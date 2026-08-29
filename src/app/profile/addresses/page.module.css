@@ -1,0 +1,118 @@
+.main {
+  max-width: var(--spacing-container-max);
+  margin: 0 auto;
+  padding: 8rem var(--spacing-margin-mobile) var(--spacing-section-gap);
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding-left: var(--spacing-margin-desktop);
+    padding-right: var(--spacing-margin-desktop);
+  }
+}
+
+.header {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+}
+
+.subtitle {
+  color: var(--color-on-surface-variant);
+}
+
+.emptyCard {
+  padding: 3rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.addressCard {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-outline-variant);
+  padding-bottom: 0.75rem;
+}
+
+.icon {
+  color: var(--color-primary);
+}
+
+.lastUsed {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+.address {
+  color: var(--color-on-surface);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.reuseBtn {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  width: fit-content;
+}
+
+.reuseBtn:hover {
+  transform: scale(0.98);
+}

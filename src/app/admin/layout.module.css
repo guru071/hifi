@@ -1,0 +1,138 @@
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+}
+
+.sidebar {
+  width: 16rem; /* w-64 */
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  border-right: 1px solid var(--color-outline-variant);
+  background-color: var(--color-surface);
+  display: none;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  z-index: 40;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding: 0 0.5rem;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background-color: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.adminTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.adminSubtitle {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+.navLinks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  color: var(--color-on-surface-variant);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.navLink:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+.navLinkActive {
+  background-color: var(--color-secondary-container);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.navLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ctaContainer {
+  margin-bottom: 1.5rem;
+}
+
+.ctaBtn {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ctaBtn:hover {
+  transform: scale(0.98);
+}
+
+.footerNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: 1rem;
+}
+
+.mainContent {
+  flex: 1;
+  padding: var(--spacing-margin-mobile);
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .mainContent {
+    margin-left: 16rem;
+    padding: var(--spacing-margin-desktop);
+  }
+}
