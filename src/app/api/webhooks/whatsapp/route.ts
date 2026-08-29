@@ -127,6 +127,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
+    // Handle HIFI HELP command
+    const upperText = text.trim().toUpperCase();
+    if (upperText === 'HELP HIFI' || upperText === 'HIFI HELP') {
+      const helpMessage = `👋 *Welcome to HIFI!*
+
+Here is what I can do for you:
+🎨 *Custom Designs*: Send me a reference code (like HIFI-1234) with your image to get your custom design started!
+🛒 *Browse Store*: Visit our website to see all our latest products.
+📦 *Order Tracking*: Use your order ID on our website to track your package.
+
+*(For general chat or AI features, just talk to me normally!)*`;
+      
+      await sendWhatsAppMessage(fromNumber, helpMessage);
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
     // Find the design by reference code in text/caption
     const match = text.match(/HIFI-[A-Z0-9]{4}/);
     const referenceCode = match?.[0] ?? null;
