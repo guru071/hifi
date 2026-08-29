@@ -38,7 +38,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const needsAuth = isProtected(pathname) || isAdmin(pathname);
+  const needsAuth = isProtected(pathname);
   const isPublicPage = isPublicOnly(pathname);
 
   if (needsAuth && !user) {
@@ -53,6 +53,16 @@ export async function proxy(request: NextRequest) {
     redirectUrl.pathname = '/profile';
     redirectUrl.search = '';
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Handle Admin Password Protection
+  if (isAdmin(pathname) && pathname !== '/admin/login') {
+    const adminToken = request.cookies.get('admin_token')?.value;
+    if (!adminToken || adminToken !== 'authenticated') {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = '/admin/login';
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   return response;
