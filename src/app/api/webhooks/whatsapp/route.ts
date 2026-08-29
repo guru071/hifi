@@ -65,6 +65,68 @@ export async function POST(request: Request) {
 
     const supabase = createServerClient();
 
+    // Check if message is from Admin
+    const adminPhone = process.env.ADMIN_PHONE_NUMBER;
+    if (adminPhone && fromNumber === adminPhone) {
+      // It's an admin message for Product Creation
+      if (!mediaId) {
+        await sendWhatsAppMessage(
+          fromNumber,
+          'Please attach an image with a caption (e.g. "Cool Shirt 499") to create a product.'
+        );
+        return NextResponse.json({ success: true }, { status: 200 });
+      }
+
+      const caption = text.trim();
+      const priceMatch = caption.match(/(\d+(?:\.\d+)?)\s*$/);
+      let price = 0;
+      let title = caption;
+      if (priceMatch) {
+        price = parseFloat(priceMatch[1]);
+        title = caption.slice(0, priceMatch.index).trim();
+      }
+      if (!title) title = 'New Product';
+
+      let finalImageUrl: string | null = null;
+      try {
+        const { buffer, mimeType } = await downloadWhatsAppMedia(mediaId);
+        const extension = mimeType.split('/')[1] || 'jpg';
+        const fileName = `admin_product_${Date.now()}.${extension}`;
+        const { error: storageError } = await supabase.storage
+          .from('products')
+          .upload(fileName, buffer, { contentType: mimeType, upsert: false });
+
+        if (!storageError) {
+          finalImageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/${fileName}`;
+        } else {
+          console.error('Admin Storage upload failed:', storageError.message);
+          await sendWhatsAppMessage(fromNumber, `Failed to upload image: ${storageError.message}`);
+          return NextResponse.json({ success: true }, { status: 200 });
+        }
+      } catch (err) {
+        console.error('Admin Media download failure:', err);
+        return NextResponse.json({ success: true }, { status: 200 });
+      }
+
+      const { error: dbError } = await supabase.from('products').insert({
+        title,
+        base_price: price,
+        image_url: finalImageUrl,
+        is_active: true,
+      });
+
+      if (dbError) {
+        console.error('Admin DB insert failed:', dbError.message);
+        await sendWhatsAppMessage(fromNumber, `Failed to create product in DB: ${dbError.message}`);
+      } else {
+        await sendWhatsAppMessage(
+          fromNumber,
+          `✅ Product created!\n\nName: ${title}\nPrice: ${price}\nImage: ${finalImageUrl}`
+        );
+      }
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
     // Find the design by reference code in text/caption
     const match = text.match(/HIFI-[A-Z0-9]{4}/);
     const referenceCode = match?.[0] ?? null;
@@ -93,7 +155,20 @@ export async function POST(request: Request) {
     }).catch((e) => console.error('Failed to log inbound message:', e.message));
 
     if (!design) {
-      // Unknown thread — no reference code: still acknowledge, optionally reply with help
+      // Unknown thread — no reference code. 
+      // Forward to Maghgo API if configured, so the Maghgo bot can handle it!
+      const maghgoApiUrl = process.env.MAGHGO_API_URL;
+      if (maghgoApiUrl) {
+        try {
+          await fetch(maghgoApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: rawBody, // Forward the exact raw body received from Meta
+          });
+        } catch (forwardError) {
+          console.error('Failed to forward to Maghgo API:', forwardError);
+        }
+      }
       return NextResponse.json({ success: true }, { status: 200 });
     }
 

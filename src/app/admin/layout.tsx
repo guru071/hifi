@@ -1,40 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import styles from "./layout.module.css";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [checking, setChecking] = useState(true);
 
-  useEffect(() => {
-    async function guard() {
-      try {
-        const res = await fetch("/api/auth/me", { cache: "no-store" });
-        const data = await res.json();
-        if (!data.user || data.role !== "admin") {
-          router.replace("/login");
-          return;
-        }
-      } catch {
-        router.replace("/login");
-        return;
-      } finally {
-        setChecking(false);
-      }
-    }
-    guard();
-  }, [router]);
-
-  if (checking) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-secondary)" }}>
-        Verifying admin access...
-      </div>
-    );
+  // If we are on the admin login page, just render the children without the sidebar
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
   }
 
   return (
