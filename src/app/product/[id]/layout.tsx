@@ -1,5 +1,5 @@
 import type { Metadata, ResolvingMetadata } from 'next';
-import { createServerClient } from '@/lib/supabase/server';
+import { getProductById } from '@/lib/services/catalog';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -14,20 +14,14 @@ export async function generateMetadata(
   const id = resolvedParams.id;
   
   try {
-    const supabase = createServerClient();
-    const { data: product } = await supabase
-      .from('products')
-      .select('title, description, image_url, base_price, product_images(url)')
-      .eq('id', id)
-      .maybeSingle();
+    const product = await getProductById(id);
 
     if (!product) {
       return { title: 'Product Not Found' };
     }
 
     const previousImages = (await parent).openGraph?.images || [];
-    const productImages = product.product_images as any[] | undefined;
-    const heroImage = product.image_url || productImages?.[0]?.url;
+    const heroImage = product.image_url || product.product_images?.[0]?.url;
 
     return {
       title: product.title,
