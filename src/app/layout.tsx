@@ -11,8 +11,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HIFI E-commerce",
-  description: "Premium custom T-shirt brand",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hificustoms.com"),
+  title: {
+    default: "HIFI E-commerce | Premium Custom T-Shirts",
+    template: "%s | HIFI E-commerce",
+  },
+  description: "Create and order premium custom T-shirts instantly. We turn your designs into high-quality apparel.",
+  keywords: ["custom t-shirts", "premium blanks", "apparel printing", "custom clothing", "HIFI customs"],
+  openGraph: {
+    title: "HIFI Premium Customs",
+    description: "Create and order premium custom T-shirts instantly.",
+    url: "/",
+    siteName: "HIFI E-commerce",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HIFI Premium Customs",
+    description: "Create and order premium custom T-shirts instantly.",
+  },
 };
 
 export default function RootLayout({
