@@ -21,13 +21,13 @@ export default function Contact() {
           <div className={styles.contactGrid}>
             <div>
               <h3>General Inquiries</h3>
-              <p>Email: info@hificustoms.com</p>
+              <p>Email: hificustomprinting@gmail.com</p>
               <p>Response time: 1-2 business days</p>
             </div>
             
             <div>
               <h3>Custom Design Support</h3>
-              <p>For immediate assistance with an active customization session, please reply directly in your WhatsApp chat thread, or email support@hificustoms.com.</p>
+              <p>For immediate assistance with an active customization session, please reply directly in your WhatsApp chat thread, or email hificustomprinting@gmail.com.</p>
             </div>
           </div>
           

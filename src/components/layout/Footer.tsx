@@ -7,7 +7,11 @@ export default function Footer() {
       <div className={styles.footerContainer}>
         <div className={styles.brandColumn}>
           <div className={styles.brandName}>HIFI</div>
-          <p className={styles.copyright}>© 2024 HIFI PREMIUM CUSTOMS</p>
+          <p className={styles.copyright}>© 2026 HIFI PREMIUM CUSTOMS</p>
+          <p className={styles.copyright}>Powered by Maghgo</p>
+          <a href="mailto:hificustomprinting@gmail.com" className={styles.link} style={{ fontSize: '0.875rem', marginTop: '4px' }}>
+            hificustomprinting@gmail.com
+          </a>
         </div>
         <div className={styles.linksColumn}>
           <Link href="/privacy" className={styles.link}>
