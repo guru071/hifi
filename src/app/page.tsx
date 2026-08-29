@@ -56,7 +56,7 @@ export default function Home() {
         <div className={styles.heroImageContainer}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa2vpmi_-PjziA27i1el1AHXo8ZxuHWXZ-q58THPNqHLnUzlXazuOOXiMm96Ht0MIlqYdO6UlMS8bffDPXPCD5GGSf2z4d9RB6p7bPytndNL3RnWqOUAOD83WVptxOU04KTOyL7ujtBH5zzNCWqByI3ulTe3gpjMcFcB8U_nOjZGYzghEMQ8uibhZ_ZZiQygL6K4O4SgdV8TIRCA264nmJcYiOJ77H1bm5nR71qCQ26z9Obe5fmWkj"
+            src="/hero_tshirt.png"
             alt="Premium white T-shirt on model"
             className={styles.heroImage}
           />
@@ -155,7 +155,7 @@ export default function Home() {
           <div className={styles.brandImageContainer}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWQJnic-iD81YOeUJK7Wb4xaxA4wghQZNfjcgxroAnt_2xKh-BCA1_aE1q3JIRe8iv_RFG7Xvi5N5bjnGw6E0f948sj4OyuaVs7YYNykvqPhcxSNwtFefQTUetDjsN8bBLVtWC47QgTajJMcvCYEKfAJ1fC_jW8WjbPtWWEJbEtlf6080d5RmMC2cZf-37cXOSTHupDvTemN8kfVrnz1XMZ3K4eo65aK6hkmUjXziAkGU87YkhOjFK"
+              src="/studio_craft.png"
               alt="Studio printing process"
               className={styles.brandImage}
             />

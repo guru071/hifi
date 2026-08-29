@@ -309,7 +309,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
                   </div>
                   
                   {/* WhatsApp Chat Area */}
-                  <div style={{ flex: 1, overflowY: "auto", padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem", backgroundImage: "url('https://i.ibb.co/L5hY88c/wa-bg.png')", backgroundSize: "cover" }}>
+                  <div style={{ flex: 1, overflowY: "auto", padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem", backgroundImage: "url('/whatsapp_bg.png')", backgroundSize: "cover" }}>
                     <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
                       <span style={{ background: "#ffeeba", color: "#664d03", fontSize: "11px", padding: "4px 8px", borderRadius: "8px", display: "inline-block" }}>
                         Messages are processed by HIFI AI Bot to automatically attach designs to your order.

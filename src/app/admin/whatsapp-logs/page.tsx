@@ -135,7 +135,7 @@ export default function AdminWhatsAppLogs() {
         </div>
 
         {/* Chat Area */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#efeae2', backgroundImage: "url('https://i.ibb.co/L5hY88c/wa-bg.png')", backgroundSize: 'cover' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#efeae2', backgroundImage: "url('/whatsapp_bg.png')", backgroundSize: 'cover' }}>
           {selectedPhone ? (
             <>
               <div style={{ background: '#00a884', color: 'white', padding: '1rem', fontWeight: 600 }}>
