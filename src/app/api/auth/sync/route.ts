@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
+import { sendWelcomeMessage } from '@/lib/services/whatsapp-notifications';
 
 /**
  * POST /api/auth/sync
@@ -26,6 +27,11 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (existing) {
+      // Returning user — send welcome back if they have a phone
+      if (phone || decoded.phoneNumber) {
+        const userPhone = phone || decoded.phoneNumber;
+        sendWelcomeMessage(userPhone, full_name || decoded.name || 'there', false).catch(() => {});
+      }
       return NextResponse.json({ synced: false, message: 'Profile already exists' }, { status: 200 });
     }
 
@@ -43,6 +49,10 @@ export async function POST(request: Request) {
           .from('users')
           .update({ auth_id: decoded.uid, updated_at: new Date().toISOString() })
           .eq('id', byEmail.id);
+        // Returning user welcome
+        if (phone || decoded.phoneNumber) {
+          sendWelcomeMessage(phone || decoded.phoneNumber, full_name || decoded.name || 'there', false).catch(() => {});
+        }
         return NextResponse.json({ synced: true, message: 'Profile linked to Firebase UID' }, { status: 200 });
       }
     }
@@ -59,6 +69,11 @@ export async function POST(request: Request) {
     if (error) {
       console.error('Error creating user profile:', error);
       return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 });
+    }
+
+    // Send welcome message to new user
+    if (phone) {
+      sendWelcomeMessage(phone, full_name || decoded.name || 'there', true).catch(() => {});
     }
 
     return NextResponse.json({ synced: true, message: 'Profile created' }, { status: 201 });

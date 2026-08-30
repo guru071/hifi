@@ -1,0 +1,300 @@
+.container {
+  max-width: 900px;
+  padding-bottom: 3rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-on-surface-variant);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+.backLink:hover { color: var(--color-primary); }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.orderId {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-family: monospace;
+}
+
+.date {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin-top: 0.25rem;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badgePaid { background: rgba(37, 211, 102, 0.12); color: #1f9d55; }
+.badgePending { background: var(--color-surface-container-high); color: var(--color-on-surface-variant); }
+.badgeCancelled { background: rgba(255, 0, 0, 0.1); color: #d33; }
+.badgeShipped { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+.badgeProcessing { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+
+/* ─── Sections ─── */
+
+.section {
+  border-radius: var(--radius-xl);
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Customer Card ─── */
+
+.customerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.infoLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  letter-spacing: 0.3px;
+  margin-bottom: 0.15rem;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: var(--color-on-surface);
+  word-break: break-word;
+}
+
+/* ─── Items ─── */
+
+.itemCard {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+.itemCard:last-child { border-bottom: none; }
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+}
+
+.noImage {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-container);
+  border-radius: var(--radius-lg);
+  color: var(--color-on-surface-variant);
+  font-size: 12px;
+}
+
+.itemTitle {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 0.2rem;
+}
+
+.itemMeta {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+.itemPrice {
+  font-weight: 700;
+  font-size: 15px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ─── Design Image ─── */
+
+.designSection {
+  margin-top: 0.75rem;
+}
+
+.designImage {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-primary);
+  padding: 0.25rem;
+  background: var(--color-surface-container-lowest);
+}
+
+.designLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ─── Totals ─── */
+
+.totalsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.totalRowFinal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 800;
+  padding-top: 0.5rem;
+  border-top: 2px solid var(--color-outline-variant);
+  margin-top: 0.25rem;
+}
+
+/* ─── Address ─── */
+
+.addressText {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+
+/* ─── Payment ─── */
+
+.paymentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ─── Update Controls ─── */
+
+.controls {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.controlLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+  letter-spacing: 0.5px;
+}
+
+.controlSelect {
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: 14px;
+  min-width: 11rem;
+}
+
+.saveBtn {
+  padding: 0.55rem 1.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.msg {
+  font-size: 13px;
+  margin-top: 0.75rem;
+}
+.msgOk { color: #1f9d55; }
+.msgErr { color: var(--color-error); }
+
+/* ─── Two Column Layout ─── */
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 700px) {
+  .customerGrid,
+  .paymentGrid,
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+  .itemCard {
+    grid-template-columns: 60px 1fr auto;
+  }
+  .itemImage, .noImage {
+    width: 60px;
+    height: 60px;
+  }
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

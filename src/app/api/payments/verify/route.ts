@@ -3,6 +3,7 @@ import { createServerClient, createRouteClient } from '@/lib/supabase/server';
 import { verifyPaymentSignature, generateInvoice } from '@/lib/services/payments';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
+import { notifyAdminNewOrder, notifyCustomerOrderConfirmation } from '@/lib/services/whatsapp-notifications';
 
 export async function POST(request: Request) {
   const supabase = createServerClient();
@@ -82,6 +83,10 @@ export async function POST(request: Request) {
       },
       supabase
     );
+
+    // 5. Fire-and-forget WhatsApp notifications (don't block response)
+    notifyAdminNewOrder(orderId).catch(err => console.error('[WA] Admin notify failed:', err));
+    notifyCustomerOrderConfirmation(orderId).catch(err => console.error('[WA] Customer notify failed:', err));
 
     return NextResponse.json({ success: true, message: 'Payment verified successfully' }, { status: 200 });
   } catch (error) {

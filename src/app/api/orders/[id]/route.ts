@@ -5,6 +5,7 @@ import { getUserRole } from '@/lib/admin';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
 import { checkAdminAuth } from '@/lib/admin';
+import { notifyCustomerOrderStatus } from '@/lib/services/whatsapp-notifications';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const supabase = createServerClient();
@@ -119,6 +120,13 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       },
       supabase
     );
+
+    // Notify customer via WhatsApp when order status changes
+    if (status && status !== current.status) {
+      notifyCustomerOrderStatus(order.id, status).catch(err =>
+        console.error('[WA] Status notify failed:', err)
+      );
+    }
 
     return NextResponse.json({ order }, { status: 200 });
   } catch (error) {
