@@ -4,6 +4,7 @@ import { getProfileByAuthId } from '@/lib/services/users';
 import { getUserRole } from '@/lib/admin';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
+import { checkAdminAuth } from '@/lib/admin';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const supabase = createServerClient();
@@ -12,18 +13,21 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
   // Resolve caller from bearer token or session cookie; admins may fetch any order.
   let callerUser: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] | null = null;
-  let isAdmin = false;
-  if (authHeader?.startsWith('Bearer ')) {
-    const { data } = await supabase.auth.getUser(authHeader.slice(7));
-    callerUser = data.user;
-    if (callerUser) isAdmin = (await getUserRole(callerUser.id)) === 'admin';
-  } else {
-    const routeClient = await createRouteClient();
-    const { data } = await routeClient.auth.getUser();
-    callerUser = data.user;
+  let isAdmin = await checkAdminAuth();
+  
+  if (!isAdmin) {
+    if (authHeader?.startsWith('Bearer ')) {
+      const { data } = await supabase.auth.getUser(authHeader.slice(7));
+      callerUser = data.user;
+      if (callerUser) isAdmin = (await getUserRole(callerUser.id)) === 'admin';
+    } else {
+      const routeClient = await createRouteClient();
+      const { data } = await routeClient.auth.getUser();
+      callerUser = data.user;
+    }
   }
 
-  if (!callerUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAdmin && !callerUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const { data: order, error } = await supabase

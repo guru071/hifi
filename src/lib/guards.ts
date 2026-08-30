@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { createRouteClient } from '@/lib/supabase/server';
-import { getUserRole } from '@/lib/admin';
+import { getUserRole, checkAdminAuth } from '@/lib/admin';
 
 /**
  * Admin guard for route handlers.
@@ -10,6 +10,10 @@ import { getUserRole } from '@/lib/admin';
  * to short-circuit with 401/403.
  */
 export async function requireAdminRequest(request: Request) {
+  if (await checkAdminAuth()) {
+    return { admin: { user: { id: 'simple-admin' } as any, role: 'admin' }, response: null };
+  }
+
   const serviceClient = createServerClient();
 
   let user: Awaited<ReturnType<typeof serviceClient.auth.getUser>>['data']['user'] | null = null;

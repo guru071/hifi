@@ -4,19 +4,14 @@ import { createDesignSubmission, resolveDesignImageUrl } from '@/lib/services/de
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
 
+import { checkAdminAuth } from '@/lib/admin';
+
 export async function GET() {
   const supabase = createServerClient();
   // Admin-only: design queue is backend-facing
-  const routeClient = await createRouteClient();
-  const {
-    data: { user },
-  } = await routeClient.auth.getUser();
-  if (!user) {
+  const isAdmin = await checkAdminAuth();
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  const { data: profile } = await supabase.from('users').select('role').eq('auth_id', user.id).maybeSingle();
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
   }
 
   try {

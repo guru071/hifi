@@ -113,7 +113,11 @@ export async function POST(request: Request) {
   }
 }
 
+import { checkAdminAuth } from '@/lib/admin';
+
 async function getUserRoleFromRequest(request: Request) {
+  if (await checkAdminAuth()) return 'admin';
+  
   const authHeader = request.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
   const supabase = createServerClient();

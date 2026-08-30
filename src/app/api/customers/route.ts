@@ -22,17 +22,15 @@ interface CustomerAggregate extends CustomerWithOrders {
   pending_payments: number;
 }
 
+import { checkAdminAuth } from '@/lib/admin';
+
 export async function GET() {
   const supabase = createServerClient();
 
   // Admin-only
-  const routeClient = await createRouteClient();
-  const {
-    data: { user },
-  } = await routeClient.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const role = await getUserRole(user.id);
-  if (role !== 'admin') return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
+  if (!(await checkAdminAuth())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     const { data: users, error } = await supabase

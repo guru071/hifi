@@ -12,6 +12,8 @@ interface AnalyticsEventBody {
   metadata?: Json | null;
 }
 
+import { checkAdminAuth } from '@/lib/admin';
+
 export async function GET(request: Request) {
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
@@ -19,13 +21,9 @@ export async function GET(request: Request) {
   const from = searchParams.get('from');
 
   // Admin-only analytics read
-  const routeClient = await createRouteClient();
-  const {
-    data: { user },
-  } = await routeClient.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const role = await getUserRole(user.id);
-  if (role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!(await checkAdminAuth())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     let query = supabase.from('analytics_events').select('*').order('created_at', { ascending: false }).limit(1000);

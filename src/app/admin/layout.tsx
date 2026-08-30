@@ -79,10 +79,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined">storefront</span>
             <span className={styles.navLabel}>Storefront</span>
           </Link>
-          <Link href="/api/auth/logout" className={styles.navLink}>
+          <a href="/api/auth/logout" className={styles.navLink}>
             <span className="material-symbols-outlined">logout</span>
             <span className={styles.navLabel}>Log Out</span>
-          </Link>
+          </a>
         </div>
       </nav>
 
