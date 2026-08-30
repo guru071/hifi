@@ -140,19 +140,19 @@ export async function sendWhatsAppList(to: string, body: string, buttonLabel: st
 }
 
 /**
- * A native "Catalog" message that displays products in a horizontal scroll (Multi-Product Message).
- * Requires products to exist in a linked Facebook Commerce Catalog.
+ * A WhatsApp Flow interactive message.
+ * This triggers a Flow (Interactive GUI) in WhatsApp and passes initial data to it.
  */
-export async function sendWhatsAppProductList(
+export async function sendWhatsAppFlow(
   to: string,
-  catalogId: string,
-  productRetailerIds: string[],
+  flowId: string,
+  screenName: string,
   body: string,
+  flowData: Record<string, any>,
   header?: string,
   footer?: string
 ) {
-  if (!catalogId) throw new Error('WhatsApp Catalog ID is required for Product List messages');
-  if (productRetailerIds.length === 0) throw new Error('At least one product_retailer_id is required');
+  if (!flowId) throw new Error('WhatsApp Flow ID is required');
 
   return sendRawWhatsAppPayload({
     messaging_product: 'whatsapp',
@@ -160,20 +160,23 @@ export async function sendWhatsAppProductList(
     to,
     type: 'interactive',
     interactive: {
-      type: 'product_list',
+      type: 'flow',
       ...(header ? { header: { type: 'text', text: header.slice(0, 60) } } : {}),
       body: { text: body.slice(0, 1024) },
       ...(footer ? { footer: { text: footer.slice(0, 60) } } : {}),
       action: {
-        catalog_id: catalogId,
-        sections: [
-          {
-            title: 'Featured Products',
-            product_items: productRetailerIds.slice(0, 30).map(id => ({
-              product_retailer_id: id
-            }))
+        name: 'flow',
+        parameters: {
+          flow_message_version: '3',
+          flow_token: `flow_${Date.now()}`,
+          flow_id: flowId,
+          flow_cta: 'View Products',
+          flow_action: 'navigate',
+          flow_action_payload: {
+            screen: screenName,
+            data: flowData,
           }
-        ]
+        }
       }
     }
   });

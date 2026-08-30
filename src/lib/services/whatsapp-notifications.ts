@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server';
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl, sendWhatsAppProductList } from './whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl, sendWhatsAppFlow } from './whatsapp';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hificustom.goatech.tech';
 const ADMIN_WHATSAPP = process.env.ADMIN_WHATSAPP_NUMBER;
@@ -247,15 +247,24 @@ ${productList}
 Use code *HIFI10* for 10% off your next order!`;
 
     try {
-      const catalogId = process.env.WHATSAPP_CATALOG_ID;
+      const flowId = process.env.MAGHGO_FLOW_ID;
+      const flowScreen = process.env.MAGHGO_FLOW_SCREEN;
       
-      if (catalogId) {
-        // Send native catalog multi-product message
-        const productIds = products.map(p => p.id);
+      if (flowId && flowScreen) {
+        // Send native WhatsApp Flow (Interactive GUI)
+        const flowData = {
+          products: products.map(p => ({
+            id: p.id,
+            title: p.title,
+            price: `₹${p.base_price}`,
+            image_url: p.image_url || ''
+          }))
+        };
         const headerText = `🔥 New at HIFI!`;
         const bodyText = `Hi ${customer.full_name || 'there'}! Check out our latest products.\n\nUse code *HIFI10* for 10% off your next order!`;
         const footerText = `Shop now at HIFI Custom`;
-        await sendWhatsAppProductList(phone, catalogId, productIds, bodyText, headerText, footerText);
+        
+        await sendWhatsAppFlow(phone, flowId, flowScreen, bodyText, flowData, headerText, footerText);
         sent++;
         await new Promise(r => setTimeout(r, 500));
       } else {
