@@ -4,6 +4,8 @@ import {
   verifyWhatsAppSignature,
   downloadWhatsAppMedia,
   sendWhatsAppMessage,
+  sendWhatsAppButtons,
+  sendWhatsAppList,
   logWhatsAppMessage,
 } from '@/lib/services/whatsapp';
 
@@ -13,10 +15,10 @@ export async function POST(request: Request) {
   const expectedAuth = `Bearer ${process.env.MAGHGO_BOT_TOKEN}`;
 
   if (!authHeader || authHeader !== expectedAuth) {
-    console.error(`HIFI Webhook blocked: Expected ${expectedAuth}, got ${authHeader}`);
+    console.error(`HIFI Webhook blocked: Expected '${expectedAuth}', got '${authHeader}'`);
     return NextResponse.json({ 
       error: 'Unauthorized',
-      debug: `Server sees token starting with: ${process.env.MAGHGO_BOT_TOKEN ? process.env.MAGHGO_BOT_TOKEN.substring(0, 3) + '...' : 'undefined'}`
+      debug: `Expected: '${expectedAuth}', Got: '${authHeader}'`
     }, { status: 401 });
   }
 
@@ -132,19 +134,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
+    const interactiveId = (
+      (message as any).interactive?.button_reply?.id ||
+      (message as any).interactive?.list_reply?.id || ''
+    ).toUpperCase();
+
+    if (interactiveId === 'HIFI_CUSTOM_DESIGN') {
+      await sendWhatsAppMessage(fromNumber, '🎨 To start a custom design, simply send me a reference code (e.g., HIFI-1234) along with an image you want to print!');
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+    if (interactiveId === 'HIFI_TRACK_ORDER') {
+      await sendWhatsAppMessage(fromNumber, '📦 Please visit our website and enter your Order ID on the tracking page to track your package.');
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+    if (interactiveId === 'HIFI_CONTACT_SUPPORT') {
+      await sendWhatsAppMessage(fromNumber, '💬 Support is here! An agent will be with you shortly. Please describe your issue.');
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
     // Handle HIFI HELP command
-    const upperText = text.trim().toUpperCase();
+    const upperText = (interactiveId || text).trim().toUpperCase();
     if (upperText === 'HELP HIFI' || upperText === 'HIFI HELP') {
-      const helpMessage = `👋 *Welcome to HIFI!*
-
-Here is what I can do for you:
-🎨 *Custom Designs*: Send me a reference code (like HIFI-1234) with your image to get your custom design started!
-🛒 *Browse Store*: Visit our website to see all our latest products.
-📦 *Order Tracking*: Use your order ID on our website to track your package.
-
-*(For general chat or AI features, just talk to me normally!)*`;
+      const helpMessage = `👋 *Welcome to HIFI!*\n\nI am your custom design assistant. What would you like to do?`;
       
-      await sendWhatsAppMessage(fromNumber, helpMessage);
+      await sendWhatsAppButtons(fromNumber, helpMessage, [
+        { id: 'HIFI_CUSTOM_DESIGN', title: '🎨 Custom Design' },
+        { id: 'HIFI_TRACK_ORDER', title: '📦 Track Order' },
+        { id: 'HIFI_CONTACT_SUPPORT', title: '💬 Support' }
+      ]);
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
