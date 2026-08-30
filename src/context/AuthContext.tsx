@@ -10,6 +10,9 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  verifyBeforeUpdateEmail,
   type User,
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
@@ -23,6 +26,9 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: string | null }>;
   signInWithProvider: (provider: OAuthProvider) => Promise<{ error: string | null }>;
+  sendPasswordReset: (email: string) => Promise<{ error: string | null }>;
+  verifyEmail: () => Promise<{ error: string | null }>;
+  updateUserEmail: (newEmail: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
 
@@ -33,6 +39,9 @@ const AuthContext = createContext<AuthContextValue>({
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
   signInWithProvider: async () => ({ error: null }),
+  sendPasswordReset: async () => ({ error: null }),
+  verifyEmail: async () => ({ error: null }),
+  updateUserEmail: async () => ({ error: null }),
   signOut: async () => {},
 });
 
@@ -131,8 +140,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const sendPasswordReset = useCallback(async (email: string) => {
+    try {
+      await sendPasswordResetEmail(firebaseAuth, email);
+      return { error: null };
+    } catch (e: unknown) {
+      const msg = (e as { message?: string })?.message ?? "Password reset failed";
+      return { error: friendlyError(msg) };
+    }
+  }, []);
+
+  const verifyEmail = useCallback(async () => {
+    if (!firebaseAuth.currentUser) return { error: "No authenticated user" };
+    try {
+      await sendEmailVerification(firebaseAuth.currentUser);
+      return { error: null };
+    } catch (e: unknown) {
+      const msg = (e as { message?: string })?.message ?? "Email verification failed";
+      return { error: friendlyError(msg) };
+    }
+  }, []);
+
+  const updateUserEmail = useCallback(async (newEmail: string) => {
+    if (!firebaseAuth.currentUser) return { error: "No authenticated user" };
+    try {
+      await verifyBeforeUpdateEmail(firebaseAuth.currentUser, newEmail);
+      return { error: null };
+    } catch (e: unknown) {
+      const msg = (e as { message?: string })?.message ?? "Email update failed";
+      return { error: friendlyError(msg) };
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, getIdToken, signIn, signUp, signInWithProvider, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      getIdToken, 
+      signIn, 
+      signUp, 
+      signInWithProvider, 
+      sendPasswordReset,
+      verifyEmail,
+      updateUserEmail,
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   );

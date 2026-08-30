@@ -153,6 +153,10 @@ export default function Profile() {
                   <span>Saved Addresses</span>
                   <span className={`material-symbols-outlined ${styles.icon}`}>location_on</span>
                 </button>
+                <button className={styles.actionBtn} onClick={() => router.push("/profile/security")}>
+                  <span>Security & Sign-in</span>
+                  <span className={`material-symbols-outlined ${styles.icon}`}>security</span>
+                </button>
                 <button className={`${styles.actionBtn} ${styles.btnDanger}`} onClick={handleSignOut}>
                   <span>Sign Out</span>
                   <span className={`material-symbols-outlined ${styles.icon}`}>logout</span>
