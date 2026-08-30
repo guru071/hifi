@@ -13,8 +13,11 @@ export async function POST(request: Request) {
   const expectedAuth = `Bearer ${process.env.MAGHGO_BOT_TOKEN}`;
 
   if (!authHeader || authHeader !== expectedAuth) {
-    console.error('HIFI Webhook blocked: Invalid or missing MAGHGO_BOT_TOKEN');
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    console.error(`HIFI Webhook blocked: Expected ${expectedAuth}, got ${authHeader}`);
+    return NextResponse.json({ 
+      error: 'Unauthorized',
+      debug: `Server sees token starting with: ${process.env.MAGHGO_BOT_TOKEN ? process.env.MAGHGO_BOT_TOKEN.substring(0, 3) + '...' : 'undefined'}`
+    }, { status: 401 });
   }
 
   try {
