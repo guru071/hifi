@@ -19,17 +19,14 @@ export function verifyWhatsAppSignature(rawBody: string, signatureHeader: string
   return crypto.timingSafeEqual(a, b);
 }
 
-/**
- * Send an outbound WhatsApp message via the Business Cloud API.
- */
 export async function sendWhatsAppMessage(to: string, bodyText: string, payloadMeta?: Record<string, string>) {
   const token = process.env.WHATSAPP_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  if (!token || !phoneNumberId) {
-    throw new Error('WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID not configured');
+  const maghgoApi = process.env.MAGHGO_OUTBOUND_API_URL;
+  if (!maghgoApi || !token) {
+    throw new Error('MAGHGO_OUTBOUND_API_URL or WHATSAPP_TOKEN not configured.');
   }
 
-  const res = await fetch(`${GRAPH_BASE}/${phoneNumberId}/messages`, {
+  const res = await fetch(maghgoApi, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -46,7 +43,7 @@ export async function sendWhatsAppMessage(to: string, bodyText: string, payloadM
 
   if (!res.ok) {
     const errBody = await res.text();
-    throw new Error(`WhatsApp send failed (${res.status}): ${errBody}`);
+    throw new Error(`Maghgo WhatsApp send failed (${res.status}): ${errBody}`);
   }
 
   return res.json();

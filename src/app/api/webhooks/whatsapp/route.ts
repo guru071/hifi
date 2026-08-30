@@ -171,20 +171,8 @@ Here is what I can do for you:
     }).catch((e) => console.error('Failed to log inbound message:', e.message));
 
     if (!design) {
-      // Unknown thread — no reference code. 
-      // Forward to Maghgo API if configured, so the Maghgo bot can handle it!
-      const maghgoApiUrl = process.env.MAGHGO_API_URL;
-      if (maghgoApiUrl) {
-        try {
-          await fetch(maghgoApiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: rawBody, // Forward the exact raw body received from Meta
-          });
-        } catch (forwardError) {
-          console.error('Failed to forward to Maghgo API:', forwardError);
-        }
-      }
+      // Unknown thread — no reference code.
+      // Since Maghgo is the primary receiver and forwards to HIFI, we just drop this to prevent infinite loops.
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
