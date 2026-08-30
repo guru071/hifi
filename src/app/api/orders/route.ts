@@ -28,9 +28,11 @@ export async function GET(request: Request) {
       if (role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       query = query.eq('user_id', userId);
     } else {
-      // Not an admin → return only the caller's orders
-      if (!profile) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      if (role !== 'admin') query = query.eq('user_id', profile.id);
+      // If admin, they can fetch all orders without a profile
+      if (role !== 'admin') {
+        if (!profile) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        query = query.eq('user_id', profile.id);
+      }
     }
 
     const { data: orders, error } = await query;
