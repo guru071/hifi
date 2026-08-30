@@ -44,7 +44,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
     // Ownership check: customers see only their own orders
     if (!isAdmin) {
-      const profile = await getProfileByAuthId(callerUser.id, supabase);
+      const profile = await getProfileByAuthId(callerUser!.id, supabase);
       if (!profile || order.user_id !== profile.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
