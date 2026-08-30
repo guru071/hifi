@@ -20,6 +20,7 @@ export async function getUserRole(authUserId: string): Promise<'admin' | 'custom
  * Returns { user, role } or throws/redirects for unauthorized access.
  */
 import { cookies } from 'next/headers';
+import { createRouteClient } from '@/lib/supabase/server';
 
 export async function requireAdmin(user: User | null) {
   if (!user) return null;
@@ -28,10 +29,20 @@ export async function requireAdmin(user: User | null) {
   return { user, role };
 }
 
+/**
+ * Checks if the request is authorized as admin (via simple password or Supabase session)
+ */
 export async function checkAdminAuth(): Promise<boolean> {
   const cookieStore = await cookies();
   if (cookieStore.get('admin_token')?.value === 'authenticated') {
     return true;
+  }
+  
+  const routeClient = await createRouteClient();
+  const { data: { user } } = await routeClient.auth.getUser();
+  if (user) {
+    const role = await getUserRole(user.id);
+    if (role === 'admin') return true;
   }
   return false;
 }
