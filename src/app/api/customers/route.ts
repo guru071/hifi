@@ -41,7 +41,7 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching customers:', error);
-      return NextResponse.json({ error: 'Failed to fetch customers' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch customers', details: error }, { status: 500 });
     }
 
     const customers: CustomerAggregate[] = ((users ?? []) as unknown as CustomerWithOrders[]).map((user) => {

@@ -19,7 +19,7 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching settings:', error);
-      return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch settings', details: error }, { status: 500 });
     }
 
     return NextResponse.json({ settings: settings || [] }, { status: 200 });
