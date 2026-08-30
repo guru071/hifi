@@ -154,10 +154,35 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const { admin, response } = await requireAdminRequest(request);
     if (response) return response;
 
+    // Fetch the product first so we can clean up its image from storage
+    const { data: product } = await supabase
+      .from('products')
+      .select('image_url')
+      .eq('id', params.id)
+      .maybeSingle();
+
     const { error } = await supabase.from('products').delete().eq('id', params.id);
     if (error) {
       console.error('Error deleting product:', error);
       return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+    }
+
+    // Delete the image from Supabase storage if it was uploaded there
+    if (product?.image_url) {
+      try {
+        const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/`;
+        if (product.image_url.startsWith(storageBase)) {
+          const fileName = product.image_url.replace(storageBase, '');
+          const { error: storageError } = await supabase.storage
+            .from('products')
+            .remove([fileName]);
+          if (storageError) {
+            console.warn('Could not delete image from storage:', storageError.message);
+          }
+        }
+      } catch (imgErr) {
+        console.warn('Image cleanup failed (non-fatal):', imgErr);
+      }
     }
 
     await logAudit(

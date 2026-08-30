@@ -200,6 +200,21 @@ export default function AdminProducts() {
     }
   }
 
+  async function deleteProduct(p: AdminProduct) {
+    if (!window.confirm(`Delete "${p.title}"?\n\nThis will permanently remove the product and its image. This cannot be undone.`)) return;
+    setMsg("");
+    setErr("");
+    try {
+      const res = await fetch(`/api/products/${p.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Delete failed");
+      setMsg(`"${p.title}" deleted successfully.`);
+      loadAll();
+    } catch (e: unknown) {
+      if (e instanceof Error) setErr(e.message);
+    }
+  }
+
   async function createCategory(e: React.FormEvent) {
     e.preventDefault();
     setMsg("");
@@ -325,6 +340,11 @@ export default function AdminProducts() {
             <div className={styles.productActions}>
               <button className={styles.secondaryBtn} onClick={() => openEdit(p)}>Edit</button>
               <button className={styles.secondaryBtn} onClick={() => toggleActive(p)}>{p.is_active ? "Hide" : "Show"}</button>
+              <button
+                className={styles.secondaryBtn}
+                style={{ color: 'var(--color-error, #ef4444)', borderColor: 'var(--color-error, #ef4444)' }}
+                onClick={() => deleteProduct(p)}
+              >Delete</button>
             </div>
           </div>
 
