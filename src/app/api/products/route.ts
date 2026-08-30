@@ -4,6 +4,14 @@ import { listActiveProducts, listAdminProducts } from '@/lib/services/catalog';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
 
+const COMMON_COLORS = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'grey', 'brown', 'navy', 'maroon', 'gold', 'silver'];
+
+function extractColors(text: string): string[] {
+  if (!text) return [];
+  const words = text.toLowerCase().split(/[\s,.-]+/);
+  return COMMON_COLORS.filter(color => words.includes(color));
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -68,7 +76,25 @@ export async function POST(request: Request) {
       supabase
     );
 
-    return NextResponse.json({ product: data }, { status: 201 });
+    // Auto-detect colors and create variants
+    const textToSearch = `${title} ${description || ''}`;
+    const detectedColors = Array.from(new Set(extractColors(textToSearch)));
+
+    if (detectedColors.length > 0) {
+      const variantsToInsert = detectedColors.map(color => ({
+        product_id: data.id,
+        color: color.charAt(0).toUpperCase() + color.slice(1),
+        size: 'One Size',
+        sku: `${title.substring(0, 3).toUpperCase()}-${color.substring(0, 3).toUpperCase()}`,
+        inventory_count: 100,
+        price_adjustment: 0
+      }));
+      
+      const { error: variantError } = await supabase.from('product_variants').insert(variantsToInsert);
+      if (variantError) console.error('Failed to auto-create variants:', variantError);
+    }
+
+    return NextResponse.json({ product: data, detectedColors }, { status: 201 });
   } catch (error) {
     console.error('Server error creating product:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

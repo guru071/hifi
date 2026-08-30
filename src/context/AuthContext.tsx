@@ -6,7 +6,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
-  OAuthProvider as FirebaseOAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   updateProfile,
@@ -17,7 +16,7 @@ import {
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
 
-export type OAuthProvider = "google" | "apple";
+export type OAuthProvider = "google";
 
 type AuthContextValue = {
   user: User | null;
@@ -119,11 +118,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (provider === "google") {
         const googleProvider = new GoogleAuthProvider();
         await signInWithPopup(firebaseAuth, googleProvider);
-      } else if (provider === "apple") {
-        const appleProvider = new FirebaseOAuthProvider("apple.com");
-        appleProvider.addScope("email");
-        appleProvider.addScope("name");
-        await signInWithPopup(firebaseAuth, appleProvider);
       }
       return { error: null };
     } catch (e: unknown) {
