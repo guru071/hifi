@@ -9,10 +9,12 @@ import {
 
 export async function POST(request: Request) {
   const rawBody = await request.text();
-  const signature = request.headers.get('x-hub-signature-256');
+  const authHeader = request.headers.get('authorization');
+  const expectedAuth = `Bearer ${process.env.MAGHGO_BOT_TOKEN}`;
 
-  if (!verifyWhatsAppSignature(rawBody, signature)) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 403 });
+  if (!authHeader || authHeader !== expectedAuth) {
+    console.error('HIFI Webhook blocked: Invalid or missing MAGHGO_BOT_TOKEN');
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
