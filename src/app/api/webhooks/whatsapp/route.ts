@@ -139,21 +139,23 @@ export async function POST(request: Request) {
       (message as any).interactive?.list_reply?.id || ''
     ).toUpperCase();
 
-    if (interactiveId === 'HIFI_CUSTOM_DESIGN') {
+    // Handle interactive button clicks OR text matches (if Maghgo normalizes them)
+    const upperText = (interactiveId || text).trim().toUpperCase();
+
+    if (interactiveId === 'HIFI_CUSTOM_DESIGN' || upperText.includes('CUSTOM DESIGN')) {
       await sendWhatsAppMessage(fromNumber, '🎨 To start a custom design, simply send me a reference code (e.g., HIFI-1234) along with an image you want to print!');
       return NextResponse.json({ success: true }, { status: 200 });
     }
-    if (interactiveId === 'HIFI_TRACK_ORDER') {
+    if (interactiveId === 'HIFI_TRACK_ORDER' || upperText.includes('TRACK ORDER')) {
       await sendWhatsAppMessage(fromNumber, '📦 Please visit our website and enter your Order ID on the tracking page to track your package.');
       return NextResponse.json({ success: true }, { status: 200 });
     }
-    if (interactiveId === 'HIFI_CONTACT_SUPPORT') {
+    if (interactiveId === 'HIFI_CONTACT_SUPPORT' || upperText.includes('SUPPORT')) {
       await sendWhatsAppMessage(fromNumber, '💬 Support is here! An agent will be with you shortly. Please describe your issue.');
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
     // Handle HIFI HELP command
-    const upperText = (interactiveId || text).trim().toUpperCase();
     if (upperText === 'HELP HIFI' || upperText === 'HIFI HELP') {
       const helpMessage = `👋 *Welcome to HIFI!*\n\nI am your custom design assistant. What would you like to do?`;
       
