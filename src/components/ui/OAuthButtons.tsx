@@ -41,6 +41,18 @@ export default function OAuthButtons() {
           </svg>
           <span>{busy === "google" ? "Connecting..." : "Google"}</span>
         </button>
+
+        <button
+          type="button"
+          className={styles.providerBtn}
+          onClick={() => handleProvider("apple")}
+          disabled={busy !== null}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+            <path d="M17.05 12.54c-.03-2.53 2.06-3.74 2.16-3.8-1.18-1.72-3.01-1.96-3.66-1.99-1.56-.16-3.04.92-3.83.92-.79 0-2-.9-3.3-.87-1.7.03-3.26.99-4.13 2.51-1.77 3.06-.45 7.6 1.27 10.09.84 1.22 1.84 2.6 3.16 2.55 1.27-.05 1.75-.82 3.28-.82s1.96.82 3.3.8c1.37-.03 2.24-1.25 3.07-2.48.97-1.42 1.37-2.8 1.39-2.87-.03-.01-2.67-1.02-2.7-4.05zM14.4 4.08c.7-.85 1.17-2.02 1.04-3.2-1.01.04-2.23.67-2.96 1.52-.65.75-1.22 1.95-1.07 3.1 1.13.09 2.29-.57 2.99-1.42z" />
+          </svg>
+          <span>{busy === "apple" ? "Connecting..." : "Apple"}</span>
+        </button>
       </div>
     </div>
   );
