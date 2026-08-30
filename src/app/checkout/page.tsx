@@ -153,6 +153,12 @@ export default function Checkout() {
           contact: "",
         },
         theme: { color: "#000000" },
+        modal: {
+          ondismiss: function () {
+            setError("Payment cancelled. Please try again.");
+            setLoading(false);
+          }
+        },
       };
 
       const paymentObject = new (window as unknown as { Razorpay: RazorpayConstructor }).Razorpay(options);
