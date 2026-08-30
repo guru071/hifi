@@ -140,6 +140,46 @@ export async function sendWhatsAppList(to: string, body: string, buttonLabel: st
 }
 
 /**
+ * A native "Catalog" message that displays products in a horizontal scroll (Multi-Product Message).
+ * Requires products to exist in a linked Facebook Commerce Catalog.
+ */
+export async function sendWhatsAppProductList(
+  to: string,
+  catalogId: string,
+  productRetailerIds: string[],
+  body: string,
+  header?: string,
+  footer?: string
+) {
+  if (!catalogId) throw new Error('WhatsApp Catalog ID is required for Product List messages');
+  if (productRetailerIds.length === 0) throw new Error('At least one product_retailer_id is required');
+
+  return sendRawWhatsAppPayload({
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'product_list',
+      ...(header ? { header: { type: 'text', text: header.slice(0, 60) } } : {}),
+      body: { text: body.slice(0, 1024) },
+      ...(footer ? { footer: { text: footer.slice(0, 60) } } : {}),
+      action: {
+        catalog_id: catalogId,
+        sections: [
+          {
+            title: 'Featured Products',
+            product_items: productRetailerIds.slice(0, 30).map(id => ({
+              product_retailer_id: id
+            }))
+          }
+        ]
+      }
+    }
+  });
+}
+
+/**
  * Download WhatsApp media: two-step flow — GET /{media-id} returns a signed url,
  * then GET the url with the same Bearer token. Returns the buffer + mime type.
  */

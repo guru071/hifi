@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server';
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl } from './whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl, sendWhatsAppProductList } from './whatsapp';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hificustom.goatech.tech';
 const ADMIN_WHATSAPP = process.env.ADMIN_WHATSAPP_NUMBER;
@@ -247,23 +247,36 @@ ${productList}
 Use code *HIFI10* for 10% off your next order!`;
 
     try {
-      await sendWhatsAppMessage(phone, msg);
-      sent++;
-      // Small delay to avoid rate limits
-      await new Promise(r => setTimeout(r, 500));
+      const catalogId = process.env.WHATSAPP_CATALOG_ID;
+      
+      if (catalogId) {
+        // Send native catalog multi-product message
+        const productIds = products.map(p => p.id);
+        const headerText = `🔥 New at HIFI!`;
+        const bodyText = `Hi ${customer.full_name || 'there'}! Check out our latest products.\n\nUse code *HIFI10* for 10% off your next order!`;
+        const footerText = `Shop now at HIFI Custom`;
+        await sendWhatsAppProductList(phone, catalogId, productIds, bodyText, headerText, footerText);
+        sent++;
+        await new Promise(r => setTimeout(r, 500));
+      } else {
+        // Fallback to standard text + image
+        await sendWhatsAppMessage(phone, msg);
+        sent++;
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Send first product image if available
+        const firstProduct = products[0];
+        if (firstProduct?.image_url) {
+          try {
+            await sendWhatsAppImage(phone, firstProduct.image_url, `${firstProduct.title} — ₹${firstProduct.base_price}`);
+          } catch {
+            // Non-critical, skip image
+          }
+        }
+      }
     } catch (err) {
       console.error(`[WA-Promo] Failed to send to ${phone}:`, err);
       skipped++;
-    }
-
-    // Send first product image if available
-    const firstProduct = products[0];
-    if (firstProduct?.image_url) {
-      try {
-        await sendWhatsAppImage(phone, firstProduct.image_url, `${firstProduct.title} — ₹${firstProduct.base_price}`);
-      } catch {
-        // Non-critical, skip image
-      }
     }
   }
 
