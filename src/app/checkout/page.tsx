@@ -73,6 +73,8 @@ export default function Checkout() {
     });
   };
 
+  const [pendingOrder, setPendingOrder] = useState<{ orderId: string, razorpayOrderId: string, amount: number, currency: string } | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -80,39 +82,45 @@ export default function Checkout() {
     setLoading(true);
     setError("");
 
-    const form = new FormData(e.currentTarget as HTMLFormElement);
-    const shippingAddress = {
-      full_name: `${form.get("firstName")} ${form.get("lastName")}`.trim(),
-      email: String(form.get("email") || ""),
-      phone: String(form.get("phone") || ""),
-      line1: String(form.get("address") || ""),
-      line2: String(form.get("apartment") || "") || null,
-      city: String(form.get("city") || ""),
-      state: String(form.get("state") || ""),
-      postal_code: String(form.get("zip") || ""),
-      country: "India",
-    };
-
     try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shippingAddress,
-          items: items.map((it) => ({
-            productId: it.productId,
-            variantId: it.variantId ?? null,
-            quantity: it.quantity,
-            customDesignId: it.customDesignId ?? null,
-          })),
-        }),
-      });
+      let orderData = pendingOrder;
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create order");
+      // Only create a new order if we don't already have one pending for this session
+      if (!orderData) {
+        const form = new FormData(e.currentTarget as HTMLFormElement);
+        const shippingAddress = {
+          full_name: `${form.get("firstName")} ${form.get("lastName")}`.trim(),
+          email: String(form.get("email") || ""),
+          phone: String(form.get("phone") || ""),
+          line1: String(form.get("address") || ""),
+          line2: String(form.get("apartment") || "") || null,
+          city: String(form.get("city") || ""),
+          state: String(form.get("state") || ""),
+          postal_code: String(form.get("zip") || ""),
+          country: "India",
+        };
 
-      if (data.razorpayInitFailed || !data.razorpayOrderId) {
-        throw new Error("Payment gateway unavailable. Please try again.");
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shippingAddress,
+            items: items.map((it) => ({
+              productId: it.productId,
+              variantId: it.variantId ?? null,
+              quantity: it.quantity,
+              customDesignId: it.customDesignId ?? null,
+            })),
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create order");
+        if (data.razorpayInitFailed || !data.razorpayOrderId) {
+          throw new Error("Payment gateway unavailable. Please try again.");
+        }
+        orderData = data;
+        setPendingOrder(data);
       }
 
       // Load Razorpay Script
@@ -120,11 +128,11 @@ export default function Checkout() {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: Math.round(data.amount * 100),
-        currency: data.currency,
+        amount: Math.round(orderData!.amount * 100),
+        currency: orderData!.currency,
         name: "HIFI Customs",
         description: "Custom apparel order",
-        order_id: data.razorpayOrderId,
+        order_id: orderData!.razorpayOrderId,
         handler: async function (response: RazorpayResponse) {
           try {
             const verifyRes = await fetch("/api/payments/verify", {
@@ -134,14 +142,14 @@ export default function Checkout() {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
-                orderId: data.orderId,
+                orderId: orderData!.orderId,
               }),
             });
             const verifyData = await verifyRes.json();
             if (!verifyRes.ok) throw new Error(verifyData.error || "Verification failed");
 
             clearCart();
-            router.push(`/order/${data.orderId}`);
+            router.push(`/order/${orderData!.orderId}`);
           } catch (err) {
             setError((err as Error).message || "Payment verification failed");
             setLoading(false);
@@ -155,7 +163,7 @@ export default function Checkout() {
         theme: { color: "#000000" },
         modal: {
           ondismiss: function () {
-            setError("Payment cancelled. Please try again.");
+            setError("Payment cancelled. You can retry by clicking 'Complete Order' again.");
             setLoading(false);
           }
         },
