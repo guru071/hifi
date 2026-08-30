@@ -20,10 +20,10 @@ export function verifyWhatsAppSignature(rawBody: string, signatureHeader: string
 }
 
 export async function sendWhatsAppMessage(to: string, bodyText: string, payloadMeta?: Record<string, string>) {
-  const token = process.env.WHATSAPP_TOKEN;
+  const token = process.env.MAGHGO_BOT_TOKEN;
   const maghgoApi = process.env.MAGHGO_OUTBOUND_API_URL;
   if (!maghgoApi || !token) {
-    throw new Error('MAGHGO_OUTBOUND_API_URL or WHATSAPP_TOKEN not configured.');
+    throw new Error('MAGHGO_OUTBOUND_API_URL or MAGHGO_BOT_TOKEN not configured.');
   }
 
   const res = await fetch(maghgoApi, {
