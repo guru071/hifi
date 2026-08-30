@@ -76,7 +76,7 @@ View: ${SITE_URL}/admin/orders`;
     console.log('[WA-Notify] Admin notified for order', orderId);
 
     // If there are custom designs, send the images to the admin
-    const designIds = items.map(i => i.design_id).filter(Boolean);
+    const designIds = items.map(i => i.design_id).filter(Boolean) as string[];
     if (designIds.length > 0) {
       const { data: designs } = await supabase
         .from('custom_designs')
