@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createRouteClient, createServerClient } from '@/lib/supabase/server';
-import { getProfileByAuthId } from '@/lib/services/users';
+import { createServerClient } from '@/lib/supabase/server';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
-export async function GET() {
-  const routeClient = await createRouteClient();
-  const {
-    data: { user },
-  } = await routeClient.auth.getUser();
-
-  if (!user) {
+export async function GET(request: Request) {
+  const decoded = await verifyFirebaseToken(request);
+  if (!decoded) {
     return NextResponse.json({ profile: null }, { status: 200 });
   }
 
   const supabase = createServerClient();
-  const profile = await getProfileByAuthId(user.id, supabase);
+  const { data: profile } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_id', decoded.uid)
+    .maybeSingle();
 
   return NextResponse.json({ profile }, { status: 200 });
 }

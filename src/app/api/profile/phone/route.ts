@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createRouteClient, createServerClient } from '@/lib/supabase/server';
-import { getProfileByAuthId, setUserPhone } from '@/lib/services/users';
+import { createServerClient } from '@/lib/supabase/server';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
+import { setUserPhone } from '@/lib/services/users';
 
 export async function POST(request: Request) {
-  const routeClient = await createRouteClient();
-  const {
-    data: { user },
-  } = await routeClient.auth.getUser();
-  if (!user) {
+  const decoded = await verifyFirebaseToken(request);
+  if (!decoded) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,7 +26,12 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createServerClient();
-    const profile = await getProfileByAuthId(user.id, supabase);
+    const { data: profile } = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', decoded.uid)
+      .maybeSingle();
+
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }

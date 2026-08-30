@@ -33,7 +33,7 @@ export default function Profile() {
   const { user, signOut, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  const fullName = (user?.user_metadata?.full_name as string) || user?.email || "";
+  const fullName = user?.displayName || user?.email || "";
   const email = user?.email || "";
 
   useEffect(() => {

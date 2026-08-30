@@ -148,7 +148,7 @@ export default function Checkout() {
           }
         },
         prefill: {
-          name: (user?.user_metadata?.full_name as string) || "",
+          name: (user?.displayName as string) || "",
           email: user?.email || "",
           contact: "",
         },

@@ -1,22 +1,29 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { createOrder, OrderCreationError } from '@/lib/services/orders';
-import { getProfileByAuthId } from '@/lib/services/users';
-import { getUserRole } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
+import { getFirebaseProfileId } from '@/lib/guards';
+
+async function getUserRoleFromRequest(request: Request): Promise<'admin' | 'customer' | null> {
+  if (await checkAdminAuth()) return 'admin';
+  const decoded = await verifyFirebaseToken(request);
+  if (!decoded) return null;
+  const supabase = createServerClient();
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('auth_id', decoded.uid)
+    .maybeSingle();
+  return (profile?.role as 'admin' | 'customer') ?? 'customer';
+}
 
 export async function GET(request: Request) {
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const role = await getUserRoleFromRequest(request);
-
-  const routeClient = await createRouteClient();
-  const {
-    data: { user: authUser },
-  } = await routeClient.auth.getUser();
-
-  // Customers may only ever fetch their own orders.
-  const profile = authUser ? await getProfileByAuthId(authUser.id, supabase) : null;
+  const profileId = role !== 'admin' ? await getFirebaseProfileId(request) : null;
 
   try {
     let query = supabase
@@ -28,10 +35,9 @@ export async function GET(request: Request) {
       if (role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       query = query.eq('user_id', userId);
     } else {
-      // If admin, they can fetch all orders without a profile
       if (role !== 'admin') {
-        if (!profile) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        query = query.eq('user_id', profile.id);
+        if (!profileId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        query = query.eq('user_id', profileId);
       }
     }
 
@@ -50,23 +56,22 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const supabase = createServerClient();
+    const profileId = await getFirebaseProfileId(request);
 
-    // 1. Resolve the authenticated user strictly from the session (never client-supplied userId)
-    const routeClient = await createRouteClient();
-    const {
-      data: { user: authUser },
-    } = await routeClient.auth.getUser();
-
-    if (!authUser) {
+    if (!profileId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const profile = await getProfileByAuthId(authUser.id, supabase);
+    const { data: profile } = await supabase
+      .from('users')
+      .select('id, full_name, email, phone')
+      .eq('id', profileId)
+      .maybeSingle();
+
     if (!profile) {
       return NextResponse.json({ error: 'Account profile not found' }, { status: 404 });
     }
 
-    // 2. Parse + shape payload
     const body = await request.json();
     const items = body.items;
     let shippingAddress = body.shippingAddress;
@@ -75,7 +80,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid payload: missing shipping address' }, { status: 400 });
     }
 
-    // Expand a legacy flat shipping object into a structured address
     if (!shippingAddress.line1) {
       shippingAddress = {
         full_name: shippingAddress.name ?? profile.full_name ?? '',
@@ -88,12 +92,7 @@ export async function POST(request: Request) {
       };
     }
 
-    // 3. Delegate to the order service (server-side pricing, delivery calc, snapshot, inventory, razorpay)
-    const result = await createOrder({
-      profileId: profile.id,
-      items,
-      address: shippingAddress,
-    });
+    const result = await createOrder({ profileId: profile.id, items, address: shippingAddress });
 
     return NextResponse.json(
       {
@@ -113,18 +112,4 @@ export async function POST(request: Request) {
     console.error('Server error creating order:', error);
     return NextResponse.json({ error: 'Invalid request or server error' }, { status: 400 });
   }
-}
-
-import { checkAdminAuth } from '@/lib/admin';
-
-async function getUserRoleFromRequest(request: Request) {
-  if (await checkAdminAuth()) return 'admin';
-  
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-  const supabase = createServerClient();
-  const token = authHeader.slice(7);
-  const { data } = await supabase.auth.getUser(token);
-  if (!data.user) return null;
-  return getUserRole(data.user.id);
 }
