@@ -216,28 +216,7 @@ export default function SecuritySettings() {
               </div>
             </div>
 
-            <div className={`glass-panel ${styles.orderCard}`}>
-              <div className={styles.orderHeader}>
-                <h2 style={{ fontSize: "1.25rem", margin: 0, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span className="material-symbols-outlined">phonelink_lock</span>
-                  Multi-Factor Authentication (MFA)
-                </h2>
-              </div>
-              <div className={styles.orderBody} style={{ padding: "1.5rem" }}>
-                <p style={{ marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                  Add an extra layer of security to your account by setting up 2-Step Verification via SMS. 
-                  <br /><br />
-                  <em>Note: Administrator setup required. Identity Platform must be enabled in the Firebase Console for SMS MFA to function.</em>
-                </p>
-                <button 
-                  disabled
-                  className={styles.actionBtn} 
-                  style={{ padding: "0.5rem 1rem", minHeight: "auto", fontSize: "0.875rem", width: "fit-content", opacity: 0.5, cursor: "not-allowed" }}
-                >
-                  Enroll Phone Number (Coming Soon)
-                </button>
-              </div>
-            </div>
+
 
           </div>
         </div>
