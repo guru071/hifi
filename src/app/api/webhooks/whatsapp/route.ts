@@ -139,8 +139,13 @@ export async function POST(request: Request) {
       (message as any).interactive?.list_reply?.id || ''
     ).toUpperCase();
 
+    const interactiveTitle = (
+      (message as any).interactive?.button_reply?.title ||
+      (message as any).interactive?.list_reply?.title || ''
+    ).toUpperCase();
+
     // Handle interactive button clicks OR text matches (if Maghgo normalizes them)
-    const upperText = (interactiveId || text).trim().toUpperCase();
+    const upperText = (interactiveId || interactiveTitle || text).trim().toUpperCase();
 
     if (interactiveId === 'HIFI_CUSTOM_DESIGN' || upperText.includes('CUSTOM DESIGN')) {
       await sendWhatsAppMessage(fromNumber, '🎨 To start a custom design, simply send me a reference code (e.g., HIFI-1234) along with an image you want to print!');

@@ -67,13 +67,35 @@ ${address.line1 || ''}${address.line2 ? ', ' + address.line2 : ''}
 ${address.city || ''}, ${address.state || ''} ${address.postal_code || ''}
 ${address.country || 'India'}
 
-${items.some(i => i.design_id) ? '⚠️ Contains custom design(s) — check admin panel' : ''}
+${items.some(i => i.design_id) ? '⚠️ Custom design(s) attached.' : ''}
 
 View: ${SITE_URL}/admin/orders`;
 
   try {
     await sendWhatsAppMessage(ADMIN_WHATSAPP, msg);
     console.log('[WA-Notify] Admin notified for order', orderId);
+
+    // If there are custom designs, send the images to the admin
+    const designIds = items.map(i => i.design_id).filter(Boolean);
+    if (designIds.length > 0) {
+      const { data: designs } = await supabase
+        .from('custom_designs')
+        .select('design_image_url, reference_code')
+        .in('id', designIds);
+      
+      if (designs && designs.length > 0) {
+        for (const design of designs) {
+          if (design.design_image_url) {
+            let fullUrl = design.design_image_url;
+            if (!fullUrl.startsWith('http')) {
+              fullUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/designs/${fullUrl}`;
+            }
+            await sendWhatsAppImage(ADMIN_WHATSAPP, fullUrl, `🎨 Custom Design Ref: ${design.reference_code}`);
+            await new Promise(r => setTimeout(r, 500)); // Rate limit
+          }
+        }
+      }
+    }
   } catch (err) {
     console.error('[WA-Notify] Failed to notify admin:', err);
   }
