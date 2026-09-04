@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
-import { getUserRole } from '@/lib/admin';
+import { createServerClient } from '@/lib/supabase/server';
 
 interface CustomerOrder {
   id?: string;

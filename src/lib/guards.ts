@@ -12,7 +12,7 @@ import { verifyFirebaseToken } from '@/lib/firebase/admin';
 export async function requireAdminRequest(request: Request) {
   // 1. Cookie-based admin (simple admin dashboard login)
   if (await checkAdminAuth()) {
-    return { admin: { user: { id: 'simple-admin' } as any, role: 'admin' }, response: null };
+    return { admin: { user: { id: 'simple-admin', email: 'admin@local' }, role: 'admin' as const }, response: null };
   }
 
   // 2. Firebase token

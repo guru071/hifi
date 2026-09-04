@@ -140,7 +140,7 @@ export default function SecuritySettings() {
                 ) : (
                   <form onSubmit={handleChangeEmail}>
                     <p style={{ marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      A verification link will be sent to the new email address. Your email won't change until you verify the new address.
+                      A verification link will be sent to the new email address. Your email won&apos;t change until you verify the new address.
                     </p>
                     <input
                       type="email"

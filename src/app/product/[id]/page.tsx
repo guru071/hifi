@@ -15,8 +15,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
   const [designId, setDesignId] = useState<string>("");
   const [designRef, setDesignRef] = useState<string>("");
   const [uploadMethod, setUploadMethod] = useState<"none" | "upload">("none");
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const [product, setProduct] = useState<ProductWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -67,7 +66,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     
-    setIsUploading(true);
+    setUploading(true);
     
     try {
       const refCode = "HIFI-" + Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -94,7 +93,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
       console.error(err);
       alert("Error uploading design");
     } finally {
-      setIsUploading(false);
+      setUploading(false);
     }
   }
 
