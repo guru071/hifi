@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI Admin - Inventory Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "on-background": "#1b1b1b",
+                        "surface-dim": "#dadada",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "outline-variant": "#cfc4c5",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "secondary": "#5d5f5f",
+                        "inverse-surface": "#303030",
+                        "surface-tint": "#5e5e5e",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-primary-container": "#848484",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "outline": "#7e7576",
+                        "on-surface-variant": "#4c4546",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#c6c6c6",
+                        "primary-container": "#1b1b1b",
+                        "on-surface": "#1b1b1b",
+                        "background": "#f9f9f9",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#616363",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-fixed": "#1b1b1b",
+                        "tertiary-container": "#1b1b1b",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#dfe0e0",
+                        "on-tertiary-container": "#848484",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eeeeee"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "section-gap": "128px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #000000;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #000000;
+        }
+        
+        /* Custom Scrollbar for tables */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e2e2; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c6c6c6; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="bg-surface text-primary font-label-sm h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col h-full py-6 px-4 z-40 hidden md:flex transition-all duration-200">
+<div class="mb-8 px-2 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a professional individual wearing minimalist high-fashion attire, lit by soft studio lighting against a stark white background, conveying authority and modern premium aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhuCfI1e666P0kGSofcaWxTDfk8gWuSIh1pTaMQsxF1iDT6eu_kp9nYrIPq2sMULSKph57bQAf-ygOq-0B_kqBCLkEYyUZ7Y-aAsFYxCceXjRJBrytAR4dlbShfbUnxn6XB69HQXU2xIMWNZWWhiUzQpA0qbbiCdUsfDbYtQszZGhzaZkuDOn_adFfIzuuo3a98DmsvSLstITg_nYHtrJ-XP8IoBA-u7vdZju5J3nrP7EnoDoSSfE_"/>
+</div>
+<div>
+<h1 class="font-headline-lg text-[16px] leading-tight text-primary">HIFI Admin</h1>
+<p class="text-on-surface-variant text-[10px]">Premium Management</p>
+</div>
+</div>
+<button class="mb-8 w-full bg-primary text-on-primary py-3 rounded-full hover:bg-inverse-surface transition-colors font-label-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Product
+        </button>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container text-primary font-bold hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+<span>Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop min-h-screen">
+<!-- Header & Controls -->
+<header class="mb-12 flex flex-col gap-6">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary mb-2">Inventory Management</h2>
+<p class="font-body-md text-on-surface-variant">Manage product variants, stock levels, and delivery configuration.</p>
+</div>
+</div>
+<!-- Glass Search & Filters -->
+<div class="glass-panel rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-full py-3 pl-12 pr-4 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search products, SKUs, or tags..." type="text"/>
+</div>
+<div class="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+<button class="whitespace-nowrap px-6 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface hover:border-primary transition-colors font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                        Category
+                    </button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface hover:border-primary transition-colors font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+                        Stock Status
+                    </button>
+<button class="whitespace-nowrap px-6 py-2 rounded-full border border-primary bg-primary text-on-primary font-label-sm flex items-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+</header>
+<!-- Delivery Settings Section -->
+<section class="mb-12 glass-panel rounded-3xl p-8 relative overflow-hidden group">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-surface-variant rounded-full blur-3xl opacity-50 pointer-events-none group-hover:opacity-70 transition-opacity duration-700"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+<div>
+<h3 class="font-headline-lg text-[24px] text-primary mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">local_shipping</span>
+                        Delivery Settings
+                    </h3>
+<p class="font-body-md text-on-surface-variant text-sm">Configure how delivery fees are applied across your inventory.</p>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 flex items-center gap-6">
+<span class="font-label-sm text-on-surface uppercase tracking-wider" id="fee-mode-label">Per Product Fee</span>
+<!-- Custom Toggle -->
+<div class="relative inline-block w-14 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-outline-variant appearance-none cursor-pointer z-10 top-1 left-1 transition-all duration-300" id="delivery-toggle" name="toggle" onchange="toggleDeliveryMode(this)" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-8 rounded-full bg-outline-variant cursor-pointer transition-colors duration-300" for="delivery-toggle"></label>
+</div>
+<span class="font-label-sm text-on-surface-variant uppercase tracking-wider" id="global-mode-label">Global Fee</span>
+</div>
+</div>
+<!-- Global Fee Input (Hidden by default) -->
+<div class="mt-6 pt-6 border-t border-outline-variant flex items-center gap-4 hidden opacity-0 transition-opacity duration-300" id="global-fee-input-area">
+<label class="font-label-sm text-primary uppercase">Global Standard Rate:</label>
+<div class="relative w-48">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-body-md">$</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 pl-8 pr-4 font-body-md focus:outline-none focus:border-primary transition-colors" type="number" value="15.00"/>
+</div>
+</div>
+</section>
+<!-- Inventory Data Table -->
+<section class="glass-panel rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-dim bg-surface/50">
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest w-12">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest">Product</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest">SKU</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest">Variant</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest text-right">Stock</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest text-right">Price</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest text-right delivery-fee-col">Delivery Fee</th>
+<th class="py-4 px-6 font-label-sm text-on-surface-variant uppercase tracking-widest text-center">Status</th>
+<th class="py-4 px-6"></th>
+</tr>
+</thead>
+<tbody class="font-body-md text-on-surface">
+<!-- Row 1 -->
+<tr class="border-b border-surface-dim hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A meticulously styled flat lay of a thick, premium black cotton t-shirt on a crisp white surface, showcasing the heavy fabric texture and minimalist cut, lit by soft, diffused natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJTj9_goG88kbcPXOYmpR8krAUJk0_mx0Vf3jM40JzXqXYY8L5ekT4l6NxTYRTY8d_ru0ri8Fk-4KqjQcyg8Gdp_pL1WKmeT3YF2_bRA2-aAphRLgowgpjKEAgaXMuJgyU7OTztw2mmJ_vGnoRSfJAMZ79w-4CwSpTBWYaInjM_62NpnKCoWsbqxser7TyWTDNeBEf6wnzc-aOKdF7b79wXISWk0lAd76X4ELizukj6EtJoqzOWMaE"/>
+</div>
+<span class="font-semibold">The Heavyweight Tee</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono text-sm">HVT-BLK-M</td>
+<td class="py-4 px-6 flex items-center gap-2">
+<span class="w-4 h-4 rounded-full bg-black border border-outline-variant shadow-sm inline-block"></span>
+                                Black / M
+                            </td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                                    142
+                                </div>
+</td>
+<td class="py-4 px-6 text-right">$85.00</td>
+<td class="py-4 px-6 text-right delivery-fee-col">
+<div class="relative inline-block w-24">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+<input class="fee-input w-full bg-transparent border border-outline-variant rounded md py-1 pl-6 pr-2 text-right focus:outline-none focus:border-primary transition-colors text-sm hover:border-surface-tint" type="number" value="10.00"/>
+</div>
+</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-block px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-[10px]">In Stock</span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-surface-dim hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A minimalist flat lay of a thick, premium white cotton t-shirt on a crisp white surface, showcasing the heavy fabric texture and modern cut, lit by soft, bright natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuButTus_BD2k4R3KYvOPA9J7chwbuoCxWTJHbwsmns-sO7YsmLioQTwkGz3UvnGpx-MYNypzaQEeaytYvhJneTbEaVKly-1usKwLayRzCgLJZ54rIesTIUFhRY89dFpeIaF16_TphNHezDCwi0eFg51O2ZtR7NSMB-SQIM4SBcV_ZEPSbhdQPwZSYm2dR9PuTTNQ7uuZAC62F5WB4yOShAqP7YJWNBjejXEVzltooUqeb4X3F_ovP3v"/>
+</div>
+<span class="font-semibold">The Heavyweight Tee</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono text-sm">HVT-WHT-L</td>
+<td class="py-4 px-6 flex items-center gap-2">
+<span class="w-4 h-4 rounded-full bg-white border border-outline-variant shadow-sm inline-block"></span>
+                                Bone / L
+                            </td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="w-2 h-2 rounded-full bg-error inline-block"></span>
+<span class="text-error font-medium">8</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right">$85.00</td>
+<td class="py-4 px-6 text-right delivery-fee-col">
+<div class="relative inline-block w-24">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+<input class="fee-input w-full bg-transparent border border-outline-variant rounded md py-1 pl-6 pr-2 text-right focus:outline-none focus:border-primary transition-colors text-sm hover:border-surface-tint" type="number" value="10.00"/>
+</div>
+</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-block px-3 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px]">Low Stock</span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-surface-dim hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist presentation of a lightweight, premium grey cotton t-shirt folded neatly on a bright surface, emphasizing the soft texture and precise seams, high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABsxUdnNSgeHnvhDy7y_bbxzdWFGFKpKDjpGuo5LRVTlG5siUHdEQ6CbMsAAa3B-HyH-Ev-mgIA3WVmh9z8MaC3Yqq2iXOzmghw0xZhqnva__yCCWeroM5SzwNDkgeQ5KqhP2XxFOrH7W9mADoEy9vBVvZJ98TRqGjmPar1tVVnYMatv_ucR1j_tATAXpsGT-jzhtzzOqJ6Cb4GjMPvLcjUAJRMpL6ZYJKqNxwuQGavtMSmqcLKXb7"/>
+</div>
+<span class="font-semibold">The Core Tee</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant font-mono text-sm">COR-GRY-S</td>
+<td class="py-4 px-6 flex items-center gap-2">
+<span class="w-4 h-4 rounded-full bg-[#d3d3d3] border border-outline-variant shadow-sm inline-block"></span>
+                                Ash / S
+                            </td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                                    215
+                                </div>
+</td>
+<td class="py-4 px-6 text-right">$45.00</td>
+<td class="py-4 px-6 text-right delivery-fee-col">
+<div class="relative inline-block w-24">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+<input class="fee-input w-full bg-transparent border border-outline-variant rounded md py-1 pl-6 pr-2 text-right focus:outline-none focus:border-primary transition-colors text-sm hover:border-surface-tint" type="number" value="5.00"/>
+</div>
+</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-block px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-[10px]">In Stock</span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-surface-container-lowest p-4 border-t border-surface-dim flex justify-between items-center text-sm text-on-surface-variant">
+<span>Showing 1-3 of 24 items</span>
+<div class="flex gap-2">
+<button class="p-1 rounded hover:bg-surface-container-high transition-colors text-outline"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 rounded hover:bg-surface-container-high transition-colors text-primary"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</section>
+</main>
+<script>
+        function toggleDeliveryMode(checkbox) {
+            const inputs = document.querySelectorAll('.fee-input');
+            const globalArea = document.getElementById('global-fee-input-area');
+            const perProductLabel = document.getElementById('fee-mode-label');
+            const globalLabel = document.getElementById('global-mode-label');
+
+            if (checkbox.checked) {
+                // Global Mode Active
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('opacity-30', 'cursor-not-allowed', 'bg-surface-container-high');
+                    input.classList.remove('hover:border-surface-tint');
+                });
+                
+                globalArea.classList.remove('hidden');
+                // slight delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    globalArea.classList.remove('opacity-0');
+                    globalArea.classList.add('opacity-100');
+                }, 10);
+
+                globalLabel.classList.remove('text-on-surface-variant');
+                globalLabel.classList.add('text-primary');
+                perProductLabel.classList.remove('text-primary');
+                perProductLabel.classList.add('text-on-surface-variant');
+
+            } else {
+                // Per Product Mode Active
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.classList.remove('opacity-30', 'cursor-not-allowed', 'bg-surface-container-high');
+                    input.classList.add('hover:border-surface-tint');
+                });
+
+                globalArea.classList.remove('opacity-100');
+                globalArea.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    globalArea.classList.add('hidden');
+                }, 300); // match transition duration
+
+                perProductLabel.classList.remove('text-on-surface-variant');
+                perProductLabel.classList.add('text-primary');
+                globalLabel.classList.remove('text-primary');
+                globalLabel.classList.add('text-on-surface-variant');
+            }
+        }
+        
+        // Initialize state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('delivery-toggle');
+            toggleDeliveryMode(toggle);
+        });
+    </script>
+</body></html>

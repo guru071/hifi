@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI | The Heavyweight Tee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1b1b1b",
+                    "on-tertiary-fixed-variant": "#474747",
+                    "inverse-on-surface": "#f1f1f1",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#c6c6c6",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#dadada",
+                    "inverse-primary": "#c6c6c6",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-tertiary-container": "#848484",
+                    "surface-variant": "#e2e2e2",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-container-low": "#f3f3f3",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#4c4546",
+                    "surface": "#f9f9f9",
+                    "error": "#ba1a1a",
+                    "primary": "#000000",
+                    "surface-container": "#eeeeee",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "background": "#f9f9f9",
+                    "tertiary": "#000000",
+                    "on-secondary-container": "#616363",
+                    "on-surface": "#1b1b1b",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1b1b1b",
+                    "tertiary-fixed-dim": "#c6c6c6",
+                    "inverse-surface": "#303030",
+                    "secondary": "#5d5f5f",
+                    "surface-tint": "#5e5e5e",
+                    "on-primary-fixed-variant": "#474747",
+                    "secondary-fixed": "#e2e2e2",
+                    "tertiary-container": "#1b1b1b",
+                    "outline-variant": "#cfc4c5",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-primary-container": "#848484",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "outline": "#7e7576",
+                    "surface-container-highest": "#e2e2e2",
+                    "primary-fixed": "#e2e2e2",
+                    "secondary-container": "#dfe0e0",
+                    "surface-bright": "#f9f9f9",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#1b1b1b",
+                    "primary-container": "#1b1b1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "128px",
+                    "unit": "8px",
+                    "container-max": "1440px",
+                    "margin-mobile": "20px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "display-lg-mobile": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-xl": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "display-lg": [
+                            "72px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        }
+        .variant-ring.active {
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen pt-24">
+<!-- TopNavBar -->
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-xl flex justify-between items-center px-8 py-3 max-w-container-max z-50">
+<div class="flex items-center gap-8 hidden md:flex">
+<a class="font-body-md text-body-md text-primary dark:text-on-primary font-bold border-b border-primary hover:text-primary transition-all duration-300" href="#">Shop</a>
+<a class="font-body-md text-body-md text-secondary dark:text-on-secondary-fixed-variant hover:text-primary transition-all duration-300" href="#">Collections</a>
+<a class="font-body-md text-body-md text-secondary dark:text-on-secondary-fixed-variant hover:text-primary transition-all duration-300" href="#">Brand</a>
+</div>
+<div class="font-display-lg text-headline-xl tracking-tighter text-primary dark:text-on-primary md:absolute md:left-1/2 md:-translate-x-1/2">
+            HIFI
+        </div>
+<div class="flex items-center gap-4 text-primary dark:text-on-primary">
+<button class="hover:text-primary transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="hover:text-primary transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Product Area -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Gallery (Left) -->
+<div class="md:col-span-7 flex flex-col gap-6 relative">
+<div class="w-full aspect-[4/5] bg-surface-container-low rounded-xl overflow-hidden relative shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-black/5">
+<img class="w-full h-full object-cover" data-alt="A neatly folded premium heavyweight black t-shirt resting on a textured light grey linen surface. High fashion editorial lighting, soft shadows, crisp details on the fabric grain and subtle embroidered logo on the pocket. Minimalist and luxurious atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3v7WEQP0sQOScwrfnVK24Nx5b7kdlz_f9RiRKjK2Rj8V_izkY3VLWZc30gtEcTGVti-4uS07-h6pO8tC0115KxMMQYppcaJk8_bywZ_8tMlGrQFsbVig7YUhKbq87_HwAZDljwRA3K4MHtWUartmf-R6yZzrSiwzracHfqBbA0DoLxrptz4FN95EJ3eSKEViFPwaeP_GYIjV8jA-ohVpOpctkYlwNZ6-dsw5N2ADLAyTU-sJpOuF0"/>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<button class="aspect-square bg-surface-container-low rounded-lg overflow-hidden border border-black/5 hover:opacity-80 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Macro close-up shot of the shoulder seam on a crisp white heavyweight t-shirt. Precise stitching details, thick premium cotton texture visible. Soft, diffused lighting highlighting the fabric's quality against a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBKwrKq0iHZn06XoTGYEUpaRxHpodJBYo_R4jeVFTh-Xgz7EUTilJZ3LtuNct3-4NvgroOHjM684_EcLozHC73m6M8UZCr7-k2DzO0Jpy0EaMt25kwX5YUth5snZqkRk_60rwI6FcDs9oaZjKZXmRl1iCnT2BExfyuKAZTm8U57xUKr2cx6IIA9dNZrMDlNXWUaKtpe3xjQNtn134x46AsIr31yepc5gUgcfm6s-YZxE_IN83ViN79"/>
+</button>
+<button class="aspect-square bg-surface-container-low rounded-lg overflow-hidden border border-black/5 hover:opacity-80 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Close up of a black t-shirt fabric texture, showing the dense weave of a heavyweight cotton material. Soft studio lighting emphasizing the matte finish and premium feel of the textile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTx2wCGOjxD6lm2QZNG_IW3hU8d4KJH1joG91Jq4bdaVUNorjXmpUDr9wcz3eZHt-xwlIFstHc9F7RA_wLeqRjrG8uUvRZHns9PVHqp1zr173VfW6hGFZek67qNgBH67vZ3UQ2aNS9RHjDIiFUS0Io8Uu9Ppnd_KP5eI76d6-RYODEVN2iHwLhnKmWlCYxgC_OIfc_f2Wpa27TOlWmcuLD2VE0bAtxF4cUyVtGpGI5fVFNB9VFjQsl"/>
+</button>
+<button class="aspect-square bg-surface-container-low rounded-lg overflow-hidden border border-black/5 hover:opacity-80 transition-opacity flex items-center justify-center bg-surface-variant text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 32px;">play_circle</span>
+</button>
+</div>
+</div>
+<!-- Product Details (Right) -->
+<div class="md:col-span-5 flex flex-col gap-8 md:pl-8">
+<!-- Header -->
+<div class="flex flex-col gap-2">
+<h1 class="font-headline-lg text-headline-lg md:font-display-lg md:text-headline-xl text-primary">The Heavyweight Tee</h1>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg text-on-surface-variant">$55.00</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-size: 16px; font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.9 (128 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Selectors -->
+<div class="flex flex-col gap-6">
+<!-- Color -->
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Color: Ink Black</span>
+<div class="flex gap-4">
+<button class="w-8 h-8 rounded-full bg-primary variant-ring active transition-shadow"></button>
+<button class="w-8 h-8 rounded-full bg-white border border-outline-variant variant-ring transition-shadow hover:shadow-[0_0_0_2px_#ffffff,0_0_0_4px_#e2e2e2]"></button>
+<button class="w-8 h-8 rounded-full bg-[#708090] variant-ring transition-shadow hover:shadow-[0_0_0_2px_#ffffff,0_0_0_4px_#e2e2e2]"></button>
+</div>
+</div>
+<!-- Size -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Size</span>
+<button class="font-label-sm text-label-sm text-secondary underline hover:text-primary">Size Guide</button>
+</div>
+<div class="grid grid-cols-5 gap-2">
+<button class="py-3 text-center border border-outline-variant rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors">S</button>
+<button class="py-3 text-center border border-primary rounded-lg font-label-sm text-label-sm bg-primary text-on-primary transition-colors">M</button>
+<button class="py-3 text-center border border-outline-variant rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors">L</button>
+<button class="py-3 text-center border border-outline-variant rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors">XL</button>
+<button class="py-3 text-center border border-outline-variant rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors opacity-50 cursor-not-allowed">XXL</button>
+</div>
+</div>
+</div>
+<!-- Customization Panel (Glass) -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-6 mt-4">
+<div class="flex justify-between items-center border-b border-outline-variant pb-4">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Custom Artwork</h3>
+<div class="flex gap-4">
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors">Upload</button>
+<button class="font-label-sm text-label-sm text-primary font-bold border-b border-primary pb-1">WhatsApp</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-body-md text-body-md text-on-surface-variant">Send us your design via WhatsApp for a quick mock-up.</p>
+<div class="grid grid-cols-4 gap-2 text-center">
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm text-primary">1</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-[10px]">Gen Ref</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm text-primary">2</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-[10px]">Open App</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-label-sm text-label-sm text-primary">3</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-[10px]">Send Art</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full border border-dashed border-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-sm">hourglass_empty</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline text-[10px]">Received</span>
+</div>
+</div>
+<button class="w-full py-4 rounded-lg bg-surface-container-low border border-outline-variant flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors mt-2">
+<span class="material-symbols-outlined text-primary">chat</span>
+<span class="font-label-sm text-label-sm text-primary">Start WhatsApp Chat</span>
+</button>
+<div class="text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant text-[10px] uppercase tracking-wider animate-pulse">Waiting for design...</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-4 mt-4">
+<button class="w-full py-4 rounded-full bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-inverse-surface transition-colors active:scale-[0.98]">Add to Cart</button>
+<button class="w-full py-4 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm uppercase tracking-widest border border-outline-variant hover:bg-surface-container-high transition-colors active:scale-[0.98]">Buy Now</button>
+</div>
+<!-- Details Accordions -->
+<div class="flex flex-col mt-8 border-t border-outline-variant">
+<details class="group py-4 border-b border-outline-variant">
+<summary class="flex justify-between items-center font-label-sm text-label-sm uppercase tracking-widest text-primary cursor-pointer list-none">
+                            Fabric &amp; Fit
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-4 font-body-md text-body-md text-on-surface-variant">
+                            Knitted from 100% organic cotton at a substantial 240gsm. Features a relaxed, boxy fit with dropped shoulders and a tight crewneck. Pre-shrunk for lasting structure.
+                        </div>
+</details>
+<details class="group py-4 border-b border-outline-variant">
+<summary class="flex justify-between items-center font-label-sm text-label-sm uppercase tracking-widest text-primary cursor-pointer list-none">
+                            Printing Process
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-4 font-body-md text-body-md text-on-surface-variant">
+                            We utilize advanced Direct-to-Garment (DTG) printing with eco-friendly inks that bond directly with the fabric fibers, ensuring a soft hand-feel and incredible durability without cracking.
+                        </div>
+</details>
+<details class="group py-4 border-b border-outline-variant">
+<summary class="flex justify-between items-center font-label-sm text-label-sm uppercase tracking-widest text-primary cursor-pointer list-none">
+                            Shipping
+                            <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-4 font-body-md text-body-md text-on-surface-variant">
+                            Free standard shipping on orders over $150. Custom orders require 3-5 business days for production before dispatch.
+                        </div>
+</details>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest dark:bg-primary-container border-t border-outline-variant mt-section-gap">
+<div class="max-w-container-max mx-auto px-margin-desktop py-section-gap grid grid-cols-1 md:grid-cols-4 gap-gutter items-start">
+<div class="col-span-1 md:col-span-1 flex flex-col gap-4">
+<div class="font-display-lg text-headline-lg text-primary">HIFI</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Premium custom apparel engineered for modern creators.</p>
+</div>
+<div class="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="flex flex-col gap-4">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Support</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping Info</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Legal</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-8 border-t border-outline-variant flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm">
+<span>© 2024 HIFI PREMIUM CUSTOMS</span>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI Admin - Custom Designs Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "on-background": "#1b1b1b",
+                        "surface-dim": "#dadada",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "outline-variant": "#cfc4c5",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "secondary": "#5d5f5f",
+                        "inverse-surface": "#303030",
+                        "surface-tint": "#5e5e5e",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-primary-container": "#848484",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "outline": "#7e7576",
+                        "on-surface-variant": "#4c4546",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#c6c6c6",
+                        "primary-container": "#1b1b1b",
+                        "on-surface": "#1b1b1b",
+                        "background": "#f9f9f9",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#616363",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-fixed": "#1b1b1b",
+                        "tertiary-container": "#1b1b1b",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#dfe0e0",
+                        "on-tertiary-container": "#848484",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eeeeee"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "section-gap": "128px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.7);
+            border-left: 1px solid rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255,255,255,0.4) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(226,226,226,0.3) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex antialiased">
+<!-- SideNavBar Component -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col py-6 px-4 z-40 hidden md:flex transition-all duration-200">
+<div class="mb-12 px-2 flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="Admin Portrait, a professional headshot of an executive in a minimalist studio setting, soft high-key lighting, black and white aesthetic with a subtle electric blue rim light, conveying premium quality and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3wVQO1tyof5GM-xJnh11hscooAW5NyFXnpJM8SvFibjg4qyS_RC_WI2zu6g-HOfaf3fVMOVqACidS97b5iugKY7TOHuLUNbu84fK7SV0QNrPa2KyfI0SJM3C-9KKb8udmlYP99SHYeHB4JLlw4a8IB9JzixuGCd--c61sSYtwy5xBEtmwaYWmrnpJqzQkirw68kuKtNkqRNDOD6BbRofGts_TRD1OSTtmRUzoq92bbIyF9QAFma_P"/>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary text-xl font-bold tracking-tight">HIFI Admin</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Premium Management</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<!-- Dashboard (Inactive) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<!-- Orders (Active - Semantic match for Custom Designs Queue) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container text-primary font-bold font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                    Orders
+                </a>
+</li>
+<!-- Inventory (Inactive) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                    Inventory
+                </a>
+</li>
+<!-- Customers (Inactive) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Customers
+                </a>
+</li>
+<!-- Settings (Inactive) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<button class="mt-4 mb-8 bg-primary text-on-primary font-label-sm text-label-sm py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-inverse-surface transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+            New Product
+        </button>
+<div class="mt-auto border-t border-outline-variant pt-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Log Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop min-h-screen">
+<!-- Header -->
+<header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-2">Design Queue</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Review, approve, or request revisions for custom artwork submissions. High-fidelity preview mode active.</p>
+</div>
+<div class="flex items-center gap-4 glass-panel rounded-full px-6 py-3">
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary block"></span>
+                    12 Pending Review
+                </span>
+<div class="w-px h-4 bg-outline-variant"></div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid / Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<article class="glass-panel rounded-xl overflow-hidden flex flex-col group relative">
+<div class="relative h-64 w-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="High-contrast abstract geometric design, sharp angles, deep blacks, pristine whites, and electric blue accents, presented as a flat digital artwork proof for premium apparel printing, minimalist gallery lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByLtZpyZh7NH5DVwoQ4Wi7QFiLgUppX_KeGxMt_XsMeqrXtE6GAoJ6DgXgDEVrw7iRfG-37e1VbcrmdzwPgKKK4_GWtquFgyGIUa9nsAJDPOl3YfWX61oC-FU2Ql6HAoLXTIAOgYxMpo8vt8yBYTmmeJeQwMqU4ny4bJbZCeUXDic-jcdKeMckr3vp7Mj8muEtB5IULCb0RdMXM20PWb5IbEs4pQYCWCVKFtJpMhObFKFGOOizHCBq"/>
+<div class="absolute top-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-primary">#ORD-9921</span>
+</div>
+<div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm" title="Source: Upload">
+<span class="material-symbols-outlined text-[16px] text-primary">cloud_upload</span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-lg text-primary">Geometric Nexus</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Client: E. Thorne</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">Vector / AI</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3 border-t border-outline-variant/30">
+<button class="flex-1 bg-surface-container-highest hover:bg-surface-dim text-primary font-label-sm text-label-sm py-3 rounded-lg transition-colors border border-outline-variant/50">
+                            Revise
+                        </button>
+<button class="flex-1 bg-primary hover:bg-inverse-surface text-on-primary font-label-sm text-label-sm py-3 rounded-lg transition-colors shadow-md">
+                            Approve
+                        </button>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="glass-panel rounded-xl overflow-hidden flex flex-col group relative">
+<div class="relative h-64 w-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Monochrome typographic lockup featuring a heavy, bold serif font intertwined with delicate script, high-resolution digital proof, clean white background, meant for luxury packaging, precise and minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvHuvzkYGiGlZVsjOSXSPGnha3sGW5-UZBVFT7PWCflzjpUxi7bQ59M4ch8SB6-UoZ-7b3iZr2F6R9GyQFuZVKoAzcjM3AfF1V2evHsUsIBtPwfU-TosvnK2bph2JB7R1uIVSiqL3Fq2OqU-_7TKAFDCiI5ipJhsL6tL4E4ZmAklsQsn13O_mcI81QRuDYuoVIHBN2bVj3QYOr3VekEKSRCf-7cAL8BhW_OAn0NPcUJh0vakbTc1N0"/>
+<div class="absolute top-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-primary">#ORD-9922</span>
+</div>
+<div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm text-[#25D366]" title="Source: WhatsApp">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.711.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.102.824z"></path></svg>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-lg text-primary">Brutal Type</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Client: M. Rivera</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">PNG / Raster</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3 border-t border-outline-variant/30">
+<button class="flex-1 bg-surface-container-highest hover:bg-surface-dim text-primary font-label-sm text-label-sm py-3 rounded-lg transition-colors border border-outline-variant/50">
+                            Revise
+                        </button>
+<button class="flex-1 bg-primary hover:bg-inverse-surface text-on-primary font-label-sm text-label-sm py-3 rounded-lg transition-colors shadow-md">
+                            Approve
+                        </button>
+</div>
+</div>
+</article>
+<!-- Card 3 (Revision Requested State) -->
+<article class="glass-panel rounded-xl overflow-hidden flex flex-col group relative border-error/20">
+<div class="relative h-64 w-full bg-surface-container-high overflow-hidden opacity-80">
+<img class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" data-alt="Fluid organic shapes, liquid metal texture, chrome and black aesthetic, highly detailed rendering meant for a fashion editorial print, moody lighting, subtle grain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI7dePziQ_ykjakucPnxhUrtCrHx_pzckGZ86Hz0x_kBu0IXSH2v9idDbPsELnclG8HF1PJbV7WqLt089MMGhoQBqBxpIyICf_wh0Ghm_e9Q3jWxRLPgXgpSE8eTr90w_34O5PK2QA9RuHkytN34ejpdCtmq4jPcIYQeHYvS-PD9itAb7-QOcgxutBZq8khwuqHSuS5UfzQ-1zD8j5BJU9hXBZLN8LRaSRlRM91E5Cx87DEdBASsRZ"/>
+<div class="absolute inset-0 bg-surface/20 backdrop-blur-[2px]"></div>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">#ORD-9918</span>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-surface/90 backdrop-blur-md px-4 py-2 rounded border border-white/20 shadow-sm">
+<span class="font-label-sm text-label-sm text-error flex items-center gap-2 uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">sync_problem</span>
+                            Revision Pending
+                        </span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-lg text-on-surface-variant">Liquid Chrome</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Client: J. Chen</p>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant/30">
+<p class="font-body-md text-body-md text-sm text-on-surface-variant mb-3 italic">"Resolution too low. Need vector format."</p>
+<button class="w-full bg-surface-container-highest hover:bg-surface-dim text-primary font-label-sm text-label-sm py-3 rounded-lg transition-colors border border-outline-variant/50 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+                            View Thread
+                        </button>
+</div>
+</div>
+</article>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI - Shop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "on-background": "#1b1b1b",
+                        "surface-dim": "#dadada",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "outline-variant": "#cfc4c5",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "secondary": "#5d5f5f",
+                        "inverse-surface": "#303030",
+                        "surface-tint": "#5e5e5e",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-primary-container": "#848484",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "outline": "#7e7576",
+                        "on-surface-variant": "#4c4546",
+                        "primary": "#000000",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#c6c6c6",
+                        "primary-container": "#1b1b1b",
+                        "on-surface": "#1b1b1b",
+                        "background": "#f9f9f9",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#616363",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-fixed": "#1b1b1b",
+                        "tertiary-container": "#1b1b1b",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#dfe0e0",
+                        "on-tertiary-container": "#848484",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eeeeee"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "section-gap": "128px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        }
+        
+        .product-card {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar Component from JSON -->
+<header class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl z-50">
+<div class="flex justify-between items-center px-8 py-3 max-w-container-max mx-auto">
+<div class="flex-1 flex items-center">
+<span class="material-symbols-outlined hover:text-primary transition-all duration-300 cursor-pointer">search</span>
+</div>
+<div class="font-display-lg text-headline-xl tracking-tighter text-primary dark:text-on-primary text-center">
+                HIFI
+            </div>
+<nav class="flex-1 flex justify-end items-center gap-6">
+<a class="text-primary dark:text-on-primary font-bold border-b border-primary font-body-md text-body-md hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="#">Shop</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant font-body-md text-body-md hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="#">Collections</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant font-body-md text-body-md hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="#">Brand</a>
+<div class="flex gap-4 ml-4 text-primary dark:text-on-primary">
+<span class="material-symbols-outlined hover:text-primary transition-all duration-300 cursor-pointer active:scale-95 transition-transform">shopping_bag</span>
+<span class="material-symbols-outlined hover:text-primary transition-all duration-300 cursor-pointer active:scale-95 transition-transform">account_circle</span>
+</div>
+</nav>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-32 pb-section-gap min-h-screen flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar Filters -->
+<aside class="w-full md:w-64 shrink-0 hidden md:block">
+<div class="glass-panel rounded-xl p-6 sticky top-32">
+<h2 class="font-headline-lg text-headline-lg mb-8">Filters</h2>
+<div class="space-y-8">
+<!-- Category -->
+<div>
+<h3 class="font-label-sm text-label-sm uppercase mb-4 text-secondary">Category</h3>
+<div class="space-y-3 font-body-md text-body-md text-on-surface-variant">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">T-Shirts</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Hoodies</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Outerwear</span>
+</label>
+</div>
+</div>
+<!-- Size -->
+<div>
+<h3 class="font-label-sm text-label-sm uppercase mb-4 text-secondary">Size</h3>
+<div class="flex flex-wrap gap-2">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center font-label-sm text-label-sm hover:border-primary transition-colors bg-surface">S</button>
+<button class="w-10 h-10 rounded-full border border-primary bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm shadow-md">M</button>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center font-label-sm text-label-sm hover:border-primary transition-colors bg-surface">L</button>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center font-label-sm text-label-sm hover:border-primary transition-colors bg-surface">XL</button>
+</div>
+</div>
+<!-- Price -->
+<div>
+<h3 class="font-label-sm text-label-sm uppercase mb-4 text-secondary">Price</h3>
+<input class="w-full accent-primary h-1 bg-surface-variant rounded-full appearance-none outline-none" type="range"/>
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-secondary">
+<span>$0</span>
+<span>$200+</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Product Grid -->
+<div class="flex-1">
+<div class="mb-8 flex justify-between items-end">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg">T-Shirts</h1>
+<div class="text-secondary font-body-md text-body-md">Showing 12 items</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Product 1 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col group cursor-pointer relative">
+<div class="absolute top-4 left-4 z-10 glass-panel px-3 py-1 rounded-full font-label-sm text-label-sm text-primary">Customizable</div>
+<div class="h-80 w-full relative overflow-hidden bg-surface-variant">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A high-end studio shot of a minimalist white premium t-shirt draped elegantly on a mannequin against a soft, bright white background. Lighting is soft and highly controlled, emphasizing the smooth texture of the luxury fabric. The mood is modern, crisp, and sophisticated, perfectly fitting a liquid-glass e-commerce aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6pDt2lAAEyq1JhYz_iERFLXo2PPf3khao6T2WQjT86JCQ2on2pf1mRfLeo50xPFnaZMwHL2DfI88nok46NPnU7uVg0lPLsASrQ7Okpb9wD1r8DlkFMp2UUj2mUzNVSbr27iD6DrMaKo65f3uW8GV9AuQ_bJ8RcVd9fi-JUD2BMdzHxe2Pd17HQMhkRf31Qitr9ibrX6EAjck6HTHQv1KD70DWweSZoBRT_hFGVYFdbd2YZ2KsHWds')"></div>
+</div>
+<div class="p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">The Essential Tee</h3>
+<span class="font-body-md text-body-md text-primary">$85</span>
+</div>
+<div class="flex gap-2 mt-2">
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-white"></div>
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-black"></div>
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-secondary-container"></div>
+</div>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col group cursor-pointer relative">
+<div class="h-80 w-full relative overflow-hidden bg-surface-variant">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A premium flat-lay product photo of a heavyweight black t-shirt folded perfectly on a pristine white marble surface. Subtle soft shadows give a floating effect. Lighting is crisp and cool, highlighting the dense weave of the cotton. The overall tone is minimalist authority and high-fashion minimalism." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDY36p8QQNkby4AZDPe7a32GANOymhU6-s1lV39LZHTxoHYlcrmSEVIMjP0nN52uHMIm20NEmA5KlUd-KxvFDbPR7-oyePBeEpfAVLiLSigjtbtRxxh-GvKwTaHLKGBpKdAyLijj-C-teB94r3hsnv66PG3fMxh--d3QFunVZ3rbkaelhRdcI3jN2wuRw_PtHzcX5jiGlqm4NkB7Zq6kWfzKIPxtuGb-h534vpmf9R1Tt0heRy-NLbc')"></div>
+</div>
+<div class="p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Heavyweight Box</h3>
+<span class="font-body-md text-body-md text-primary">$95</span>
+</div>
+<div class="flex gap-2 mt-2">
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-black ring-1 ring-offset-1 ring-primary"></div>
+</div>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col group cursor-pointer relative">
+<div class="absolute top-4 left-4 z-10 glass-panel px-3 py-1 rounded-full font-label-sm text-label-sm text-primary">Customizable</div>
+<div class="h-80 w-full relative overflow-hidden bg-surface-variant">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A fashion editorial shot of an off-white oversized t-shirt hanging on a sleek chrome hanger against a soft grey gradient background. The lighting is ethereal and bright, creating a sense of luxury and space. The garment appears soft and breathable, reflecting a modern minimalist aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvK3hRaDSnjJZgmURt8RFVn-2hMhOK2fNh-Yh2ZuLDSE6WVKKBT_guaeG2RzsfHXsjYV12zu2MTq4vVUrzQcIuSlJmL0miZoxGIJJVFt14R56e8kInoABTEP8GclD5Co5BpdRn6G_QA973tT8SCd_So1uvY2YlKTw-Dv_xeI0DkiwwzZKfElDfdF7WcxAtVfEZAYumGJHzJFb270YdHTI9KfQSA8RmWV8J-VFhyuLDY1nVVzjTKX9h')"></div>
+</div>
+<div class="p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Oversize Drape</h3>
+<span class="font-body-md text-body-md text-primary">$110</span>
+</div>
+<div class="flex gap-2 mt-2">
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-surface-container-high"></div>
+<div class="w-4 h-4 rounded-full border border-outline-variant bg-white"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Component from JSON -->
+<footer class="w-full border-t border-outline-variant bg-surface-container-lowest dark:bg-primary-container">
+<div class="max-w-container-max mx-auto px-margin-desktop py-section-gap grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="font-display-lg text-headline-lg text-primary md:col-span-1">
+                HIFI
+            </div>
+<div class="flex flex-col gap-4 font-body-md text-body-md md:col-span-2">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping Info</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a>
+</div>
+<div class="font-body-md text-body-md text-on-surface dark:text-on-primary md:col-span-1 text-right">
+                © 2024 HIFI PREMIUM CUSTOMS
+            </div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI - Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1b1b",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#cfc4c5",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-fixed-variant": "#474747",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#e2e2e2",
+                        "tertiary-fixed": "#e2e2e2",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-surface-variant": "#4c4546",
+                        "on-secondary-container": "#616363",
+                        "inverse-surface": "#303030",
+                        "on-background": "#1b1b1b",
+                        "primary-container": "#1b1b1b",
+                        "secondary-container": "#dfe0e0",
+                        "on-tertiary-container": "#848484",
+                        "surface-container-high": "#e8e8e8",
+                        "on-primary-container": "#848484",
+                        "surface-tint": "#5e5e5e",
+                        "on-primary-fixed": "#1b1b1b",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "outline": "#7e7576",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-dim": "#dadada",
+                        "surface": "#f9f9f9",
+                        "primary": "#000000",
+                        "tertiary": "#000000",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#c6c6c6",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#e2e2e2",
+                        "tertiary-container": "#1b1b1b",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "secondary": "#5d5f5f",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eeeeee"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "container-max": "1440px",
+                        "section-gap": "128px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-lg-mobile": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .glass-card {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md relative overflow-x-hidden pt-24 pb-48">
+<!-- TopNavBar -->
+<header class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] rounded-full bg-white/70 backdrop-blur-3xl shadow-2xl z-50">
+<div class="flex justify-between items-center px-8 py-3 max-w-container-max z-50">
+<!-- Brand -->
+<div class="font-display-lg text-headline-xl tracking-tighter text-primary">
+                HIFI
+            </div>
+<!-- Close Action for transactional screen -->
+<button aria-label="Close Cart" class="text-primary hover:text-primary transition-all duration-300 w-10 h-10 flex items-center justify-center rounded-full glass-panel">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="mb-12">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Your Cart</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">2 items ready for production.</p>
+</div>
+<div class="space-y-6">
+<!-- Cart Item 1 -->
+<div class="glass-card rounded-xl p-4 flex gap-4 items-start">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-surface-container-low relative">
+<img alt="The Heavyweight Tee" class="w-full h-full object-cover" data-alt="A highly detailed close-up shot of a premium heavyweight black t-shirt folded neatly on a pristine white marble surface. The lighting is bright and studio-quality, highlighting the thick texture of the cotton fabric. A subtle, modern graphic is partially visible. The overall mood is luxurious, minimalist, and perfectly aligned with a high-end streetwear fashion aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7NO0z6DIab-uwkW-9s8DyCaYS9WecR91xDK92BjY1WFzkniIT2Q-kwIBkXTHf8qh1Q7aOdpQO-IWh2j7LE0Mc0YJVbyBe-XtkEAL3_zQLprewR8XWVf5GqZg7I1xxHbfffrj5urPcFuOzQvB7qqBUX_Kdy3nf7tJDO4zabm4mibAtV4jTLY1PbmTeIZ14GaTkebRS9hW9q3xqnnDNWrTEel0BYFj3wyiGDKpjXXx5QEDmsOvKVL1C"/>
+</div>
+<div class="flex-grow flex flex-col justify-between min-h-[6rem]">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">The Heavyweight Tee</h3>
+<span class="font-body-md text-body-md text-primary font-semibold">$85</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">Size: L | Color: Onyx Black</p>
+<div class="inline-flex items-center gap-1 bg-surface-container-high px-2 py-1 rounded-md mb-3">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-label-sm text-primary text-[10px]">Custom Design Received</span>
+</div>
+</div>
+<div class="flex justify-between items-center mt-auto">
+<div class="flex items-center gap-3 bg-surface-container-low rounded-full px-3 py-1">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="font-label-sm text-label-sm w-4 text-center">1</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors font-label-sm text-label-sm uppercase underline underline-offset-4 decoration-outline-variant hover:decoration-error">
+                            Remove
+                        </button>
+</div>
+</div>
+</div>
+<!-- Cart Item 2 -->
+<div class="glass-card rounded-xl p-4 flex gap-4 items-start opacity-70 hover:opacity-100 transition-opacity">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-surface-container-low relative">
+<img alt="Steel Flask" class="w-full h-full object-cover" data-alt="A stylized product shot of a sleek, brushed steel water bottle standing upright against an infinite white background. The studio lighting reflects off the metallic surface, emphasizing its cylindrical geometry and premium build quality. A minimalist laser-engraved logo is visible near the base. The aesthetic is clean, industrial, and deeply rooted in modern luxury hardware design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgWH85RRKBpf3TPOxTErASkUo-ita0EUqPxm-rfnjxgsj2W0GUU5fXPeylCMBK5zYlxRmajF7sHZN3KHF98q3JNAp7yeLjonNh0jxTKRmYxCLV675jKJqV-qezkHfyQIKlVT4oK4daEnDUWS2AMdPSrgSHjuSCSnvEyt03fvuTysiVwBGox_Y-jCfYftAEFgj_7XdDVyhlpFi3vNE8E4ffc7HtDrQ40Foi5o33VK2C5vTKSs8BKtmh"/>
+</div>
+<div class="flex-grow flex flex-col justify-between min-h-[6rem]">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Steel Flask</h3>
+<span class="font-body-md text-body-md text-primary font-semibold">$40</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mb-2">Capacity: 32oz | Finish: Raw</p>
+</div>
+<div class="flex justify-between items-center mt-auto">
+<div class="flex items-center gap-3 bg-surface-container-low rounded-full px-3 py-1">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="font-label-sm text-label-sm w-4 text-center">1</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors font-label-sm text-label-sm uppercase underline underline-offset-4 decoration-outline-variant hover:decoration-error">
+                            Remove
+                        </button>
+</div>
+</div>
+</div>
+<!-- Value Prop Banner -->
+<div class="mt-8 bg-surface-container-low border border-outline-variant/30 rounded-lg p-4 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 0;">local_shipping</span>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Free premium shipping on all custom orders over $100.</p>
+</div>
+</div>
+</main>
+<!-- Sticky Summary Panel -->
+<div class="fixed bottom-0 left-0 w-full glass-panel z-40 px-margin-mobile py-6 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+<div class="max-w-container-max mx-auto space-y-4">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+<span class="font-body-md text-body-md text-primary font-semibold">$125.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Shipping</span>
+<span class="font-body-md text-body-md text-on-surface-variant italic text-sm">Calculated at next step</span>
+</div>
+<div class="h-px w-full bg-outline-variant/50 my-2"></div>
+<div class="flex justify-between items-center mb-6">
+<span class="font-headline-lg text-headline-lg text-primary text-xl">Total</span>
+<span class="font-headline-lg text-headline-lg text-primary text-2xl">$125.00</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-label-sm text-label-sm uppercase tracking-[0.1em] hover:bg-inverse-surface transition-colors duration-300 flex justify-center items-center gap-2">
+                Secure Checkout
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

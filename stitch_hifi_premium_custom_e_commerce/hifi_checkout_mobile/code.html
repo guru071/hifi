@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HIFI Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#1b1b1b",
+                      "on-secondary": "#ffffff",
+                      "outline-variant": "#cfc4c5",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f9f9f9",
+                      "on-primary-fixed-variant": "#474747",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#e2e2e2",
+                      "tertiary-fixed": "#e2e2e2",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "on-surface-variant": "#4c4546",
+                      "on-secondary-container": "#616363",
+                      "inverse-surface": "#303030",
+                      "on-background": "#1b1b1b",
+                      "primary-container": "#1b1b1b",
+                      "secondary-container": "#dfe0e0",
+                      "on-tertiary-container": "#848484",
+                      "surface-container-high": "#e8e8e8",
+                      "on-primary-container": "#848484",
+                      "surface-tint": "#5e5e5e",
+                      "on-primary-fixed": "#1b1b1b",
+                      "surface-container-highest": "#e2e2e2",
+                      "on-tertiary-fixed": "#1b1b1b",
+                      "outline": "#7e7576",
+                      "on-primary": "#ffffff",
+                      "background": "#f9f9f9",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "surface-container-low": "#f3f3f3",
+                      "surface-dim": "#dadada",
+                      "surface": "#f9f9f9",
+                      "primary": "#000000",
+                      "tertiary": "#000000",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#c6c6c6",
+                      "inverse-primary": "#c6c6c6",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#e2e2e2",
+                      "tertiary-container": "#1b1b1b",
+                      "inverse-on-surface": "#f1f1f1",
+                      "surface-variant": "#e2e2e2",
+                      "tertiary-fixed-dim": "#c6c6c6",
+                      "secondary": "#5d5f5f",
+                      "on-secondary-fixed-variant": "#454747",
+                      "on-tertiary-fixed-variant": "#474747",
+                      "on-error": "#ffffff",
+                      "surface-container": "#eeeeee"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "unit": "8px",
+                      "margin-desktop": "64px",
+                      "container-max": "1440px",
+                      "section-gap": "128px",
+                      "margin-mobile": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-xl": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "72px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Liquid Glass Custom Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .glass-input:focus {
+            background: #ffffff;
+            border-color: #000000;
+            box-shadow: 0 0 0 1px #000000;
+            outline: none;
+        }
+
+        .spring-transition {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        /* Hide scrollbar for clean mobile feel */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col items-center justify-start overflow-x-hidden pt-6 pb-32">
+<!-- Header / Brand (Suppressed standard nav per intent, keeping minimal brand anchor) -->
+<header class="w-full px-margin-mobile flex justify-center items-center py-4 z-50">
+<h1 class="font-headline-xl text-headline-xl text-primary tracking-tighter uppercase">HIFI</h1>
+</header>
+<!-- Main Mobile Container -->
+<main class="w-full max-w-[480px] px-margin-mobile flex flex-col gap-8 relative z-10">
+<!-- Progress Indicator (Liquid Glass style) -->
+<div class="w-full flex justify-between items-center relative py-2">
+<!-- Connecting Line -->
+<div class="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 h-[2px] bg-outline-variant/30 z-0"></div>
+<div class="absolute left-[10%] right-[50%] top-1/2 -translate-y-1/2 h-[2px] bg-primary z-0 transition-all duration-500"></div>
+<!-- Step 1: Shipping (Active) -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm shadow-md">1</div>
+<span class="font-label-sm text-label-sm text-primary">Shipping</span>
+</div>
+<!-- Step 2: Method -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-8 h-8 rounded-full glass-panel text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm">2</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Method</span>
+</div>
+<!-- Step 3: Payment -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-8 h-8 rounded-full glass-panel text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm">3</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Payment</span>
+</div>
+</div>
+<!-- Order Summary Collapsible (Glass Floating UI Level 2) -->
+<section class="glass-panel rounded-xl overflow-hidden w-full spring-transition" id="order-summary-container">
+<button class="w-full flex justify-between items-center p-4 bg-surface-container-lowest/50" onclick="toggleSummary()">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">shopping_bag</span>
+<span class="font-label-sm text-label-sm text-primary uppercase">Order Summary</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-headline-lg text-headline-lg-mobile text-primary">$1,250</span>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" id="summary-chevron">expand_more</span>
+</div>
+</button>
+<div class="h-0 overflow-hidden transition-all duration-500 ease-in-out" id="order-summary-content">
+<div class="p-4 border-t border-outline-variant/20 flex flex-col gap-4 bg-white/40">
+<!-- Cart Item -->
+<div class="flex gap-4 items-center">
+<div class="w-16 h-16 rounded-lg overflow-hidden glass-panel shrink-0">
+<img alt="HIFI Pro Headphones" class="w-full h-full object-cover" data-alt="A macro studio shot of a premium, matte black wireless over-ear headphone cup resting on a sleek white marble surface. High-key lighting highlighting the minimalist design, sophisticated modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1Fjgd0g2b_oFU7-XCW0ALroPIvVRbLxSJ4dDyAVh9_cuzr6RG9gNodTfR-dGiMPGPQP5QHt0krinQZVNrDfjG2hbywwfy6oaksvJkvBeBEGleAoQ75rchY_uCYQNmQQPzDd2oA15CRe3K-_mtwxM1jg4SK9T35K_Uh1370eGqUUsVJyT7HeD9AvM7aw3JiIFTz5h1bk_ZY5KE63mkt4giAu5RZZgcdyAfQDZ1mxiYbZe4sDXXQlCd"/>
+</div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-primary">HIFI Pro - Matte Black</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Qty: 1</span>
+</div>
+<span class="font-body-md text-body-md text-primary">$1,250</span>
+</div>
+<div class="w-full h-[1px] bg-outline-variant/30 my-2"></div>
+<!-- Totals -->
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+<span class="font-body-md text-body-md text-primary">$1,250.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Shipping</span>
+<span class="font-body-md text-body-md text-primary">Calculated next step</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Shipping Information Form (Level 1 Surface) -->
+<section class="flex flex-col gap-6">
+<h2 class="font-headline-lg text-headline-lg-mobile text-primary tracking-tight">Shipping Information</h2>
+<form class="flex flex-col gap-4">
+<!-- Contact Info -->
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Contact</label>
+<input class="w-full glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50 focus:ring-0" placeholder="Email Address" type="email"/>
+</div>
+<!-- Shipping Address -->
+<div class="flex flex-col gap-2 mt-4">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Delivery Address</label>
+<div class="flex gap-4">
+<input class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="First Name" type="text"/>
+<input class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="Last Name" type="text"/>
+</div>
+<input class="w-full glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="Street Address" type="text"/>
+<input class="w-full glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="Apartment, suite, etc. (optional)" type="text"/>
+<div class="flex gap-4">
+<input class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="City" type="text"/>
+<select class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1.2em_1.2em]" style="background-image: url('data:image/svg+xml;utf8,&lt;svg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%231b1b1b\'&gt;&lt;path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'/&gt;&lt;/svg&gt;');">
+<option disabled="" selected="" value="">State</option>
+<option value="NY">New York</option>
+<option value="CA">California</option>
+</select>
+</div>
+<div class="flex gap-4">
+<input class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary placeholder:text-on-surface-variant/50" placeholder="ZIP Code" type="text"/>
+<select class="w-1/2 glass-input rounded-lg px-4 py-3 font-body-md text-body-md text-primary appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1.2em_1.2em]" style="background-image: url('data:image/svg+xml;utf8,&lt;svg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%231b1b1b\'&gt;&lt;path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'/&gt;&lt;/svg&gt;');">
+<option selected="" value="US">United States</option>
+</select>
+</div>
+</div>
+</form>
+</section>
+</main>
+<!-- Fixed Bottom Action Area (Glass Floating UI Level 2) -->
+<div class="fixed bottom-0 left-0 w-full p-4 glass-panel border-t border-white/20 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] z-50 rounded-t-3xl md:hidden">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-label-sm text-label-sm uppercase tracking-widest hover:bg-secondary-container hover:text-primary transition-colors duration-300 flex justify-center items-center gap-2 group">
+            Continue to Shipping
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+</button>
+</div>
+<!-- Desktop Action Area (Visible only on wider screens, adhering to responsive pivot) -->
+<div class="hidden md:flex w-full max-w-[480px] mt-8 z-10">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-label-sm text-label-sm uppercase tracking-widest hover:scale-95 transition-transform duration-300 flex justify-center items-center gap-2 group shadow-xl">
+            Continue to Shipping
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+</button>
+</div>
+<script>
+        function toggleSummary() {
+            const content = document.getElementById('order-summary-content');
+            const chevron = document.getElementById('summary-chevron');
+            
+            if (content.style.height === '' || content.style.height === '0px') {
+                content.style.height = content.scrollHeight + 'px';
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.height = '0px';
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</body></html>
