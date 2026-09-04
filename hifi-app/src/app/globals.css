@@ -1,0 +1,103 @@
+:root {
+  /* Colors */
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-secondary: #5d5f5f;
+  --color-on-secondary: #ffffff;
+  --color-accent: #0055ff; /* Electric Blue */
+  
+  --color-background: #f9f9f9;
+  --color-on-background: #1b1b1b;
+  --color-surface: #ffffff;
+  --color-on-surface: #1b1b1b;
+  --color-on-surface-variant: #4c4546;
+  
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-container-high: #ececec;
+  --color-surface-container: #f3f3f3;
+  --color-surface-container-low: #f9f9f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-outline: #7e7576;
+  --color-outline-variant: #cfc4c5;
+  
+  --color-error: #ba1a1a;
+  
+  /* Typography */
+  --font-inter: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --spacing-unit: 8px;
+  --spacing-gutter: 24px;
+  --spacing-margin-desktop: 64px;
+  --spacing-margin-mobile: 20px;
+  --spacing-section-gap: 128px;
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Glass Shadows */
+  --shadow-glass-sm: 0 10px 40px rgba(0, 0, 0, 0.04);
+  --shadow-glass-lg: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0a0a0a;
+    --color-on-background: #ededed;
+    --color-primary: #ffffff;
+    --color-on-primary: #000000;
+    --color-surface: #1b1b1b;
+    --color-on-surface: #ededed;
+    --color-on-surface-variant: #c6c6c6;
+    --color-surface-container-highest: #303030;
+    --color-surface-container-high: #2b2b2b;
+    --color-surface-container: #212121;
+    --color-surface-container-low: #1c1c1c;
+    --color-surface-container-lowest: #0f0f0f;
+    --color-outline-variant: #4c4546;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Base utility for glass */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-panel {
+    background: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
+  }
+}

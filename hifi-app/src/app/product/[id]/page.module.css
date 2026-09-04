@@ -1,0 +1,425 @@
+.main {
+  max-width: var(--spacing-container-max);
+  margin: 0 auto;
+  padding: 8rem var(--spacing-margin-mobile) var(--spacing-section-gap);
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding-left: var(--spacing-margin-desktop);
+    padding-right: var(--spacing-margin-desktop);
+  }
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-gutter);
+}
+
+@media (min-width: 768px) {
+  .gridContainer {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+/* Gallery - Left */
+.galleryArea {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .galleryArea {
+    grid-column: span 7;
+  }
+}
+
+.mainImageContainer {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-color: var(--color-surface-container-low);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-glass-sm);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.thumbnailBtn {
+  aspect-ratio: 1 / 1;
+  background-color: var(--color-surface-container-low);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  padding: 0;
+  position: relative;
+}
+
+.thumbnailBtn:hover {
+  opacity: 0.8;
+}
+
+.videoBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+}
+
+/* Details - Right */
+.detailsArea {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .detailsArea {
+    grid-column: span 5;
+    padding-left: 2rem;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 32px; /* headline-lg */
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 40px; /* headline-xl */
+  }
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.price {
+  font-size: 18px; /* body-lg */
+  color: var(--color-on-surface-variant);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Selectors */
+.selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selectorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.selectorLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sizeGuide {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+}
+
+.colorList {
+  display: flex;
+  gap: 1rem;
+}
+
+.colorBtn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-outline-variant);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.colorBtnActive {
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-primary);
+}
+
+.sizeGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.sizeBtn {
+  padding: 0.75rem 0;
+  text-align: center;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  font-weight: 600;
+  background-color: transparent;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sizeBtn:hover {
+  border-color: var(--color-primary);
+}
+
+.sizeBtnActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.sizeBtnDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Customization Panel */
+.customPanel {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.customHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-outline-variant);
+  padding-bottom: 1rem;
+}
+
+.customTitle {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.customTabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.tabBtn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding-bottom: 0.25rem;
+}
+
+.tabBtnActive {
+  color: var(--color-primary);
+  border-bottom: 1px solid var(--color-primary);
+}
+
+.customDesc {
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+}
+
+.whatsappSteps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.stepCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepCircle {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-container-high);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.stepCircleDashed {
+  border: 1px dashed var(--color-outline);
+  background: transparent;
+  color: var(--color-outline);
+}
+
+.stepLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+}
+
+.chatBtn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.chatBtn:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+.statusText {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+/* Actions */
+.actionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.primaryBtn:hover {
+  background-color: var(--color-accent);
+}
+
+.secondaryBtn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-outline-variant);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.secondaryBtn:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+/* Accordions */
+.accordionGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+.accordion {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.accordionSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.accordionSummary::-webkit-details-marker {
+  display: none;
+}
+
+.accordionContent {
+  padding-top: 1rem;
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+}

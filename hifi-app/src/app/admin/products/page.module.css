@@ -1,0 +1,242 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.subtitle {
+  color: var(--color-on-surface-variant);
+  margin-top: 0.25rem;
+  font-size: 14px;
+}
+
+.primaryBtn {
+  padding: 0.6rem 1.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryBtn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.formPanel,
+.catPanel {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  margin-bottom: 1.5rem;
+}
+
+.panelTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.25rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+}
+
+.input {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-size: 14px;
+  text-transform: none;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+}
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.catForm {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.catForm .input {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.catList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.catChip {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-container-high);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.catChip em {
+  font-style: normal;
+  color: var(--color-on-surface-variant);
+}
+
+.productCard {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  margin-bottom: 1rem;
+}
+
+.productRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.thumb {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  background-color: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+}
+
+.productInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.productTitle {
+  font-weight: 700;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.productActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.variantTable {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: 1rem;
+}
+
+.variantHeader,
+.variantRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  padding: 0.35rem 0;
+}
+
+.variantRow {
+  text-transform: none;
+  font-weight: 500;
+  color: var(--color-on-surface);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.variantInput {
+  width: 100%;
+  max-width: 6rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font-size: 13px;
+}
+
+.variantFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.75rem;
+}
+
+.badge {
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badgeActive {
+  background-color: rgba(37, 211, 102, 0.12);
+  color: #1f9d55;
+}
+
+.badgeHidden {
+  background-color: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+}
+
+@media (max-width: 700px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .variantHeader,
+  .variantRow {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .variantRow span:nth-of-type(3),
+  .variantRow span:nth-of-type(4) {
+    display: none;
+  }
+  .productRow {
+    flex-wrap: wrap;
+  }
+}

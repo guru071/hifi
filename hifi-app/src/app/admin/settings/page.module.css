@@ -1,0 +1,139 @@
+.header {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-gutter);
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: 1fr 3fr;
+  }
+}
+
+.settingsNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navItem {
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navItemActive {
+  background-color: var(--color-secondary-container);
+  color: var(--color-primary);
+}
+
+.navItemInactive {
+  color: var(--color-on-surface-variant);
+}
+
+.navItemInactive:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sectionCard {
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface-variant);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  background-color: var(--color-surface-container-lowest);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.btnPrimary {
+  align-self: flex-start;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.btnPrimary:hover {
+  transform: scale(0.98);
+}

@@ -1,0 +1,118 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.subtitle {
+  color: var(--color-on-surface-variant);
+  margin-top: 0.25rem;
+}
+
+.toggleBtn {
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reviewCard {
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  margin-bottom: 1rem;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.name {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin-top: 0.25rem;
+}
+
+.comment {
+  color: var(--color-on-surface);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.badge {
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badgeActive {
+  background-color: rgba(37, 211, 102, 0.12);
+  color: #1f9d55;
+}
+
+.badgeHidden {
+  background-color: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.primaryBtn {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryBtn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dangerBtn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}

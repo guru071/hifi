@@ -1,0 +1,133 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem var(--spacing-margin-mobile) 4rem;
+  background-color: var(--color-background);
+}
+
+.authCard {
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem 2rem;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .authCard {
+    padding: 3rem;
+  }
+}
+
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 32px; /* headline-lg */
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-surface);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-outline-variant);
+  font-family: var(--font-inter);
+  font-size: 16px;
+  color: var(--color-on-surface);
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+.input::placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.7;
+}
+
+.submitBtn {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 1rem;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.submitBtn:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+.footer {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+}
+
+.error {
+  color: var(--color-error, #d93025);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: var(--color-secondary);
+}
