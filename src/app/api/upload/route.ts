@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const formData = await request.formData();
+    const formData = (await request.formData()) as any;
     const file = formData.get('file') as File | null;
 
     if (!file) {

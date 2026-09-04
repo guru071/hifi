@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const supabase = createServerClient();
 
   try {
-    const formData = await request.formData();
+    const formData = (await request.formData()) as any;
     const razorpay_payment_id = formData.get('razorpay_payment_id') as string;
     const razorpay_order_id = formData.get('razorpay_order_id') as string;
     const razorpay_signature = formData.get('razorpay_signature') as string;

@@ -4,7 +4,7 @@ import { getProfileByAuthId } from '@/lib/services/users';
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const formData = (await request.formData()) as any;
     const file = formData.get('file') as File | null;
     const referenceCode = formData.get('referenceCode') as string | null;
 
