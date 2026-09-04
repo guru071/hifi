@@ -115,11 +115,6 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
           (pData.products || []).forEach((p: ProductInfo) => { map[p.id] = p; });
           setProducts(map);
         }
-
-        useEffect(() => {
-          if (!orderId) return;
-          fetchOrder();
-        }, [orderId]); // eslint-disable-line react-hooks/exhaustive-deps
       }
 
       if (designIds.length > 0) {
@@ -162,6 +157,11 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
       setSaving(false);
     }
   }
+
+  useEffect(() => {
+    if (!orderId) return;
+    fetchOrder();
+  }, [orderId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <p>Loading order...</p>;
   if (error) return <p style={{ color: "var(--color-error)" }}>{error}</p>;

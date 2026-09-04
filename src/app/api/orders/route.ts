@@ -58,7 +58,7 @@ async function ensureOrderProfileId(request: Request) {
     .from('users')
     .insert({
       auth_id: decoded.uid,
-      email: decoded.email ?? null,
+      email: decoded.email ?? '',
       full_name: fullName,
       role: 'customer',
     })

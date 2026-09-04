@@ -106,6 +106,7 @@ export default function EditProductPage() {
 
   if (loading) return <div style={{ padding: '2rem' }}>Loading product...</div>;
   if (!product && error) return <div style={{ padding: '2rem', color: 'red' }}>{error}</div>;
+  if (!product) return <div style={{ padding: '2rem' }}>Product not found.</div>;
 
   return (
     <div>
