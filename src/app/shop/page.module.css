@@ -259,8 +259,8 @@
 
 .productGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-gutter);
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 @media (min-width: 640px) {
