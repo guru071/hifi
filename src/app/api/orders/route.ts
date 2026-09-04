@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { createOrder, OrderCreationError } from '@/lib/services/orders';
 import { checkAdminAuth } from '@/lib/admin';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
-import { getFirebaseProfileId } from '@/lib/guards';
+import { getProfileByAuthId } from '@/lib/services/users';
 
 async function getUserRoleFromRequest(request: Request): Promise<'admin' | 'customer' | null> {
   if (await checkAdminAuth()) return 'admin';
@@ -18,12 +18,67 @@ async function getUserRoleFromRequest(request: Request): Promise<'admin' | 'cust
   return (profile?.role as 'admin' | 'customer') ?? 'customer';
 }
 
+async function ensureOrderProfileId(request: Request) {
+  const supabase = createServerClient();
+  const decoded = await verifyFirebaseToken(request);
+  if (!decoded) return null;
+
+  const profile = await getProfileByAuthId(decoded.uid, supabase);
+  if (profile?.id) return profile.id;
+
+  if (decoded.email) {
+    const { data: byEmail, error: byEmailError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', decoded.email)
+      .maybeSingle();
+
+    if (byEmailError) {
+      console.error('Error resolving profile by email:', byEmailError);
+      return null;
+    }
+
+    if (byEmail?.id) {
+      const { error: linkError } = await supabase
+        .from('users')
+        .update({ auth_id: decoded.uid, updated_at: new Date().toISOString() })
+        .eq('id', byEmail.id);
+
+      if (linkError) {
+        console.error('Error linking Firebase UID to profile:', linkError);
+        return null;
+      }
+
+      return byEmail.id;
+    }
+  }
+
+  const fullName = decoded.name || decoded.email?.split('@')[0] || 'User';
+  const { data: created, error: createError } = await supabase
+    .from('users')
+    .insert({
+      auth_id: decoded.uid,
+      email: decoded.email ?? null,
+      full_name: fullName,
+      role: 'customer',
+    })
+    .select('id')
+    .single();
+
+  if (createError) {
+    console.error('Error creating profile for order:', createError);
+    return null;
+  }
+
+  return created.id;
+}
+
 export async function GET(request: Request) {
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const role = await getUserRoleFromRequest(request);
-  const profileId = role !== 'admin' ? await getFirebaseProfileId(request) : null;
+  const profileId = role !== 'admin' ? await ensureOrderProfileId(request) : null;
 
   try {
     let query = supabase
@@ -56,7 +111,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const supabase = createServerClient();
-    const profileId = await getFirebaseProfileId(request);
+    const profileId = await ensureOrderProfileId(request);
 
     if (!profileId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

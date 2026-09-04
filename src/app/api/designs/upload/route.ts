@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createRouteClient } from '@/lib/supabase/server';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
+import { createServerClient } from '@/lib/supabase/server';
 import { getProfileByAuthId } from '@/lib/services/users';
 
 export async function POST(request: Request) {
@@ -12,11 +13,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing file or referenceCode' }, { status: 400 });
     }
 
-    const routeClient = await createRouteClient();
-    
-    // Check for authenticated user (optional, as they could be a guest)
-    const { data: { user } } = await routeClient.auth.getUser();
-    const profile = user ? await getProfileByAuthId(user.id, routeClient) : null;
+    const supabase = createServerClient();
+
+    // Optional Firebase auth: link upload to a known profile when available.
+    const decoded = await verifyFirebaseToken(request);
+    const profile = decoded ? await getProfileByAuthId(decoded.uid, supabase) : null;
 
     // 1. Upload to storage
     const extension = file.name.split('.').pop() || 'jpg';
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const { error: storageError } = await routeClient.storage
+    const { error: storageError } = await supabase.storage
       .from('designs')
       .upload(fileName, buffer, { 
         contentType: file.type || 'image/jpeg',
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Create custom design record
-    const { data: existing } = await routeClient
+    const { data: existing } = await supabase
       .from('custom_designs')
       .select('id')
       .eq('reference_code', referenceCode)
@@ -46,22 +47,27 @@ export async function POST(request: Request) {
     let customDesignId;
     if (existing) {
       // If it exists, update it
-      await routeClient
+      const { error: updateError } = await supabase
         .from('custom_designs')
         .update({
           status: 'received',
           media_url: fileName,
           design_image_url: fileName,
-          media_mime_type: file.type
+          media_mime_type: file.type,
+          ...(profile?.id ? { user_id: profile.id } : {}),
         })
         .eq('id', existing.id);
+      if (updateError) {
+        console.error('Custom design update failed:', updateError);
+        return NextResponse.json({ error: 'Failed to update design record' }, { status: 500 });
+      }
       customDesignId = existing.id;
     } else {
       // Create new
-      const { data: newDesign } = await routeClient
+      const { data: newDesign, error: insertError } = await supabase
         .from('custom_designs')
         .insert({
-          profile_id: profile?.id ?? null,
+          user_id: profile?.id ?? null,
           reference_code: referenceCode,
           status: 'received',
           media_url: fileName,
@@ -70,6 +76,10 @@ export async function POST(request: Request) {
         })
         .select('id')
         .single();
+      if (insertError) {
+        console.error('Custom design insert failed:', insertError);
+        return NextResponse.json({ error: 'Failed to create design record' }, { status: 500 });
+      }
       customDesignId = newDesign?.id;
     }
 
