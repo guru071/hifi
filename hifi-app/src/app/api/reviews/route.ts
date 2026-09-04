@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { submitReview, ReviewValidationError } from '@/lib/services/reviews';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function GET(request: Request) {
   const supabase = createServerClient();
@@ -41,14 +42,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const supabase = createServerClient();
   try {
-    // 1. Authenticate from session (never trust client user id)
-    const routeClient = await createRouteClient();
-    const {
-      data: { user: authUser },
-    } = await routeClient.auth.getUser();
-    if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // 1. Authenticate via Firebase token (consistent with the rest of the app)
+    const decoded = await verifyFirebaseToken(request);
+    if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const profile = await getProfileByAuthId(authUser.id, supabase);
+    const profile = await getProfileByAuthId(decoded.uid, supabase);
     if (!profile) return NextResponse.json({ error: 'Account profile not found' }, { status: 404 });
 
     const body = await request.json();

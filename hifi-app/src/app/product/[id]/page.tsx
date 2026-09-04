@@ -40,9 +40,13 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
     setReviewMsg("");
     setReviewErr("");
     try {
+      const token = await user.getIdToken();
       const res = await fetch("/api/reviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({ product_id: id, rating: reviewRating, comment: reviewComment }),
       });
       const data = await res.json();

@@ -10,8 +10,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 
 function LoginForm() {
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
