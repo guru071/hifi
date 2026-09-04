@@ -11,7 +11,7 @@ const inr = (n: number) => `₹${Number(n).toFixed(2)}`;
 
 type OrderLineItem = ItemSnapshot & { id?: string | null; design_id?: string | null };
 
-const statusSteps = ["pending_payment", "paid", "processing", "shipped", "delivered"];
+const statusSteps = ["pending", "pending_payment", "paid", "processing", "shipped", "delivered"];
 const statusLabels: Record<string, string> = {
   pending_payment: "Awaiting payment",
   pending: "Order received",
@@ -141,7 +141,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
             {address.phone && <>Phone: {address.phone}<br /></>}
           </p>
           <div style={{ marginTop: "1.5rem", display: "flex", gap: "0.75rem" }}>
-            <Link href={`/profile/invoice/${order.id}`} style={{ color: "#fff" }}>View Invoice</Link>
+            <Link href={`/profile/invoice/${order.id}`} style={{ color: "#fff", background: "var(--color-primary)", padding: "0.5rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>Download Bill</Link>
           </div>
         </div>
       </main>

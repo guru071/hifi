@@ -45,7 +45,7 @@ export default function Register() {
       setError(signUpError);
       return;
     }
-    router.push("/login");
+    router.push("/profile");
     router.refresh();
   }
 

@@ -274,9 +274,15 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                     Custom Design
                     {design.status && <span> — {design.status}</span>}
                   </div>
-                  <a href={design.image_url} target="_blank" rel="noopener noreferrer">
-                    <img src={design.image_url} alt="Custom Design" className={styles.designImage} />
-                  </a>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "0.5rem" }}>
+                    <a href={design.image_url} target="_blank" rel="noopener noreferrer">
+                      <img src={design.image_url} alt="Custom Design" className={styles.designImage} />
+                    </a>
+                    <a href={design.image_url} download="design.jpg" target="_blank" rel="noopener noreferrer" style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", textDecoration: "none", fontSize: "14px", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>download</span>
+                      Download Design
+                    </a>
+                  </div>
                 </div>
               )}
             </div>
@@ -392,7 +398,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
           <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>Invoice</span>
             <Link href={`/profile/invoice/${order.id}`} className={styles.saveBtn} style={{ textDecoration: "none", textAlign: "center" }}>
-              View Invoice
+              Download Bill
             </Link>
           </div>
         </div>

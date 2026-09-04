@@ -168,7 +168,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>print</span>
-              Print Invoice
+              Download / Print Bill
             </button>
           </div>
         </div>

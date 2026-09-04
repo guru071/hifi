@@ -54,6 +54,26 @@ type AdminOrder = {
   [key: string]: unknown;
 };
 
+function DesignPreview({ designId }: { designId: string }) {
+  const [design, setDesign] = useState<{ image_url?: string } | null>(null);
+  
+  useEffect(() => {
+    fetch(`/api/designs/${designId}`).then(r => r.json()).then(d => setDesign(d.design || d)).catch(() => {});
+  }, [designId]);
+
+  if (!design?.image_url) return null;
+
+  return (
+    <div style={{ marginTop: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", display: "flex", gap: "1rem", alignItems: "center" }}>
+      <img src={design.image_url} alt="Design" style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }} />
+      <a href={design.image_url} download="design.jpg" target="_blank" rel="noopener noreferrer" style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>
+        <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle", marginRight: "4px" }}>download</span>
+        Download Design
+      </a>
+    </div>
+  );
+}
+
 export default function AdminOrders() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,13 +178,16 @@ export default function AdminOrders() {
                 <div style={{ marginBottom: "1rem" }}>
                   <h4 style={{ marginBottom: "0.5rem" }}>Items</h4>
                   {items.map((item: OrderItem, i: number) => (
-                    <div key={item.id || i} className={styles.itemRow}>
-                      <span>{item.title || "HIFI Custom Item"}</span>
-                      <span className={styles.sub}>
-                        {item.color && <>{item.color}/{item.size} · </>}Qty {item.quantity}
-                        {item.design_id && <span style={{ color: "var(--color-primary)" }}> · Custom</span>}
-                      </span>
-                      <span>{inr(Number(item.unit_price) * item.quantity)}</span>
+                    <div key={item.id || i} style={{ marginBottom: "1rem" }}>
+                      <div className={styles.itemRow}>
+                        <span>{item.title || "HIFI Custom Item"}</span>
+                        <span className={styles.sub}>
+                          {item.color && <>{item.color}/{item.size} · </>}Qty {item.quantity}
+                          {item.design_id && <span style={{ color: "var(--color-primary)" }}> · Custom</span>}
+                        </span>
+                        <span>{inr(Number(item.unit_price) * item.quantity)}</span>
+                      </div>
+                      {item.design_id && <DesignPreview designId={item.design_id} />}
                     </div>
                   ))}
                 </div>
@@ -211,7 +234,7 @@ export default function AdminOrders() {
                       {PAYMENT_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </label>
-                  <Link href={`/profile/invoice/${order.id}`} className={styles.invoiceLink}>View Invoice</Link>
+                  <Link href={`/profile/invoice/${order.id}`} className={styles.invoiceLink}>Download Bill</Link>
                 </div>
 
                 {msg?.id === order.id && (

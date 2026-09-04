@@ -6,12 +6,11 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import OAuthButtons from "@/components/ui/OAuthButtons";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 function LoginForm() {
   const { signIn } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +28,9 @@ function LoginForm() {
       return;
     }
     const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") ? next : "/profile");
-    router.refresh();
+    const dest = next && next.startsWith("/") ? next : "/profile";
+    // Use hard navigation so the new Firebase auth state is fully active
+    window.location.href = dest;
   }
 
   return (

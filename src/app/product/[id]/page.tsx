@@ -14,11 +14,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
   const [designState, setDesignState] = useState<"waiting" | "received">("waiting");
   const [designId, setDesignId] = useState<string>("");
   const [designRef, setDesignRef] = useState<string>("");
-  const [uploadMethod, setUploadMethod] = useState<"none" | "upload" | "whatsapp">("none");
-  const [chatMessages, setChatMessages] = useState<{sender: 'ai' | 'user', text?: string, image?: string, time?: string}[]>([
-    { sender: 'ai', text: 'Hi! I am the HIFI AI Studio Assistant. Upload your design here on WhatsApp, and let me know if you have any special requirements.', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
-  ]);
-  const [chatInput, setChatInput] = useState("");
+  const [uploadMethod, setUploadMethod] = useState<"none" | "upload">("none");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [product, setProduct] = useState<ProductWithDetails | null>(null);
@@ -71,8 +67,6 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     
-    const newMsg = { sender: 'user' as const, image: URL.createObjectURL(file), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-    setChatMessages(prev => [...prev, newMsg]);
     setIsUploading(true);
     
     try {
@@ -92,12 +86,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
         setDesignRef(refCode);
         setDesignId(data.designId || "");
         setDesignState("received");
-        
-        setChatMessages(prev => [...prev, { 
-          sender: 'ai', 
-          text: `Awesome design! I've attached it to reference ${refCode}. Your design is ready for printing. You can add to cart now!`,
-          time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        }]);
+        alert("Design uploaded successfully!");
       } else {
         alert("Upload failed: " + (data.error || "Unknown error"));
       }
@@ -273,14 +262,6 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
                     <span className="material-symbols-outlined">upload_file</span>
                     UPLOAD DESIGN
                   </button>
-                  <button 
-                    onClick={() => setUploadMethod("whatsapp")}
-                    className={styles.secondaryBtn}
-                    style={{ padding: "1rem", justifyContent: "flex-start", gap: "1rem", borderColor: "#25D366", color: "#25D366" }}
-                  >
-                    <span className="material-symbols-outlined">chat</span>
-                    SEND DESIGN THROUGH WHATSAPP
-                  </button>
                 </div>
               )}
 
@@ -292,124 +273,6 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
                   <label htmlFor="standard-upload" className={styles.primaryBtn} style={{ display: "inline-block", cursor: "pointer" }}>
                     Choose File
                   </label>
-                </div>
-              )}
-
-              {uploadMethod === "whatsapp" && (
-                <div style={{ display: "flex", flexDirection: "column", height: "400px", background: "#efeae2", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--color-outline-variant)", marginTop: "1rem" }}>
-                  {/* WhatsApp Header */}
-                  <div style={{ background: "#00a884", color: "white", padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#00a884" }}>
-                      <span className="material-symbols-outlined">smart_toy</span>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: "16px" }}>HIFI AI Bot</div>
-                      <div style={{ fontSize: "12px", opacity: 0.9 }}>online</div>
-                    </div>
-                  </div>
-                  
-                  {/* WhatsApp Chat Area */}
-                  <div style={{ flex: 1, overflowY: "auto", padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem", backgroundImage: "url('/whatsapp_bg.png')", backgroundSize: "cover" }}>
-                    <div style={{ textAlign: "center", marginBottom: "0.5rem" }}>
-                      <span style={{ background: "#ffeeba", color: "#664d03", fontSize: "11px", padding: "4px 8px", borderRadius: "8px", display: "inline-block" }}>
-                        Messages are processed by HIFI AI Bot to automatically attach designs to your order.
-                      </span>
-                    </div>
-                    {chatMessages.map((msg, i) => (
-                      <div key={i} style={{ 
-                        alignSelf: msg.sender === 'ai' ? 'flex-start' : 'flex-end',
-                        maxWidth: '85%',
-                        backgroundColor: msg.sender === 'ai' ? '#ffffff' : '#d9fdd3',
-                        color: '#111b21',
-                        padding: '0.5rem 0.5rem 0.25rem 0.75rem',
-                        borderRadius: '8px',
-                        borderTopLeftRadius: msg.sender === 'ai' ? '0' : '8px',
-                        borderTopRightRadius: msg.sender === 'user' ? '0' : '8px',
-                        fontSize: '14.2px',
-                        lineHeight: '1.4',
-                        boxShadow: '0 1px 0.5px rgba(11,20,26,.13)',
-                        position: 'relative'
-                      }}>
-                        {msg.text && <div style={{ paddingRight: "3rem", paddingBottom: "0.25rem" }}>{msg.text}</div>}
-                        {msg.image && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={msg.image} alt="Upload preview" style={{ maxWidth: "100%", borderRadius: "6px", marginTop: msg.text ? "0.25rem" : "0", marginBottom: "0.25rem" }} />
-                        )}
-                        <div style={{ fontSize: "11px", color: "rgba(17,27,33,0.5)", textAlign: "right", marginTop: "-10px", float: "right" }}>
-                          {msg.time} {msg.sender === 'user' && <span className="material-symbols-outlined" style={{ fontSize: "14px", verticalAlign: "middle", marginLeft: "2px", color: "#53bdeb" }}>done_all</span>}
-                        </div>
-                        <div style={{ clear: "both" }}></div>
-                      </div>
-                    ))}
-                    {isUploading && (
-                      <div style={{ alignSelf: 'flex-start', color: '#667781', fontSize: '12px', fontStyle: 'italic', background: 'rgba(255,255,255,0.8)', padding: '4px 8px', borderRadius: '8px' }}>
-                        typing...
-                      </div>
-                    )}
-                  </div>
-
-                  {/* WhatsApp Input */}
-                  <div style={{ padding: "0.75rem", background: "#f0f2f5", display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <button 
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={designState === "received" || isUploading}
-                      style={{ 
-                        background: "none", border: "none", cursor: designState === "received" ? "not-allowed" : "pointer", 
-                        color: "#54656f", display: "flex", alignItems: "center", padding: "0.5rem"
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: "24px" }}>attach_file</span>
-                    </button>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      style={{ display: "none" }} 
-                      accept="image/*"
-                      onChange={handleChatImageUpload}
-                    />
-                    <input 
-                      type="text" 
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && chatInput.trim() && designState !== "received") {
-                          setChatMessages(prev => [...prev, { sender: 'user', text: chatInput.trim(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                          setChatInput("");
-                          setTimeout(() => {
-                            setChatMessages(prev => [...prev, { sender: 'ai', text: 'Please attach your design image using the paperclip icon so I can process it.', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                          }, 1000);
-                        }
-                      }}
-                      disabled={designState === "received" || isUploading}
-                      placeholder={designState === "received" ? "Design approved." : "Type a message"}
-                      style={{
-                        flex: 1, padding: "0.75rem 1rem", borderRadius: "8px",
-                        border: "none", background: "#ffffff",
-                        color: "#111b21", fontSize: "15px", outline: "none"
-                      }}
-                    />
-                    <button 
-                      disabled={designState === "received" || isUploading || !chatInput.trim()}
-                      onClick={() => {
-                        if (chatInput.trim() && designState !== "received") {
-                          setChatMessages(prev => [...prev, { sender: 'user', text: chatInput.trim(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                          setChatInput("");
-                          setTimeout(() => {
-                            setChatMessages(prev => [...prev, { sender: 'ai', text: 'Please attach your design image using the paperclip icon so I can process it.', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                          }, 1000);
-                        }
-                      }}
-                      style={{ 
-                        background: (designState === "received" || !chatInput.trim()) ? "transparent" : "#00a884", 
-                        border: "none", cursor: (designState === "received" || !chatInput.trim()) ? "default" : "pointer", 
-                        color: (designState === "received" || !chatInput.trim()) ? "#54656f" : "#ffffff", 
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        width: "40px", height: "40px", borderRadius: "50%"
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>send</span>
-                    </button>
-                  </div>
                 </div>
               )}
 
