@@ -109,8 +109,13 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
       // Fetch product images
       const items = (data.order.items_snapshot as SnapshotItem[]) || [];
+      const orderItems = data.order.order_items || [];
       const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))];
-      const designIds = [...new Set(items.map(i => i.design_id).filter(Boolean))];
+      
+      // Designs might be in snapshot or linked via order_items
+      const snapshotDesignIds = items.map(i => i.design_id).filter(Boolean);
+      const linkedDesignIds = orderItems.map((i: any) => i.custom_design_id).filter(Boolean);
+      const designIds = [...new Set([...snapshotDesignIds, ...linkedDesignIds])];
 
       if (productIds.length > 0) {
         const pRes = await fetch(`/api/products?ids=${productIds.join(",")}`);
@@ -234,7 +239,12 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
         </div>
         {items.map((item, i) => {
           const product = item.product_id ? products[item.product_id] : null;
-          const design = item.design_id ? designs[item.design_id] : null;
+          
+          // Match design ID (it might be on the snapshot or the corresponding order_item)
+          const orderItem = order.order_items?.[i];
+          const did = item.design_id || orderItem?.custom_design_id;
+          const design = did ? designs[did as string] : null;
+          
           const imageUrl = product?.image_url;
 
           return (
@@ -278,10 +288,28 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                     <a href={design.image_url} target="_blank" rel="noopener noreferrer">
                       <img src={design.image_url} alt="Custom Design" className={styles.designImage} />
                     </a>
-                    <a href={design.image_url} download="design.jpg" target="_blank" rel="noopener noreferrer" style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", textDecoration: "none", fontSize: "14px", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const r = await fetch(design.image_url!);
+                          const blob = await r.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `design_${order.id.slice(0,8)}.jpg`;
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                          window.open(design.image_url, '_blank');
+                        }
+                      }}
+                      style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", border: "none", cursor: "pointer", fontSize: "14px", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    >
                       <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>download</span>
                       Download Design
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
@@ -413,8 +441,19 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 }
 
 function parseAddress(a: unknown): Address {
-  if (typeof a === "string") {
-    try { return JSON.parse(a); } catch { return {}; }
-  }
-  return (a || {}) as Address;
+  if (!a) return {};
+  let parsed = typeof a === "string" ? (function(){ try{ return JSON.parse(a); }catch{ return {}; }})() : a as any;
+  
+  // Handle new checkout format mapped to Address type
+  return {
+    full_name: parsed.full_name || (parsed.firstName ? `${parsed.firstName} ${parsed.lastName || ''}`.trim() : undefined),
+    line1: parsed.line1 || parsed.address,
+    line2: parsed.line2 || parsed.apartment,
+    city: parsed.city,
+    state: parsed.state,
+    postal_code: parsed.postal_code || parsed.zip,
+    phone: parsed.phone,
+    country: parsed.country || "India",
+    email: parsed.email
+  };
 }

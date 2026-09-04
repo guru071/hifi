@@ -107,7 +107,7 @@ export default function Profile() {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1 className={styles.title}>My Account</h1>
-          <p className={styles.subtitle}>Manage your orders, custom designs, and account settings.</p>
+          <p className={styles.subtitle}>Manage your orders and account settings.</p>
         </div>
 
         <div className={styles.contentGrid}>

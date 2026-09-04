@@ -46,10 +46,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined">inventory_2</span>
             <span className={styles.navLabel}>Products</span>
           </Link>
-          <Link href="/admin/queue" className={`${styles.navLink} ${pathname.startsWith("/admin/queue") ? styles.navLinkActive : ""}`}>
-            <span className="material-symbols-outlined">palette</span>
-            <span className={styles.navLabel}>Custom Queue</span>
-          </Link>
           <Link href="/admin/customers" className={`${styles.navLink} ${pathname.startsWith("/admin/customers") ? styles.navLinkActive : ""}`}>
             <span className="material-symbols-outlined">group</span>
             <span className={styles.navLabel}>Customers</span>
