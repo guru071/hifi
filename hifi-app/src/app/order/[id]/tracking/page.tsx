@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default async function OrderTrackingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: order } = await supabase.from('orders').select('*').eq('id', id).single();
   
   if (!order) return notFound();

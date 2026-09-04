@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import Navbar from "@/components/layout/Navbar";
@@ -34,6 +34,13 @@ export default function Checkout() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect to login if not authenticated — user must be logged in to place an order
+  useEffect(() => {
+    if (user === null) {
+      router.replace('/login?redirect=/checkout');
+    }
+  }, [user, router]);
 
   const [shippingFee, setShippingFee] = useState(0);
   const [deliveryType, setDeliveryType] = useState('global');

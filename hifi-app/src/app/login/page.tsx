@@ -29,7 +29,7 @@ function LoginForm() {
     }
     const next = searchParams.get("next");
     const dest = next && next.startsWith("/") ? next : "/";
-    window.location.href = dest;
+    router.push(dest);
   }
 
   return (
@@ -78,7 +78,9 @@ function LoginContent() {
 
   useEffect(() => {
     if (user) {
-      router.replace("/");
+      const searchParams = new URLSearchParams(window.location.search);
+      const next = searchParams.get('next');
+      router.replace(next && next.startsWith('/') ? next : '/');
     }
   }, [user, router]);
 
