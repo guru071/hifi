@@ -36,7 +36,13 @@ export default function Orders() {
     }
     async function fetchOrders() {
       try {
-        const res = await fetch("/api/orders", { cache: "no-store" });
+        const token = user ? await user.getIdToken() : null;
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+        
+        const res = await fetch("/api/orders", { 
+          headers,
+          cache: "no-store" 
+        });
         if (res.ok) {
           const data = await res.json();
           setOrders(data.orders || []);

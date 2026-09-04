@@ -100,9 +100,14 @@ export default function Checkout() {
           country: "India",
         };
 
+        const token = user ? await user.getIdToken() : null;
+
         const res = await fetch("/api/orders", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
           body: JSON.stringify({
             shippingAddress,
             items: items.map((it) => ({
@@ -135,9 +140,13 @@ export default function Checkout() {
         order_id: orderData!.razorpayOrderId,
         handler: async function (response: RazorpayResponse) {
           try {
-            const verifyRes = await fetch("/api/payments/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+              const token = user ? await user.getIdToken() : null;
+              const verifyRes = await fetch("/api/payments/verify", {
+                method: "POST",
+                headers: { 
+                  "Content-Type": "application/json",
+                  ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
               body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,

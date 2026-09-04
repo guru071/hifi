@@ -44,9 +44,11 @@ export default function Profile() {
     }
     async function fetchData() {
       try {
+        const token = user ? await user.getIdToken() : null;
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
         const [ordersRes, profileRes] = await Promise.all([
-          fetch("/api/orders", { cache: "no-store" }),
-          fetch("/api/profile", { cache: "no-store" }),
+          fetch("/api/orders", { headers, cache: "no-store" }),
+          fetch("/api/profile", { headers, cache: "no-store" }),
         ]);
         if (ordersRes.ok) {
           const data = await ordersRes.json();
@@ -76,10 +78,14 @@ export default function Profile() {
     }
     setPhoneError(null);
     try {
+      const token = user ? await user.getIdToken() : null;
       const res = await fetch("/api/profile/phone", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: trimmed }),
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ phone: phoneInput }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save phone");
