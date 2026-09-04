@@ -216,7 +216,6 @@ export default function AdminDashboard() {
           <div className={`${styles.actionsCard} glass-panel`}>
             <h3 className={styles.chartTitle}>Quick Actions</h3>
             <div className={styles.actionList}>
-              </Link>
               <Link href="/admin/products" className={styles.actionBtn} style={{ textDecoration: 'none' }}>
                 <span className={styles.actionText}>Manage Inventory</span>
                 <span className={`material-symbols-outlined ${styles.actionIcon}`} style={{ fontSize: "18px" }}>arrow_forward</span>
