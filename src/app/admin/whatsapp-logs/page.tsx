@@ -21,21 +21,6 @@ export default function AdminWhatsAppLogs() {
   const [replyText, setReplyText] = useState("");
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
-  async function fetchLogs() {
-    try {
-      // Use existing API or direct supabase client if possible. We will just fetch via API.
-      // Wait, there's no API for this. We should fetch directly using client.
-      // Let's use the standard fetch for this if we had one.
-      // We need to implement this with Supabase Client.
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   // To make it functional and realtime, we'll fetch via Supabase client directly
   useEffect(() => {
     async function loadData() {

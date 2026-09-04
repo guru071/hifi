@@ -12,7 +12,16 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [product, setProduct] = useState<any>(null);
+  type EditableProduct = {
+    title: string;
+    base_price: number;
+    delivery_fee?: number | null;
+    description?: string | null;
+    category_id?: string | null;
+    image_url?: string | null;
+  };
+
+  const [product, setProduct] = useState<EditableProduct | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);

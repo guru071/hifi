@@ -20,14 +20,17 @@ export default async function AdminNotifications() {
     .limit(5);
 
   const notifications = [
-    ...(recentOrders || []).map(o => ({
-      id: o.id,
-      type: 'Order',
-      title: `New Order: ${(o.users as any)?.full_name || 'Customer'}`,
-      description: `Status: ${o.status}`,
-      date: o.created_at,
-      icon: 'shopping_cart'
-    })),
+    ...(recentOrders || []).map((o) => {
+      const user = o.users as { full_name?: string } | null;
+      return {
+        id: o.id,
+        type: 'Order',
+        title: `New Order: ${user?.full_name || 'Customer'}`,
+        description: `Status: ${o.status}`,
+        date: o.created_at,
+        icon: 'shopping_cart',
+      };
+    }),
     ...(recentMessages || []).map(m => ({
       id: m.id,
       type: 'Message',

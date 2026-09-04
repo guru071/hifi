@@ -19,7 +19,7 @@ export function verifyWhatsAppSignature(rawBody: string, signatureHeader: string
   return crypto.timingSafeEqual(a, b);
 }
 
-export async function sendRawWhatsAppPayload(payload: any) {
+export async function sendRawWhatsAppPayload(payload: Record<string, unknown>) {
   const token = process.env.MAGHGO_BOT_TOKEN;
   const maghgoApi = process.env.MAGHGO_OUTBOUND_API_URL;
   if (!maghgoApi || !token) {
@@ -148,7 +148,7 @@ export async function sendWhatsAppFlow(
   flowId: string,
   screenName: string,
   body: string,
-  flowData: Record<string, any>,
+  flowData: Record<string, unknown>,
   header?: string,
   footer?: string
 ) {

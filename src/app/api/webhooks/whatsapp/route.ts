@@ -9,6 +9,13 @@ import {
   logWhatsAppMessage,
 } from '@/lib/services/whatsapp';
 
+type InteractivePayload = {
+  interactive?: {
+    button_reply?: { id?: string; title?: string };
+    list_reply?: { id?: string; title?: string };
+  };
+};
+
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const authHeader = request.headers.get('authorization');
@@ -134,14 +141,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
+    const interactive = (message as InteractivePayload).interactive;
     const interactiveId = (
-      (message as any).interactive?.button_reply?.id ||
-      (message as any).interactive?.list_reply?.id || ''
+      interactive?.button_reply?.id ||
+      interactive?.list_reply?.id || ''
     ).toUpperCase();
 
     const interactiveTitle = (
-      (message as any).interactive?.button_reply?.title ||
-      (message as any).interactive?.list_reply?.title || ''
+      interactive?.button_reply?.title ||
+      interactive?.list_reply?.title || ''
     ).toUpperCase();
 
     // Handle interactive button clicks OR text matches (if Maghgo normalizes them)
