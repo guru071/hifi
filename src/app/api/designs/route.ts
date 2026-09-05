@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { createDesignSubmission, resolveDesignImageUrl } from '@/lib/services/designs';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
 
 import { checkAdminAuth } from '@/lib/admin';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function GET() {
   const supabase = createServerClient();
@@ -50,14 +51,11 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Resolve the authenticated submitter (optional; webhook submissions are anonymous)
-    const routeClient = await createRouteClient();
-    const {
-      data: { user: authUser },
-    } = await routeClient.auth.getUser();
-    const profile = authUser ? await getProfileByAuthId(authUser.id, supabase) : null;
+    const authUser = await verifyFirebaseToken(request);
+    const profile = authUser ? await getProfileByAuthId(authUser.uid, supabase) : null;
 
     const newDesign = await createDesignSubmission({
-      profileId: profile?.id ?? body.userId ?? null,
+      profileId: profile?.id ?? null,
       senderPhone: body.senderPhone ?? null,
       designName: body.designName ?? null,
       mediaUrl: body.mediaUrl ?? null,

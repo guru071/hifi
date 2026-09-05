@@ -33,9 +33,10 @@ function CompleteSignupForm() {
     setSubmitting(true);
     setError(null);
     try {
+      const token = user ? await user.getIdToken() : null;
       const res = await fetch("/api/profile/phone", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ phone: trimmed }),
       });
       const data = await res.json();

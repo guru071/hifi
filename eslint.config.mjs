@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    ".agents/**",
+    ".codex/**",
+    "hifi-mobile-admin/**",
+    "hifi-mobile-shop/**",
+    "test_insert.js",
+    "test_supabase.js",
   ]),
 ]);
 

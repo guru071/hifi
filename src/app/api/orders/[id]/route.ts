@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { getUserRole } from '@/lib/admin';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
 import { checkAdminAuth } from '@/lib/admin';
 import { notifyCustomerOrderStatus } from '@/lib/services/whatsapp-notifications';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const supabase = createServerClient();
@@ -13,22 +14,16 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   const authHeader = request.headers.get('Authorization');
 
   // Resolve caller from bearer token or session cookie; admins may fetch any order.
-  let callerUser: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] | null = null;
+  let callerAuthId: string | null = null;
   let isAdmin = await checkAdminAuth();
   
   if (!isAdmin) {
-    if (authHeader?.startsWith('Bearer ')) {
-      const { data } = await supabase.auth.getUser(authHeader.slice(7));
-      callerUser = data.user;
-      if (callerUser) isAdmin = (await getUserRole(callerUser.id)) === 'admin';
-    } else {
-      const routeClient = await createRouteClient();
-      const { data } = await routeClient.auth.getUser();
-      callerUser = data.user;
-    }
+    const decoded = authHeader?.startsWith('Bearer ') ? await verifyFirebaseToken(request) : null;
+    callerAuthId = decoded?.uid ?? null;
+    if (callerAuthId) isAdmin = (await getUserRole(callerAuthId)) === 'admin';
   }
 
-  if (!isAdmin && !callerUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAdmin && !callerAuthId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const { data: order, error } = await supabase
@@ -45,7 +40,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
     // Ownership check: customers see only their own orders
     if (!isAdmin) {
-      const profile = await getProfileByAuthId(callerUser!.id, supabase);
+      const profile = await getProfileByAuthId(callerAuthId!, supabase);
       if (!profile || order.user_id !== profile.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }

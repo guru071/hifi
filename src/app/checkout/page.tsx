@@ -30,17 +30,17 @@ type GlobalDeliverySetting = { setting_key: string; setting_value: DeliverySetti
 
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Redirect to login if not authenticated — user must be logged in to place an order
   useEffect(() => {
-    if (user === null) {
-      router.replace('/login?redirect=/checkout');
+    if (!authLoading && user === null) {
+      router.replace('/login?next=/checkout');
     }
-  }, [user, router]);
+  }, [authLoading, user, router]);
 
   const [shippingFee, setShippingFee] = useState(0);
   const [deliveryType, setDeliveryType] = useState('global');
@@ -88,6 +88,10 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
+    if (!user) {
+      setError("Please sign in before placing your order.");
+      return;
+    }
 
     setLoading(true);
     setError("");

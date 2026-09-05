@@ -9,8 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 
-function LoginForm() {
-  const { signIn, user } = useAuth();
+function LoginForm({ onAuthFlowChange }: { onAuthFlowChange: (active: boolean) => void }) {
+  const { signIn } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -21,10 +21,12 @@ function LoginForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
+    onAuthFlowChange(true);
     setError(null);
     const { error: signInError } = await signIn(email, password);
-    setSubmitting(false);
     if (signInError) {
+      setSubmitting(false);
+      onAuthFlowChange(false);
       setError(signInError);
       return;
     }
@@ -51,7 +53,7 @@ function LoginForm() {
       <div className={styles.formGroup}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <label htmlFor="password" className={styles.label} style={{ margin: 0 }}>Password</label>
-          <Link href="/forgot-password" style={{ fontSize: "0.875rem", color: "var(--accent)", textDecoration: "none" }}>Forgot password?</Link>
+          <Link href="/forgot-password" style={{ fontSize: "0.875rem", color: "var(--color-accent)", textDecoration: "none" }}>Forgot password?</Link>
         </div>
         <input
           type="password"
@@ -76,14 +78,15 @@ function LoginForm() {
 function LoginContent() {
   const { user } = useAuth();
   const router = useRouter();
+  const [authFlowPending, setAuthFlowPending] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !authFlowPending) {
       const searchParams = new URLSearchParams(window.location.search);
       const next = searchParams.get('next');
       router.replace(next && next.startsWith('/') ? next : '/');
     }
-  }, [user, router]);
+  }, [authFlowPending, user, router]);
 
   return (
     <div className={`${styles.authCard} glass-panel`}>
@@ -92,10 +95,10 @@ function LoginContent() {
         <p className={styles.subtitle}>Sign in to your HIFI account</p>
       </div>
       <Suspense fallback={null}>
-        <LoginForm />
+        <LoginForm onAuthFlowChange={setAuthFlowPending} />
       </Suspense>
 
-      <OAuthButtons />
+      <OAuthButtons onAuthFlowChange={setAuthFlowPending} />
 
       <div className={styles.footer}>
         Don&apos;t have an account? <Link href="/register" className={styles.link}>Create one</Link>

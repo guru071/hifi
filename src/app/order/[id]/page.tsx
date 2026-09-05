@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/context/AuthContext";
 import type { ItemSnapshot, OrderWithUsers } from "@/lib/supabase/rows";
 import { parseItemsSnapshot, parseShippingAddress } from "@/lib/supabase/rows";
 
@@ -28,6 +29,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [id, setId] = useState<string>("");
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     async function resolveParams() {
@@ -38,10 +40,12 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
   }, [params]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || authLoading) return;
     async function fetchOrder() {
       try {
-        const res = await fetch(`/api/orders/${id}`, { cache: "no-store" });
+        if (!user) throw new Error("Please sign in to view this order.");
+        const token = await user.getIdToken();
+        const res = await fetch(`/api/orders/${id}`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Order not found");
         setOrder(data.order);
@@ -52,7 +56,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
       }
     }
     fetchOrder();
-  }, [id]);
+  }, [id, user, authLoading]);
 
   if (loading) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>Loading order...</main><Footer/></>;
   if (error || !order) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Order not found"}</main><Footer/></>;
@@ -82,12 +86,12 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
                   width: "32px", height: "32px", borderRadius: "50%",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   backgroundColor: i <= currentStepIndex ? "var(--color-primary, #0061a4)" : "var(--color-surface-container-highest)",
-                  color: i <= currentStepIndex ? "#fff" : "var(--color-on-surface-variant)",
+                  color: i <= currentStepIndex ? "var(--color-on-primary)" : "var(--color-on-surface-variant)",
                   fontWeight: 600, fontSize: "14px", flexShrink: 0,
                 }}>
                   {i < currentStepIndex ? <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>check</span> : i + 1}
                 </div>
-                <div style={{ fontSize: "13px", fontWeight: i <= currentStepIndex ? 600 : 500, color: i <= currentStepIndex ? "#fff" : "var(--color-on-surface-variant)", whiteSpace: "nowrap" }}>
+                <div style={{ fontSize: "13px", fontWeight: i <= currentStepIndex ? 600 : 500, color: i <= currentStepIndex ? "var(--color-on-primary)" : "var(--color-on-surface-variant)", whiteSpace: "nowrap" }}>
                   {statusLabels[s]}
                 </div>
                 {i < statusSteps.length - 1 && (
@@ -141,7 +145,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
             {address.phone && <>Phone: {address.phone}<br /></>}
           </p>
           <div style={{ marginTop: "1.5rem", display: "flex", gap: "0.75rem" }}>
-            <Link href={`/profile/invoice/${order.id}`} style={{ color: "#fff", background: "var(--color-primary)", padding: "0.5rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>Download Bill</Link>
+            <Link href={`/profile/invoice/${order.id}`} style={{ color: "var(--color-on-primary)", background: "var(--color-primary)", padding: "0.5rem 1rem", borderRadius: "8px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>Download Bill</Link>
           </div>
         </div>
       </main>

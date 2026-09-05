@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { requireAdminRequest } from '@/lib/guards';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const supabase = createServerClient();
@@ -13,14 +14,11 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   if (!adminResponse) {
     // Admin access granted
   } else {
-    const routeClient = await createRouteClient();
-    const {
-      data: { user },
-    } = await routeClient.auth.getUser();
+    const user = await verifyFirebaseToken(request);
     if (!user) {
       return adminResponse;
     }
-    const profile = await getProfileByAuthId(user.id, supabase);
+    const profile = await getProfileByAuthId(user.uid, supabase);
     if (!profile) {
       return NextResponse.json({ error: 'Account profile not found' }, { status: 404 });
     }

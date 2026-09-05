@@ -11,7 +11,10 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
  * NEVER expose this key to the browser.
  */
 export const createServerClient = () => {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !key) {
+    throw new Error('Supabase server configuration is missing. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+  }
   return createClient<Database>(supabaseUrl, key);
 };
 

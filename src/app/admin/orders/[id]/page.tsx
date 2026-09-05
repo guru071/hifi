@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 
@@ -94,12 +94,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     })();
   }, [params]);
 
-  useEffect(() => {
-    if (!orderId) return;
-    fetchOrder();
-  }, [orderId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function fetchOrder() {
+  const fetchOrder = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/orders/${orderId}`);
@@ -109,12 +104,12 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
       // Fetch product images
       const items = (data.order.items_snapshot as SnapshotItem[]) || [];
-      const orderItems = data.order.order_items || [];
-      const productIds = [...new Set(items.map(i => i.product_id).filter(Boolean))];
+      const orderItems = (data.order.order_items || []) as NonNullable<Order["order_items"]>;
+      const productIds = [...new Set(items.map(i => i.product_id).filter((id): id is string => Boolean(id)))];
       
       // Designs might be in snapshot or linked via order_items
-      const snapshotDesignIds = items.map(i => i.design_id).filter(Boolean);
-      const linkedDesignIds = orderItems.map((i: any) => i.custom_design_id).filter(Boolean);
+      const snapshotDesignIds = items.map(i => i.design_id).filter((id): id is string => Boolean(id));
+      const linkedDesignIds = orderItems.map((i) => i.custom_design_id).filter((id): id is string => Boolean(id));
       const designIds = [...new Set([...snapshotDesignIds, ...linkedDesignIds])];
 
       if (productIds.length > 0) {
@@ -145,7 +140,12 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     } finally {
       setLoading(false);
     }
-  }
+  }, [orderId]);
+
+  useEffect(() => {
+    if (!orderId) return;
+    void Promise.resolve().then(fetchOrder);
+  }, [fetchOrder, orderId]);
 
   async function updateOrder(patch: { status?: string; payment_status?: string }) {
     if (!order) return;
@@ -301,7 +301,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                           a.click();
                           a.remove();
                           window.URL.revokeObjectURL(url);
-                        } catch (err) {
+                        } catch {
                           window.open(design.image_url, '_blank');
                         }
                       }}
@@ -442,18 +442,38 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
 function parseAddress(a: unknown): Address {
   if (!a) return {};
-  let parsed = typeof a === "string" ? (function(){ try{ return JSON.parse(a); }catch{ return {}; }})() : a as any;
+  const parsed = normalizeAddress(a);
   
   // Handle new checkout format mapped to Address type
   return {
-    full_name: parsed.full_name || (parsed.firstName ? `${parsed.firstName} ${parsed.lastName || ''}`.trim() : undefined),
-    line1: parsed.line1 || parsed.address,
-    line2: parsed.line2 || parsed.apartment,
-    city: parsed.city,
-    state: parsed.state,
-    postal_code: parsed.postal_code || parsed.zip,
-    phone: parsed.phone,
-    country: parsed.country || "India",
-    email: parsed.email
+    full_name: stringValue(parsed.full_name) || (stringValue(parsed.firstName) ? `${stringValue(parsed.firstName)} ${stringValue(parsed.lastName) || ''}`.trim() : undefined),
+    line1: stringValue(parsed.line1) || stringValue(parsed.address),
+    line2: stringValue(parsed.line2) || stringValue(parsed.apartment),
+    city: stringValue(parsed.city),
+    state: stringValue(parsed.state),
+    postal_code: stringValue(parsed.postal_code) || stringValue(parsed.zip),
+    phone: stringValue(parsed.phone),
+    country: stringValue(parsed.country) || "India",
+    email: stringValue(parsed.email)
   };
+}
+
+function normalizeAddress(a: unknown): Record<string, unknown> {
+  if (typeof a === "string") {
+    try {
+      const parsed = JSON.parse(a);
+      return isRecord(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  return isRecord(a) ? a : {};
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
 }

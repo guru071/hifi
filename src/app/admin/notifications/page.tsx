@@ -1,6 +1,14 @@
 import { createServerClient } from '@/lib/supabase/server';
 import styles from '../page.module.css';
 
+type JoinedUser = { full_name?: string | null };
+type RecentOrder = {
+  id: string;
+  created_at?: string | null;
+  status?: string | null;
+  users?: JoinedUser | JoinedUser[] | null;
+};
+
 export default async function AdminNotifications() {
   const supabase = createServerClient();
 
@@ -20,14 +28,17 @@ export default async function AdminNotifications() {
     .limit(5);
 
   const notifications = [
-    ...(recentOrders || []).map(o => ({
+    ...((recentOrders || []) as RecentOrder[]).map(o => {
+      const joinedUser = Array.isArray(o.users) ? o.users[0] : o.users;
+      return {
       id: o.id,
       type: 'Order',
-      title: `New Order: ${(o.users as any)?.full_name || 'Customer'}`,
+      title: `New Order: ${joinedUser?.full_name || 'Customer'}`,
       description: `Status: ${o.status}`,
       date: o.created_at,
       icon: 'shopping_cart'
-    })),
+      };
+    }),
     ...(recentMessages || []).map(m => ({
       id: m.id,
       type: 'Message',

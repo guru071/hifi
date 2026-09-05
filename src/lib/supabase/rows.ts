@@ -39,6 +39,7 @@ export type ItemSnapshot = {
   quantity: number;
   unit_price: number;
   total_price?: number | null;
+  design_id?: string | null;
 };
 
 export type ShippingAddress = {

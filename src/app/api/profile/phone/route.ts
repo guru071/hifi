@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
 import { setUserPhone } from '@/lib/services/users';
 
-export async function POST(request: Request) {
+async function savePhone(request: Request) {
   const decoded = await verifyFirebaseToken(request);
   if (!decoded) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -42,3 +42,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const POST = savePhone;
+export const PUT = savePhone;

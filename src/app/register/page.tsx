@@ -8,7 +8,7 @@ import OAuthButtons from "@/components/ui/OAuthButtons";
 import { useAuth } from "@/context/AuthContext";
 import { validateEmail } from "@/lib/email-validation";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Register() {
   const { signUp, user } = useAuth();
@@ -19,6 +19,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const attemptedRegistrationRef = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,9 +40,11 @@ export default function Register() {
     }
 
     setSubmitting(true);
+    attemptedRegistrationRef.current = true;
     const { error: signUpError } = await signUp(email, password, name, phone.trim());
     setSubmitting(false);
     if (signUpError) {
+      attemptedRegistrationRef.current = false;
       setError(signUpError);
       return;
     }
@@ -50,7 +53,7 @@ export default function Register() {
   }
 
   useEffect(() => {
-    if (user) {
+    if (user && !attemptedRegistrationRef.current) {
       router.replace("/");
     }
   }, [user, router]);

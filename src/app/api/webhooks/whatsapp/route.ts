@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import {
-  verifyWhatsAppSignature,
   downloadWhatsAppMedia,
   sendWhatsAppMessage,
   sendWhatsAppButtons,
-  sendWhatsAppList,
   logWhatsAppMessage,
 } from '@/lib/services/whatsapp';
+
+type WhatsAppInteractiveMessage = {
+  interactive?: {
+    button_reply?: { id?: string; title?: string };
+    list_reply?: { id?: string; title?: string };
+  };
+};
 
 export async function POST(request: Request) {
   const rawBody = await request.text();
@@ -134,14 +139,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
+    const interactiveMessage = message as WhatsAppInteractiveMessage;
     const interactiveId = (
-      (message as any).interactive?.button_reply?.id ||
-      (message as any).interactive?.list_reply?.id || ''
+      interactiveMessage.interactive?.button_reply?.id ||
+      interactiveMessage.interactive?.list_reply?.id || ''
     ).toUpperCase();
 
     const interactiveTitle = (
-      (message as any).interactive?.button_reply?.title ||
-      (message as any).interactive?.list_reply?.title || ''
+      interactiveMessage.interactive?.button_reply?.title ||
+      interactiveMessage.interactive?.list_reply?.title || ''
     ).toUpperCase();
 
     // Handle interactive button clicks OR text matches (if Maghgo normalizes them)

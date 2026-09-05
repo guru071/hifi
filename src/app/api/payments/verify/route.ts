@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, createRouteClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { verifyPaymentSignature, generateInvoice } from '@/lib/services/payments';
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
 import { notifyAdminNewOrder, notifyCustomerOrderConfirmation } from '@/lib/services/whatsapp-notifications';
+import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function POST(request: Request) {
   const supabase = createServerClient();
 
   try {
-    const formData = (await request.formData()) as any;
+    const formData = await request.formData();
     const razorpay_payment_id = formData.get('razorpay_payment_id') as string;
     const razorpay_order_id = formData.get('razorpay_order_id') as string;
     const razorpay_signature = formData.get('razorpay_signature') as string;
@@ -20,15 +21,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing payment verification fields' }, { status: 400 });
     }
 
-    // 1. Verify the caller owns this order (session-based, never trust client id)
-    const routeClient = await createRouteClient();
-    const {
-      data: { user: authUser },
-    } = await routeClient.auth.getUser();
+    // The client uses Firebase Auth, so verify its bearer token instead of
+    // looking for a separate Supabase browser session.
+    const authUser = await verifyFirebaseToken(request);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const profile = await getProfileByAuthId(authUser.id, supabase);
+    const profile = await getProfileByAuthId(authUser.uid, supabase);
     if (!profile) {
       return NextResponse.json({ error: 'Account profile not found' }, { status: 404 });
     }

@@ -8,7 +8,7 @@ export default function Footer() {
         <div className={styles.brandColumn}>
           <div className={styles.brandName}>HIFI</div>
           <p className={styles.copyright}>© 2026 HIFI PREMIUM CUSTOMS</p>
-          <p className={styles.copyright}>builded by GOAT'ECH and powered by MAGHGO</p>
+          <p className={styles.copyright}>builded by GOAT&apos;ECH and powered by MAGHGO</p>
           <a href="mailto:hificustomprinting@gmail.com" className={styles.link} style={{ fontSize: '0.875rem', marginTop: '4px' }}>
             hificustomprinting@gmail.com
           </a>

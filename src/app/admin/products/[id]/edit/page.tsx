@@ -4,6 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from '../../../page.module.css';
 
+type EditableProduct = {
+  title: string;
+  base_price: number | string;
+  delivery_fee?: number | string | null;
+  description?: string | null;
+  category_id?: string | null;
+  image_url?: string | null;
+};
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -12,7 +21,7 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<EditableProduct | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -56,8 +65,8 @@ export default function EditProductPage() {
       setImageUrl(data.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Image upload failed");
-      setImagePreview(product?.image_url || "");
-      setImageUrl(product?.image_url || "");
+      setImagePreview(product?.image_url ?? "");
+      setImageUrl(product?.image_url ?? "");
     } finally {
       setUploading(false);
     }
@@ -96,7 +105,7 @@ export default function EditProductPage() {
   };
 
   if (loading) return <div style={{ padding: '2rem' }}>Loading product...</div>;
-  if (!product && error) return <div style={{ padding: '2rem', color: 'red' }}>{error}</div>;
+  if (!product) return <div style={{ padding: '2rem', color: 'var(--color-error)' }}>{error || "Product not found"}</div>;
 
   return (
     <div>

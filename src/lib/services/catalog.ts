@@ -55,7 +55,7 @@ export async function listActiveProducts(supabase?: SupabaseClient): Promise<Pro
 
   if (error) throw new Error(`Failed to fetch products: ${error.message}`);
 
-  return (products ?? []).map((p) => normalizeProduct(p as ProductQueryRow));
+  return (products ?? []).map((p) => normalizeProduct(p as unknown as ProductQueryRow));
 }
 
 /**
@@ -76,7 +76,7 @@ export async function listAdminProducts(supabase?: SupabaseClient): Promise<Prod
 
   if (error) throw new Error(`Failed to fetch products: ${error.message}`);
 
-  return (products ?? []).map((p) => normalizeProduct(p as ProductQueryRow));
+  return (products ?? []).map((p) => normalizeProduct(p as unknown as ProductQueryRow));
 }
 
 /**
@@ -97,7 +97,7 @@ export async function getProductById(id: string, supabase?: SupabaseClient) {
     .maybeSingle();
 
   if (error) throw new Error(`Failed to fetch product: ${error.message}`);
-  return data ? normalizeProduct(data as ProductQueryRow) : null;
+  return data ? normalizeProduct(data as unknown as ProductQueryRow) : null;
 }
 
 function normalizeProduct(p: ProductQueryRow): ProductWithDetails {

@@ -26,7 +26,8 @@ export default function Addresses() {
     }
     async function fetchOrders() {
       try {
-        const res = await fetch("/api/orders", { cache: "no-store" });
+        const token = await user!.getIdToken();
+        const res = await fetch("/api/orders", { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           const seen = new Map<string, AddressView>();

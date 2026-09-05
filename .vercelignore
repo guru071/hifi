@@ -1,2 +1,10 @@
+node_modules
+.git
+.gitignore
+.agents
+.codex
 hifi-mobile-admin
 hifi-mobile-shop
+test_insert.js
+test_supabase.js
+test_supabase.ts

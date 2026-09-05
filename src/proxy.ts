@@ -1,14 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 /**
- * Next.js Middleware — runs at the Edge before any route handler.
+ * Next.js Proxy runs before matching admin routes.
  *
  * Strategy:
  * - Admin routes (/admin/*): protected by the `admin_token` cookie set by /api/admin/login.
  * - Customer auth (/login, /register, /profile, etc.) is handled client-side by Firebase.
  *   We do NOT redirect those here because the Firebase session is only available in the browser.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protect admin routes (except /admin/login itself)

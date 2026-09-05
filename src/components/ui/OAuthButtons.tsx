@@ -7,20 +7,30 @@ import styles from "./OAuthButtons.module.css";
 /**
  * Google + Apple sign-in via Firebase popup (no page redirect needed).
  */
-export default function OAuthButtons() {
-  const { signInWithProvider } = useAuth();
+export default function OAuthButtons({ onAuthFlowChange }: { onAuthFlowChange?: (active: boolean) => void }) {
+  const { signInWithProvider, getIdToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<OAuthProvider | null>(null);
 
   async function handleProvider(provider: OAuthProvider) {
     setBusy(provider);
+    onAuthFlowChange?.(true);
     setError(null);
     const { error: oauthError } = await signInWithProvider(provider);
-    setBusy(null);
     if (oauthError) {
+      setBusy(null);
+      onAuthFlowChange?.(false);
       setError(oauthError);
     } else {
-      window.location.href = "/";
+      const token = await getIdToken();
+      if (token) {
+        const searchParams = new URLSearchParams(window.location.search);
+        const next = searchParams.get("next");
+        window.location.href = next && next.startsWith("/") ? next : "/";
+        return;
+      }
+      setBusy(null);
+      onAuthFlowChange?.(false);
     }
   }
 

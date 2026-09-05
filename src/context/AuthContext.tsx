@@ -45,10 +45,10 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 // Sync the Firebase user into our Supabase users table
-async function syncProfile(user: User) {
+async function syncProfile(user: User): Promise<string | null> {
   try {
     const token = await user.getIdToken();
-    await fetch("/api/auth/sync", {
+    const response = await fetch("/api/auth/sync", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,8 +60,13 @@ async function syncProfile(user: User) {
         phone: user.phoneNumber ?? null,
       }),
     });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      return body?.error ?? "We couldn't prepare your account. Please try again.";
+    }
+    return null;
   } catch {
-    // Non-fatal: profile sync failure shouldn't block login
+    return "We couldn't prepare your account. Check your connection and try again.";
   }
 }
 
@@ -71,11 +76,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
+      setLoading(true);
       if (firebaseUser) {
+        // Keep returning sessions in sync too. Explicit login flows await this below.
         await syncProfile(firebaseUser);
       }
+      setUser(firebaseUser);
+      setLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -87,7 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const syncError = await syncProfile(user);
+      if (syncError) return { error: syncError };
       return { error: null };
     } catch (e: unknown) {
       const msg = (e as { message?: string })?.message ?? "Sign in failed";
@@ -101,11 +110,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await updateProfile(newUser, { displayName: fullName });
       // Sync with phone number
       const token = await newUser.getIdToken();
-      await fetch("/api/auth/sync", {
+      const response = await fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ email, full_name: fullName, phone: phone ?? null }),
       });
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        return { error: body?.error ?? "We couldn't prepare your account. Please try again." };
+      }
       return { error: null };
     } catch (e: unknown) {
       const msg = (e as { message?: string })?.message ?? "Sign up failed";
@@ -117,7 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (provider === "google") {
         const googleProvider = new GoogleAuthProvider();
-        await signInWithPopup(firebaseAuth, googleProvider);
+        const { user } = await signInWithPopup(firebaseAuth, googleProvider);
+        const syncError = await syncProfile(user);
+        if (syncError) return { error: syncError };
       }
       return { error: null };
     } catch (e: unknown) {

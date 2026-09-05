@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import type { OrderWithItems } from "@/lib/supabase/rows";
 import { parseItemsSnapshot } from "@/lib/supabase/rows";
+import { useAuth } from "@/context/AuthContext";
 
 interface BillingAddress {
   name?: string | null;
@@ -37,6 +38,7 @@ interface InvoiceItem {
 
 type ProductInfo = { id: string; title: string; image_url?: string; };
 type DesignInfo = { id: string; image_url?: string; status?: string; };
+type InvoiceOrderItem = NonNullable<OrderWithItems["order_items"]>[number];
 
 export default function Invoice({ params }: { params: Promise<{ id: string }> }) {
   const [order, setOrder] = useState<OrderWithItems | null>(null);
@@ -45,6 +47,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
   const [id, setId] = useState<string>("");
   const [products, setProducts] = useState<Record<string, ProductInfo>>({});
   const [designs, setDesigns] = useState<Record<string, DesignInfo>>({});
+  const { user, loading: authLoading } = useAuth();
 
   const inr = (n: number) => `₹${Number(n).toFixed(2)}`;
 
@@ -57,21 +60,24 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
   }, [params]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || authLoading) return;
     async function fetchOrder() {
       try {
-        const res = await fetch(`/api/orders/${id}`, { cache: "no-store" });
+        if (!user) throw new Error("Please sign in to view this invoice.");
+        const token = await user.getIdToken();
+        const headers = { Authorization: `Bearer ${token}` };
+        const res = await fetch(`/api/orders/${id}`, { headers, cache: "no-store" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Order not found");
         setOrder(data.order);
         
         const orderData = data.order;
         const snapItems = parseItemsSnapshot(orderData.items_snapshot);
-        const orderItems = orderData.order_items || [];
+        const orderItems = (orderData.order_items || []) as InvoiceOrderItem[];
         
-        const productIds = [...new Set(snapItems.map((i: any) => i.product_id).filter(Boolean))];
-        const snapshotDesignIds = snapItems.map((i: any) => i.design_id).filter(Boolean);
-        const linkedDesignIds = orderItems.map((i: any) => i.custom_design_id).filter(Boolean);
+        const productIds = [...new Set(snapItems.map((i) => i.product_id).filter((productId): productId is string => Boolean(productId)))];
+        const snapshotDesignIds = snapItems.map((i) => i.design_id).filter((designId): designId is string => Boolean(designId));
+        const linkedDesignIds = orderItems.map((i) => i.custom_design_id).filter((designId): designId is string => Boolean(designId));
         const designIds = [...new Set([...snapshotDesignIds, ...linkedDesignIds])];
 
         if (productIds.length > 0) {
@@ -88,7 +94,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
           const dMap: Record<string, DesignInfo> = {};
           for (const did of designIds) {
             try {
-              const dRes = await fetch(`/api/designs/${did}`);
+              const dRes = await fetch(`/api/designs/${did}`, { headers });
               if (dRes.ok) {
                 const dData = await dRes.json();
                 dMap[did as string] = dData.design || dData;
@@ -105,21 +111,23 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
       }
     }
     fetchOrder();
-  }, [id]);
+  }, [id, user, authLoading]);
 
   if (loading) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>Loading invoice...</main><Footer/></>;
   if (error || !order) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Invoice not found"}</main><Footer/></>;
 
-  const parsedAddress = typeof order.shipping_address === 'string'
-    ? (function(){ try { return JSON.parse(order.shipping_address); } catch { return {}; }})()
-    : (order.shipping_address || {});
+  const parsedAddress = normalizeBillingAddress(order.shipping_address);
     
   const address: BillingAddress = {
-    ...parsedAddress,
-    full_name: parsedAddress.full_name || (parsedAddress.firstName ? `${parsedAddress.firstName} ${parsedAddress.lastName || ''}`.trim() : 'Guest Customer'),
-    line1: parsedAddress.line1 || parsedAddress.address || 'N/A',
-    line2: parsedAddress.line2 || parsedAddress.apartment,
-    postal_code: parsedAddress.postal_code || parsedAddress.zip,
+    full_name: stringValue(parsedAddress.full_name) || (stringValue(parsedAddress.firstName) ? `${stringValue(parsedAddress.firstName)} ${stringValue(parsedAddress.lastName) || ''}`.trim() : 'Guest Customer'),
+    line1: stringValue(parsedAddress.line1) || stringValue(parsedAddress.address) || 'N/A',
+    line2: stringValue(parsedAddress.line2) || stringValue(parsedAddress.apartment),
+    city: stringValue(parsedAddress.city),
+    state: stringValue(parsedAddress.state),
+    postal_code: stringValue(parsedAddress.postal_code) || stringValue(parsedAddress.zip),
+    country: stringValue(parsedAddress.country),
+    phone: stringValue(parsedAddress.phone),
+    email: stringValue(parsedAddress.email),
   };
 
   const items: InvoiceItem[] = parseItemsSnapshot(order.items_snapshot).length
@@ -184,7 +192,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
               <tbody>
                 {items.map((item, i) => {
                   const product = item.product_id ? products[item.product_id] : null;
-                  const orderItem = (order.order_items as any[])?.[i];
+                  const orderItem = order.order_items?.[i];
                   const did = item.design_id || orderItem?.custom_design_id;
                   const design = did ? designs[did as string] : null;
 
@@ -217,7 +225,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
                                       a.click();
                                       a.remove();
                                       window.URL.revokeObjectURL(url);
-                                    } catch (err) {
+                                    } catch {
                                       window.open(design.image_url, '_blank');
                                     }
                                   }}
@@ -282,4 +290,24 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
       <Footer />
     </>
   );
+}
+
+function normalizeBillingAddress(address: unknown): Record<string, unknown> {
+  if (typeof address === "string") {
+    try {
+      const parsed = JSON.parse(address);
+      return isRecord(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  return isRecord(address) ? address : {};
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
 }

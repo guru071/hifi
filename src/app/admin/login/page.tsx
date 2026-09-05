@@ -34,7 +34,7 @@ export default function AdminLogin() {
       // Success
       router.push("/admin");
       router.refresh();
-    } catch (err) {
+    } catch {
       setError("An error occurred");
       setSubmitting(false);
     }
