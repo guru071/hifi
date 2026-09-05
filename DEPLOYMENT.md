@@ -15,8 +15,9 @@ npm run dev
 ```
 
 ## Environment Variables
-Create a `.env.local` file at the root. Firebase is the customer login provider;
-Supabase stores the customer profile row linked by Firebase UID.
+Create a `.env` or `.env.local` file at the root. This project currently keeps
+Firebase keys in `.env`; that is fine. Firebase is the customer login provider,
+and Supabase stores the customer profile row linked by Firebase UID.
 
 ```env
 # Supabase Local

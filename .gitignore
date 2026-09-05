@@ -38,6 +38,7 @@ env.7z
 
 # vercel
 .vercel
+supabase/.temp/
 
 # typescript
 *.tsbuildinfo
