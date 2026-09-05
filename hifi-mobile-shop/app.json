@@ -30,6 +30,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "36476929-d627-4072-95a5-f718967514da"
+      }
+    },
+    "owner": "greatest-of-all-time-technology"
   }
 }
