@@ -114,7 +114,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
   }, [id, user, authLoading]);
 
   if (loading) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>Loading invoice...</main><Footer/></>;
-  if (error || !order) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Invoice not found"}</main><Footer/></>;
+  if (error || !order || (order.payment_status !== 'paid' && order.status !== 'delivered' && order.status !== 'shipped')) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Invoice not found"}</main><Footer/></>;
 
   const parsedAddress = normalizeBillingAddress(order.shipping_address);
     

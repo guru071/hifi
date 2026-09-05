@@ -59,7 +59,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
   }, [id, user, authLoading]);
 
   if (loading) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>Loading order...</main><Footer/></>;
-  if (error || !order) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Order not found"}</main><Footer/></>;
+  if (error || !order || (order.payment_status !== 'paid' && order.status !== 'delivered' && order.status !== 'shipped')) return <><Navbar/><main style={{padding: '6rem 2rem', textAlign: 'center'}}>{error || "Order not found"}</main><Footer/></>;
 
   const items = parseItemsSnapshot(order.items_snapshot) as unknown as OrderLineItem[];
   const address = parseShippingAddress(order.shipping_address) ?? {};

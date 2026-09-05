@@ -124,7 +124,9 @@ export default function AdminOrders() {
     }
   }
 
-  const filtered = statusFilter === "all" ? orders : orders.filter(o => o.status === statusFilter);
+  const filtered = statusFilter === "all" 
+    ? orders.filter(o => o.payment_status === "paid" || o.status === "delivered" || o.status === "shipped") 
+    : orders.filter(o => o.status === statusFilter);
   const parseAddress = (a: unknown): OrderAddress => typeof a === 'string' ? (() => { try { return JSON.parse(a); } catch { return {}; } })() : (a || {}) as OrderAddress;
 
   return (

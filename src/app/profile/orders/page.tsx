@@ -45,7 +45,8 @@ export default function Orders() {
         });
         if (res.ok) {
           const data = await res.json();
-          setOrders(data.orders || []);
+          const validOrders = (data.orders || []).filter((o: any) => o.payment_status === 'paid' || o.status === 'delivered' || o.status === 'shipped');
+          setOrders(validOrders);
         }
       } catch (err) {
         console.error("Failed to fetch orders:", err);

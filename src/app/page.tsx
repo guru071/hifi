@@ -1,12 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
-import type { ProductWithDetails } from "@/lib/services/catalog";
+import { listActiveProducts } from "@/lib/services/catalog";
 
 type FeaturedProduct = {
   id: string;
@@ -19,33 +16,20 @@ type FeaturedProduct = {
   inr: boolean;
 };
 
-export default function Home() {
-  const [products, setProducts] = useState<FeaturedProduct[]>([]);
+export const revalidate = 0;
 
-  useEffect(() => {
-    async function fetchFeatured() {
-      try {
-        const res = await fetch("/api/products");
-        if (res.ok) {
-          const data = await res.json();
-          const formatted = data.products.slice(0, 3).map((p: ProductWithDetails) => ({
-            id: p.id,
-            title: p.title,
-            subtitle: (p.category_name || p.category) as string,
-            price: Number(p.base_price),
-            imageUrl: p.image_url as string,
-            imageAlt: p.title,
-            soldOut: !(p.product_variants || []).some((v) => Number(v.inventory_count) > 0),
-            inr: true,
-          }));
-          setProducts(formatted);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchFeatured();
-  }, []);
+export default async function Home() {
+  const activeProducts = await listActiveProducts();
+  const products: FeaturedProduct[] = activeProducts.slice(0, 3).map(p => ({
+    id: p.id,
+    title: p.title,
+    subtitle: (p.category_name || p.category || "T-Shirt") as string,
+    price: Number(p.base_price),
+    imageUrl: p.image_url as string,
+    imageAlt: p.title,
+    soldOut: !(p.product_variants || []).some((v) => Number(v.inventory_count) > 0),
+    inr: true,
+  }));
 
   return (
     <main className={styles.main}>
