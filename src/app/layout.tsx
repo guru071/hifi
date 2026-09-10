@@ -38,9 +38,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "HiFi",
+    "url": "https://hificustom.goatech.tech",
+    "description": "HiFi is a premium custom apparel platform, powered by GOAT'ECH and Maghgo.",
+    "founder": {
+      "@type": "Person",
+      "name": "Abdul Kapur"
+    },
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "GOAT'ECH"
+    }
+  };
+
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- Material Symbols is an icon font not exposed by next/font/google */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
