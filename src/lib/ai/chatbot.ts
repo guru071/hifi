@@ -79,6 +79,9 @@ If they ask for a custom design, tell them to simply send an image to this chat 
         const { data: product } = await supabase.from('products').select('*').eq('id', product_id).single();
         if (!product) return "Sorry, I couldn't find that product in our system anymore.";
 
+        // Fetch first available variant
+        const { data: variant } = await supabase.from('product_variants').select('id').eq('product_id', product.id).limit(1).maybeSingle();
+
         // 2. Create Order in DB
         const { data: userProfile } = await supabase.from('users').select('id').eq('phone', senderPhone).maybeSingle();
         
@@ -98,10 +101,9 @@ If they ask for a custom design, tell them to simply send an image to this chat 
         // Insert Order Items
         await supabase.from('order_items').insert({
           order_id: newOrder.id,
-          product_id: product.id,
+          product_variant_id: variant?.id || null,
           quantity: quantity,
           unit_price: product.base_price,
-          total_price: totalAmount,
         });
 
         // 3. Create Razorpay Payment Link
