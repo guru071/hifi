@@ -67,7 +67,7 @@ export default function AdminProducts() {
   const [priceEdits, setPriceEdits] = useState<Record<string, string>>({});
 
   
-  async function uploadVariantImage(variantId, file) {
+  async function uploadVariantImage(variantId: string, productId: string, file: File | null) {
     if (!file) return;
     try {
       setMsg("Uploading variant image...");
@@ -80,11 +80,11 @@ export default function AdminProducts() {
       // Update color field to include image using [IMG:url] syntax
       const variant = products.flatMap(p => p.product_variants || []).find(v => v.id === variantId);
       if (variant) {
-        const baseColor = variant.color.split('[IMG:')[0].trim();
+        const baseColor = (variant.color || '').split('[IMG:')[0].trim();
         const newColor = `${baseColor} [IMG:${data.url}]`;
         
         // Save to DB
-        const saveRes = await fetch(`/api/products/${variant.product_id}`, {
+        const saveRes = await fetch(`/api/products/${productId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ variants: [{ id: variantId, color: newColor }] })
@@ -94,8 +94,8 @@ export default function AdminProducts() {
         setMsg("Variant image updated!");
         loadAll();
       }
-    } catch (e) {
-      setErr(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) setErr(e.message);
     }
   }
 
@@ -398,7 +398,7 @@ export default function AdminProducts() {
     {v.color?.includes('[IMG:') && <img src={v.color.split('[IMG:')[1].replace(']','')} style={{width:24, height:24, objectFit:'cover', marginLeft:8, borderRadius:4, verticalAlign:'middle'}} />}
     <label style={{marginLeft: 8, fontSize: 10, cursor:'pointer', background:'var(--color-surface-variant)', padding:'2px 6px', borderRadius:4}}>
       🖼️ Add Image
-      <input type="file" style={{display:'none'}} accept="image/*" onChange={(e) => uploadVariantImage(v.id, e.target.files[0])} />
+      <input type="file" style={{display:'none'}} accept="image/*" onChange={(e) => uploadVariantImage(v.id, p.id, e.target.files?.[0] || null)} />
     </label>
   </span>
                   <input

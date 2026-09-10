@@ -6,6 +6,7 @@ import { logAudit } from '@/lib/services/audit';
 
 interface VariantUpdateBody {
   id: string;
+  color?: string;
   inventory_count?: number;
   price_adjustment?: number;
 }
