@@ -26,6 +26,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/__/auth/:path*',
+        // Replace with your actual firebase project ID from frame-src
+        destination: 'https://hifi-6f926.firebaseapp.com/__/auth/:path*',
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
