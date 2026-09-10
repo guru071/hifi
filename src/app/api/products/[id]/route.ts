@@ -107,6 +107,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     for (const v of variants) {
       if (!v.id) return NextResponse.json({ error: 'Each variant must include an id' }, { status: 400 });
       const patch: Record<string, unknown> = {};
+      if (v.color !== undefined) { patch.color = v.color; }
       if (v.inventory_count !== undefined) {
         if (typeof v.inventory_count !== 'number' || v.inventory_count < 0) {
           return NextResponse.json({ error: 'inventory_count must be a non-negative number' }, { status: 400 });

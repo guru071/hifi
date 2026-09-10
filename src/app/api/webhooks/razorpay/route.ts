@@ -14,9 +14,8 @@ interface RazorpayWebhookPayload {
   event?: string;
   id?: string;
   payload?: {
-    payment?: {
-      entity?: RazorpayPaymentEntity;
-    };
+    payment?: { entity?: RazorpayPaymentEntity; };
+    payment_link?: { entity?: any; };
   };
 }
 
@@ -39,7 +38,9 @@ export async function POST(request: Request) {
   const entity = payload?.payload?.payment?.entity;
 
   // We only act on payment lifecycle events; ignore the rest quickly
-  if (entity && (event === 'payment.captured' || event === 'payment.authorized' || event === 'payment.failed')) {
+  if (event === 'payment_link.paid') {
+    await processPaymentEvent(payload?.id ?? 'payment_link', { entity: payload?.payload?.payment_link?.entity as any }, true);
+  } else if (entity && (event === 'payment.captured' || event === 'payment.authorized' || event === 'payment.failed')) {
     await processPaymentEvent(payload?.id ?? `${event}-${entity.id}`, { entity });
   }
 

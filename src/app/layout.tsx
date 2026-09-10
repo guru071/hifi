@@ -17,7 +17,10 @@ export const metadata: Metadata = {
     template: "%s | HIFI E-commerce",
   },
   description: "Create and order premium custom T-shirts instantly. We turn your designs into high-quality apparel.",
-  keywords: ["custom t-shirts", "premium blanks", "apparel printing", "custom clothing", "HIFI customs"],
+  keywords: ["custom t-shirts", "premium blanks", "apparel printing", "custom clothing", "HIFI customs", "GOAT'ECH", "Maghgo", "Abdul Kapur"],
+  authors: [{ name: "Abdul Kapur" }],
+  creator: "GOAT'ECH",
+  publisher: "Maghgo",
   openGraph: {
     title: "HIFI Premium Customs",
     description: "Create and order premium custom T-shirts instantly.",

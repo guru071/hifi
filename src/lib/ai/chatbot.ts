@@ -81,37 +81,24 @@ If they ask for a custom design, tell them to simply send an image to this chat 
 
         // Fetch first available variant
         const { data: variant } = await supabase.from('product_variants').select('id').eq('product_id', product.id).limit(1).maybeSingle();
-
-        // 2. Create Order in DB
-        const { data: userProfile } = await supabase.from('users').select('id').eq('phone', senderPhone).maybeSingle();
         
         const totalAmount = product.base_price * quantity;
-        
-        const { data: newOrder, error: orderError } = await supabase.from('orders').insert({
-          user_id: userProfile?.id || null, // Guest checkout if no profile
-          total_amount: totalAmount,
-          currency: 'INR',
-          status: 'pending_payment',
-          payment_status: 'pending',
-          shipping_fee: 0,
-        }).select('id').single();
 
-        if (orderError || !newOrder) return "I had a technical hiccup creating your order. Please try again!";
-
-        // Insert Order Items
-        await supabase.from('order_items').insert({
-          order_id: newOrder.id,
-          product_variant_id: variant?.id || null,
-          quantity: quantity,
-          unit_price: product.base_price,
-        });
+        // DO NOT STORE PENDING PAYMENT IN DATABASE YET! Store details in the Razorpay link metadata.
+        const notes = {
+          product_id: product.id,
+          variant_id: variant?.id || '',
+          quantity: quantity.toString(),
+          sender_phone: senderPhone
+        };
 
         // 3. Create Razorpay Payment Link
         const paymentLink = await createPaymentLink(
-          newOrder.id, 
+          null, // No order ID yet
           totalAmount, 
           senderPhone, 
-          `Payment for ${quantity}x ${product.title}`
+          `Payment for ${quantity}x ${product.title}`,
+          notes
         );
 
         if (!paymentLink) {

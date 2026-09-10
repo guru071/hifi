@@ -159,6 +159,7 @@ export interface Database {
           id: string
           product_id: string | null
           color: string
+          image_url?: string | null
           size: string
           sku: string
           inventory_count: number | null
@@ -170,6 +171,7 @@ export interface Database {
           id?: string
           product_id?: string | null
           color: string
+          image_url?: string | null
           size: string
           sku: string
           inventory_count?: number | null

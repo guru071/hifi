@@ -66,6 +66,39 @@ export default function AdminProducts() {
   const [stockEdits, setStockEdits] = useState<Record<string, string>>({});
   const [priceEdits, setPriceEdits] = useState<Record<string, string>>({});
 
+  
+  async function uploadVariantImage(variantId, file) {
+    if (!file) return;
+    try {
+      setMsg("Uploading variant image...");
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      
+      // Update color field to include image using [IMG:url] syntax
+      const variant = products.flatMap(p => p.product_variants || []).find(v => v.id === variantId);
+      if (variant) {
+        const baseColor = variant.color.split('[IMG:')[0].trim();
+        const newColor = `${baseColor} [IMG:${data.url}]`;
+        
+        // Save to DB
+        const saveRes = await fetch(`/api/products/${variant.product_id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variants: [{ id: variantId, color: newColor }] })
+        });
+        if (!saveRes.ok) throw new Error("Failed to save variant image");
+        
+        setMsg("Variant image updated!");
+        loadAll();
+      }
+    } catch (e) {
+      setErr(e.message);
+    }
+  }
+
   async function loadAll() {
     try {
       const [prodRes, catRes] = await Promise.all([
@@ -360,7 +393,14 @@ export default function AdminProducts() {
               {(p.product_variants || []).map((v: { id: string; size?: string; color?: string; inventory_count: number; price_adjustment: number; sku?: string }) => (
                 <div key={v.id} className={styles.variantRow}>
                   <span style={{ fontFamily: "monospace", fontSize: 12 }}>{v.sku || v.id.slice(0, 8)}</span>
-                  <span>{v.color} / {v.size}</span>
+                  <span>
+    {v.color?.split('[IMG:')[0].trim()} / {v.size}
+    {v.color?.includes('[IMG:') && <img src={v.color.split('[IMG:')[1].replace(']','')} style={{width:24, height:24, objectFit:'cover', marginLeft:8, borderRadius:4, verticalAlign:'middle'}} />}
+    <label style={{marginLeft: 8, fontSize: 10, cursor:'pointer', background:'var(--color-surface-variant)', padding:'2px 6px', borderRadius:4}}>
+      🖼️ Add Image
+      <input type="file" style={{display:'none'}} accept="image/*" onChange={(e) => uploadVariantImage(v.id, e.target.files[0])} />
+    </label>
+  </span>
                   <input
                     type="number"
                     min="0"

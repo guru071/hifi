@@ -12,7 +12,7 @@ const ContentSecurityPolicy = `
 
 const securityHeaders = [
   { key: 'Content-Security-Policy', value: ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim() },
-  { key: 'X-Frame-Options', value: 'DENY' },
+  // Removed X-Frame-Options: DENY to allow Firebase Auth popups to communicate
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
 ];
