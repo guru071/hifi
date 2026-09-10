@@ -11,6 +11,8 @@
       "bundleIdentifier": "tech.goat.hifiadmin"
     },
     "android": {
+      "allowBackup": false,
+      "usesCleartextTraffic": false,
       "package": "tech.goat.hifiadmin",
       "adaptiveIcon": {
         "backgroundColor": "#1a1a1a",

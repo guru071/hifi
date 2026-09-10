@@ -11,6 +11,8 @@
       "bundleIdentifier": "tech.goat.hifishop"
     },
     "android": {
+      "allowBackup": false,
+      "usesCleartextTraffic": false,
       "package": "tech.goat.hifishop",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
