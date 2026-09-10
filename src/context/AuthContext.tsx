@@ -108,6 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       await updateProfile(newUser, { displayName: fullName });
+      // Send verification email
+      await sendEmailVerification(newUser);
       // Sync with phone number
       const token = await newUser.getIdToken();
       const response = await fetch("/api/auth/sync", {
