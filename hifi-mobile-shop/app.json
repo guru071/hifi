@@ -26,7 +26,8 @@
     "scheme": "hifi-shop",
     "plugins": [
       "expo-router",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true

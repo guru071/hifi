@@ -13,7 +13,7 @@
     "android": {
       "package": "tech.goat.hifiadmin",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1a1a1a",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -26,7 +26,8 @@
     "scheme": "hifi-admin",
     "plugins": [
       "expo-router",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
@@ -34,7 +35,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a1757873-e84e-48e8-9e0e-a7e78e239eee"
+        "projectId": "85ef0e8b-b1eb-4752-9b24-7eb3268840c1"
       }
     },
     "owner": "greatest-of-all-time-technology"

@@ -65,11 +65,31 @@ function DesignPreview({ designId }: { designId: string }) {
 
   return (
     <div style={{ marginTop: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "8px", display: "flex", gap: "1rem", alignItems: "center" }}>
-      <img src={design.image_url} alt="Design" style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }} />
-      <a href={design.image_url} download="design.jpg" target="_blank" rel="noopener noreferrer" style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>
-        <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle", marginRight: "4px" }}>download</span>
-        Download Design
-      </a>
+      <button 
+        onClick={async () => {
+          try {
+            const r = await fetch(design.image_url!);
+            const blob = await r.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `design_${designId}.jpg`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+          } catch(e) { console.error(e); }
+        }}
+        style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+        title="Click to download"
+      >
+        <img src={design.image_url} alt="Design" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "4px", border: "2px solid var(--color-primary)" }} />
+      </button>
+      <div>
+        <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "0.5rem" }}>Custom Design</div>
+        <a href={design.image_url} download={`design_${designId}.jpg`} target="_blank" rel="noopener noreferrer" style={{ padding: "0.5rem 1rem", background: "var(--color-primary)", color: "#000", borderRadius: "4px", textDecoration: "none", fontSize: "13px", fontWeight: "bold", display: "inline-block" }}>
+          <span className="material-symbols-outlined" style={{ fontSize: "16px", verticalAlign: "middle", marginRight: "4px" }}>download</span>
+          Download HD
+        </a>
+      </div>
     </div>
   );
 }
@@ -78,7 +98,7 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("paid"); // Paid effectively means "New Orders" waiting to be processed
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ id: string; text: string; error?: boolean } | null>(null);
