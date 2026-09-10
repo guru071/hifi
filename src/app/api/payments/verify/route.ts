@@ -38,6 +38,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // VULN-06: STRICT PAYMENT FRAUD PREVENTION
+    // Ensure the razorpay_order_id being verified matches exactly what was recorded for this order
+    if (order.razorpay_order_id && order.razorpay_order_id !== razorpay_order_id) {
+      return NextResponse.json({ error: 'Signature mismatch: Razorpay order ID spoofing detected' }, { status: 400 });
+    }
+
     // 2. Verify the Razorpay signature (timing-safe)
     const valid = verifyPaymentSignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
     if (!valid) return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });

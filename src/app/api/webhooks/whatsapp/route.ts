@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { createServerClient } from '@/lib/supabase/server';
 import {
   downloadWhatsAppMedia,
@@ -17,14 +18,22 @@ type WhatsAppInteractiveMessage = {
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const authHeader = request.headers.get('authorization');
-  const expectedAuth = `Bearer ${process.env.MAGHGO_BOT_TOKEN}`;
+  const botToken = process.env.MAGHGO_BOT_TOKEN;
 
-  if (!authHeader || authHeader !== expectedAuth) {
-    console.error(`HIFI Webhook blocked: Expected '${expectedAuth}', got '${authHeader}'`);
-    return NextResponse.json({ 
-      error: 'Unauthorized',
-      debug: `Expected: '${expectedAuth}', Got: '${authHeader}'`
-    }, { status: 401 });
+  if (!botToken || !authHeader) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const expectedAuth = `Bearer ${botToken}`;
+  const authBuffer = Buffer.from(authHeader);
+  const expectedBuffer = Buffer.from(expectedAuth);
+
+  if (
+    authBuffer.length !== expectedBuffer.length ||
+    !crypto.timingSafeEqual(authBuffer, expectedBuffer)
+  ) {
+    console.warn('Security Alert: Unauthorized access attempt to WhatsApp Webhook.');
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {

@@ -28,10 +28,5 @@ export async function requireAdmin(user: User | null) {
   return { user, role };
 }
 
-export async function checkAdminAuth(): Promise<boolean> {
-  const cookieStore = await cookies();
-  if (cookieStore.get('admin_token')?.value === 'authenticated') {
-    return true;
-  }
   return false;
 }

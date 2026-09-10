@@ -54,14 +54,21 @@ export async function POST(request: Request) {
 
     // Also check by email (in case they had a Supabase account before)
     if (email) {
+      if (!decoded.email_verified) {
+        return NextResponse.json({ error: 'Email not verified. Verify email before linking account.' }, { status: 403 });
+      }
+
       const { data: byEmail, error: byEmailError } = await supabase
         .from('users')
-        .select('id')
+        .select('id, role')
         .ilike('email', email)
         .maybeSingle();
       if (byEmailError) throw byEmailError;
 
       if (byEmail) {
+        if (byEmail.role === 'admin') {
+          return NextResponse.json({ error: 'Admin accounts cannot be automatically linked.' }, { status: 403 });
+        }
         // Update existing profile with the Firebase UID
         const { error: linkError } = await supabase
           .from('users')

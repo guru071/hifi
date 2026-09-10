@@ -10,6 +10,7 @@
     "expo-constants": "~57.0.17",
     "expo-linking": "~57.0.9",
     "expo-router": "~57.0.19",
+    "expo-secure-store": "^57.0.3",
     "expo-status-bar": "~57.0.1",
     "firebase": "^12.18.0",
     "react": "19.2.3",

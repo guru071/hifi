@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { getUserRole, checkAdminAuth } from '@/lib/admin';
+import { getUserRole } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 /**
  * Admin guard for route handlers.
  * Priority:
- *   1. Admin cookie (admin_token=authenticated) — simple admin login
+ *   1. Admin JWT cookie (hifi_admin_session) — simple admin login
  *   2. Firebase ID token in Authorization header — Firebase-authed admin user
  */
 export async function requireAdminRequest(request: Request) {
-  // 1. Cookie-based admin (simple admin dashboard login)
+  // 1. JWT-based admin (simple admin dashboard login)
   if (await checkAdminAuth()) {
     return { admin: { user: { id: 'simple-admin', email: 'admin@local' }, role: 'admin' as const }, response: null };
   }
