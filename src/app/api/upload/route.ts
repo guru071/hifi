@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 
 export async function POST(request: Request) {
   const isAdmin = await checkAdminAuth();

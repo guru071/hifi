@@ -137,3 +137,42 @@ export async function generateInvoice(orderId: string, supabase?: SupabaseClient
 }
 
 export { getRazorpay };
+/**
+ * Creates a Razorpay Payment Link (useful for WhatsApp integration)
+ */
+export async function createPaymentLink(orderId: string, amount: number, customerPhone: string, description: string) {
+  const raz = getRazorpay();
+  
+  try {
+    const paymentLink: any = await raz.paymentLink.create({
+      amount: Math.round(amount * 100),
+      currency: 'INR',
+      accept_partial: false,
+      description: description.substring(0, 2048), // Max length is 2048
+      customer: {
+        contact: customerPhone.replace(/[^0-9]/g, ''),
+      },
+      notify: {
+        sms: true,
+        email: false,
+      },
+      reminder_enable: true,
+      notes: {
+        order_id: orderId,
+      },
+      callback_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hificustom.goatech.tech'}/checkout/success?order_id=${orderId}`,
+      callback_method: 'get',
+      options: {
+        checkout: {
+          // Force razorpay to collect shipping address
+          name: 'HIFI Custom',
+        }
+      }
+    });
+
+    return paymentLink.short_url;
+  } catch (error) {
+    console.error('Failed to create Razorpay payment link:', error);
+    return null;
+  }
+}

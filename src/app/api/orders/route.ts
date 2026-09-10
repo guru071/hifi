@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { createOrder, OrderCreationError } from '@/lib/services/orders';
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
 import { getFirebaseProfileId } from '@/lib/guards';
 

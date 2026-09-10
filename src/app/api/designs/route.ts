@@ -4,7 +4,7 @@ import { createDesignSubmission, resolveDesignImageUrl } from '@/lib/services/de
 import { getProfileByAuthId } from '@/lib/services/users';
 import { logAudit } from '@/lib/services/audit';
 
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
 
 export async function GET() {

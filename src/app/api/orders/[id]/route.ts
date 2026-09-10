@@ -4,7 +4,7 @@ import { getProfileByAuthId } from '@/lib/services/users';
 import { getUserRole } from '@/lib/admin';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 import { notifyCustomerOrderStatus } from '@/lib/services/whatsapp-notifications';
 import { verifyFirebaseToken } from '@/lib/firebase/admin';
 

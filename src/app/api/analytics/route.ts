@@ -11,7 +11,7 @@ interface AnalyticsEventBody {
   metadata?: Json | null;
 }
 
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 
 export async function GET(request: Request) {
   const supabase = createServerClient();

@@ -27,6 +27,3 @@ export async function requireAdmin(user: User | null) {
   if (role !== 'admin') return null;
   return { user, role };
 }
-
-  return false;
-}

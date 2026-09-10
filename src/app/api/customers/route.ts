@@ -22,7 +22,7 @@ interface CustomerAggregate extends CustomerWithOrders {
   pending_payments: number;
 }
 
-import { checkAdminAuth } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin-session';
 
 export async function GET() {
   const supabase = createServerClient();

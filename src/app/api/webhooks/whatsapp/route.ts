@@ -216,21 +216,42 @@ export async function POST(request: Request) {
     }).catch((e) => console.error('Failed to log inbound message:', e.message));
 
     if (!design) {
-      // Pass the casual message to Gemini AI Chatbot
-      const aiResponse = await processWhatsAppChat(text, fromNumber);
-      
-      // Send the AI's response back via WhatsApp
-      const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-      const token = process.env.WHATSAPP_TOKEN;
-      if (phoneNumberId && token) {
-        try {
-          await sendWhatsAppMessage(fromNumber, aiResponse);
-        } catch (botError) {
-          console.error('Failed to send AI bot reply:', botError);
-        }
-      }
+      // If the user uploaded an image without a code, treat it as a new Custom Design request!
+      if (mediaId) {
+        // Create a new Custom Design
+        const newRefCode = `HIFI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        
+        // Let's create it in DB
+        const { data: newDesign, error: designErr } = await supabase.from('custom_designs').insert({
+          reference_code: newRefCode,
+          status: 'pending',
+          sender_phone: fromNumber,
+          whatsapp_message_id: messageId,
+        }).select('id').single();
 
-      return NextResponse.json({ success: true }, { status: 200 });
+        if (designErr || !newDesign) {
+          console.error("Failed to create spontaneous custom design:", designErr);
+          return NextResponse.json({ success: true }, { status: 200 });
+        } else {
+          // We will let the rest of the webhook logic download the media and attach it to this newly created design!
+          design = { id: newDesign.id, reference_code: newRefCode, status: 'pending' as const, media_url: null, design_image_url: null, media_mime_type: null, media_caption: null };
+        }
+      } else {
+        // Pass the casual text message to Gemini AI Chatbot
+        const aiResponse = await processWhatsAppChat(text, fromNumber);
+        
+        // Send the AI's response back via WhatsApp
+        const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+        const token = process.env.WHATSAPP_TOKEN;
+        if (phoneNumberId && token) {
+          try {
+            await sendWhatsAppMessage(fromNumber, aiResponse);
+          } catch (botError) {
+            console.error('Failed to send AI bot reply:', botError);
+          }
+        }
+        return NextResponse.json({ success: true }, { status: 200 });
+      }
     }
 
     // Download + store media
@@ -239,7 +260,7 @@ export async function POST(request: Request) {
       try {
         const { buffer, mimeType } = await downloadWhatsAppMedia(mediaId);
         const extension = mimeType.split('/')[1] || 'jpg';
-        const fileName = `${design.reference_code.replace(/[^A-Z0-9-]/g, '_')}_${Date.now()}.${extension}`;
+        const fileName = `${design!.reference_code.replace(/[^A-Z0-9-]/g, '_')}_${Date.now()}.${extension}`;
         const { error: storageError } = await supabase.storage
           .from('designs')
           .upload(fileName, buffer, { contentType: mimeType, upsert: false });
@@ -253,15 +274,15 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from('custom_designs')
       .update({
-        status: design.status === 'pending' ? 'received' : design.status,
+        status: design!.status === 'pending' ? 'received' : design!.status,
         whatsapp_message_id: messageId,
         sender_phone: fromNumber,
-        media_url: finalDesignUrl ?? design.media_url,
-        design_image_url: finalDesignUrl ?? design.design_image_url,
-        media_mime_type: mediaMime ?? design.media_mime_type,
-        media_caption: text || design.media_caption,
+        media_url: finalDesignUrl ?? design!.media_url,
+        design_image_url: finalDesignUrl ?? design!.design_image_url,
+        media_mime_type: mediaMime ?? design!.media_mime_type,
+        media_caption: text || design!.media_caption,
       })
-      .eq('id', design.id);
+      .eq('id', design!.id);
 
     if (updateError) {
       console.error('Failed to update design:', updateError);
@@ -274,7 +295,7 @@ export async function POST(request: Request) {
       try {
         await sendWhatsAppMessage(
           fromNumber,
-          `We've received your custom design (${design.reference_code}). Our team is reviewing it and will get back to you shortly!`
+          `We've received your custom design (${design!.reference_code}). Our team is reviewing it and will get back to you shortly!`
         );
       } catch (botError) {
         console.error('Failed to send bot reply:', botError);
