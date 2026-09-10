@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@google/genai": "^2.21.0",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.109.0",
     "firebase": "^12.18.0",

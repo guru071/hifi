@@ -1,3 +1,4 @@
+import { processWhatsAppChat } from '@/lib/ai/chatbot';
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createServerClient } from '@/lib/supabase/server';
@@ -215,8 +216,20 @@ export async function POST(request: Request) {
     }).catch((e) => console.error('Failed to log inbound message:', e.message));
 
     if (!design) {
-      // Unknown thread — no reference code.
-      // Since Maghgo is the primary receiver and forwards to HIFI, we just drop this to prevent infinite loops.
+      // Pass the casual message to Gemini AI Chatbot
+      const aiResponse = await processWhatsAppChat(text, fromNumber);
+      
+      // Send the AI's response back via WhatsApp
+      const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+      const token = process.env.WHATSAPP_TOKEN;
+      if (phoneNumberId && token) {
+        try {
+          await sendWhatsAppMessage(fromNumber, aiResponse);
+        } catch (botError) {
+          console.error('Failed to send AI bot reply:', botError);
+        }
+      }
+
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
