@@ -20,7 +20,8 @@ type FeaturedProduct = {
 
 export const revalidate = 0;
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams?: { category?: string } }) {
+  const selectedCategory = searchParams?.category;
   const supabase = createServerClient();
   
   const [productsRes, catRes, bannerRes] = await Promise.all([
@@ -33,10 +34,19 @@ export default async function Home() {
   const categories = catRes.data || [];
   const banners = (bannerRes.data?.setting_value as { id: string; image_url: string; link_url: string }[]) || [];
 
-  const products: FeaturedProduct[] = activeProducts.slice(0, 3).map(p => ({
+  
+  let filteredProducts = activeProducts;
+  if (selectedCategory) {
+    filteredProducts = activeProducts.filter(p => p.category_name === selectedCategory || p.category === selectedCategory);
+  } else {
+    // default show 6 products if no category is selected
+    filteredProducts = activeProducts.slice(0, 6);
+  }
+
+  const products: FeaturedProduct[] = filteredProducts.map(p => ({
     id: p.id,
     title: p.title,
-    subtitle: (p.category_name || p.category || "T-Shirt") as string,
+    subtitle: (p.subtitle || p.category_name || p.category || "T-Shirt") as string,
     price: Number(p.base_price),
     imageUrl: p.image_url as string,
     imageAlt: p.title,
@@ -47,22 +57,6 @@ export default async function Home() {
   return (
     <main className={styles.main}>
       <Navbar />
-
-      {/* Categories Bar (Flipkart Style) */}
-      <section className={styles.categoryBar}>
-        {categories.map((cat) => (
-          <Link href={`/shop?category=${cat.name}`} key={cat.id} className={styles.categoryBubble}>
-            <div className={styles.categoryImageWrap}>
-              {cat.image_url ? (
-                <img src={cat.image_url} data-eslint-disable="true" alt={cat.name} className={styles.categoryImage} />
-              ) : (
-                <span className="material-symbols-outlined" style={{ color: 'var(--color-outline)' }}>category</span>
-              )}
-            </div>
-            <span className={styles.categoryName}>{cat.name}</span>
-          </Link>
-        ))}
-      </section>
 
       {/* Promotional Banners Carousel */}
       {banners.length > 0 && (
@@ -76,6 +70,22 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* Categories Bar (Flipkart Style) */}
+      <section className={styles.categoryBar}>
+        {categories.map((cat) => (
+          <Link href={`/?category=${cat.name}#products`} scroll={true} key={cat.id} className={styles.categoryBubble}>
+            <div className={styles.categoryImageWrap}>
+              {cat.image_url ? (
+                <img src={cat.image_url} data-eslint-disable="true" alt={cat.name} className={styles.categoryImage} />
+              ) : (
+                <span className="material-symbols-outlined" style={{ color: 'var(--color-outline)' }}>category</span>
+              )}
+            </div>
+            <span className={styles.categoryName}>{cat.name}</span>
+          </Link>
+        ))}
+      </section>
 
       {/* Immersive Hero Section */}
       <section className={styles.heroSection}>
