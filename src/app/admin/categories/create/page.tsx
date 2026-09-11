@@ -8,6 +8,27 @@ export default function CreateCategoryPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Upload failed");
+      setImageUrl(data.url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,7 +39,8 @@ export default function CreateCategoryPage() {
     const payload = {
       name: formData.get("name"),
       slug: formData.get("slug"),
-      description: formData.get("description")
+      description: formData.get("description"),
+      image_url: imageUrl
     };
 
     try {
@@ -57,6 +79,16 @@ export default function CreateCategoryPage() {
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Slug *</label>
             <input name="slug" required type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. summer-collection" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category Image (Round Bubble)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px dashed var(--color-outline)', borderRadius: 'var(--radius-md)' }}>
+              {imageUrl && <img src={imageUrl} alt="Preview" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }} />}
+              <label style={{ cursor: 'pointer', padding: '0.5rem 1rem', background: 'var(--color-surface-variant)', borderRadius: '4px', fontSize: '0.9rem' }}>
+                {uploading ? "Uploading..." : (imageUrl ? "Change Image" : "Upload Image")}
+                <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+              </label>
+            </div>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Description</label>

@@ -27,6 +27,11 @@ export default function EditProductPage() {
   const [uploading, setUploading] = useState(false);
   const [deliveryType, setDeliveryType] = useState("global");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [categories, setCategories] = useState<{id:string, name:string}[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || [])).catch(console.error);
+  }, []);
 
   useEffect(() => {
     async function loadProduct() {
@@ -218,8 +223,11 @@ export default function EditProductPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category ID</label>
-            <input name="category_id" defaultValue={product.category_id || ""} type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>
+            <select name="category_id" defaultValue={product.category_id || ""} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', background: 'var(--color-surface)' }}>
+              <option value="">None</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
           <button
             disabled={saving || uploading}

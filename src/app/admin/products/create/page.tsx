@@ -13,6 +13,11 @@ export default function CreateProductPage() {
   const [uploading, setUploading] = useState(false);
   const [deliveryType, setDeliveryType] = useState("global");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [categories, setCategories] = useState<{id:string, name:string}[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || [])).catch(console.error);
+  }, []);
 
   const [variants, setVariants] = useState([{ id: Date.now(), color: "", size: "", stock: 10, image_url: "", image_preview: "", uploading: false }]);
 
@@ -234,8 +239,11 @@ export default function CreateProductPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category ID</label>
-            <input name="category_id" type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="UUID of category" />
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>
+            <select name="category_id" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', background: 'var(--color-surface)' }}>
+              <option value="">None</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
           <button
             disabled={loading || uploading}
