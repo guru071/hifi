@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const supabase = createServerClient();
   const body = await request.json().catch(() => ({}));
   
-  const updates: Record<string, any> = {};
+  const updates: { phone?: string } = {};
   if (body.phone !== undefined) {
     updates.phone = body.phone;
   }

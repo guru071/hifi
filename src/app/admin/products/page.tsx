@@ -66,7 +66,27 @@ export default function AdminProducts() {
   const [stockEdits, setStockEdits] = useState<Record<string, string>>({});
   const [priceEdits, setPriceEdits] = useState<Record<string, string>>({});
 
-  
+  // new variant form per product
+  const [newVariant, setNewVariant] = useState<{ productId: string, color: string, size: string, inventory_count: string, price_adjustment: string, file: File | null } | null>(null);
+
+  async function handleMainImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMsg("Uploading main image...");
+    setErr("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setForm({ ...form, image_url: data.url });
+      setMsg("Image uploaded successfully.");
+    } catch (e: any) {
+      setErr(e.message || "Failed to upload image");
+    }
+  }
+
   async function uploadVariantImage(variantId: string, productId: string, file: File | null) {
     if (!file) return;
     try {
@@ -77,13 +97,11 @@ export default function AdminProducts() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
       
-      // Update color field to include image using [IMG:url] syntax
       const variant = products.flatMap(p => p.product_variants || []).find(v => v.id === variantId);
       if (variant) {
         const baseColor = (variant.color || '').split('[IMG:')[0].trim();
         const newColor = `${baseColor} [IMG:${data.url}]`;
         
-        // Save to DB
         const saveRes = await fetch(`/api/products/${productId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -94,6 +112,45 @@ export default function AdminProducts() {
         setMsg("Variant image updated!");
         loadAll();
       }
+    } catch (e: unknown) {
+      if (e instanceof Error) setErr(e.message);
+    }
+  }
+
+  async function handleCreateVariant(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newVariant) return;
+    setMsg("Creating variant...");
+    setErr("");
+    try {
+      let finalColor = newVariant.color.trim();
+
+      // If an image was provided for the new variant, upload it first
+      if (newVariant.file) {
+        const fd = new FormData();
+        fd.append("file", newVariant.file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Image upload failed");
+        finalColor = `${finalColor} [IMG:${data.url}]`;
+      }
+
+      const res = await fetch(`/api/products/${newVariant.productId}/variants`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          color: finalColor,
+          size: newVariant.size.trim() || "One Size",
+          inventory_count: Number(newVariant.inventory_count) || 0,
+          price_adjustment: Number(newVariant.price_adjustment) || 0
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to create variant");
+      
+      setMsg("Variant created successfully!");
+      setNewVariant(null);
+      loadAll();
     } catch (e: unknown) {
       if (e instanceof Error) setErr(e.message);
     }
@@ -118,11 +175,7 @@ export default function AdminProducts() {
   }
 
   useEffect(() => {
-    // Prevent synchronous setState by moving loading state management out of the synchronous part
-    const fetchIt = async () => {
-      await loadAll();
-    };
-    fetchIt();
+    loadAll();
   }, []);
 
   function openCreate() {
@@ -164,6 +217,10 @@ export default function AdminProducts() {
       setErr("Title and a valid base price are required.");
       return;
     }
+    if (!payload.image_url) {
+      setErr("Product image is required.");
+      return;
+    }
     try {
       const res = editingId
         ? await fetch(`/api/products/${editingId}`, {
@@ -178,7 +235,7 @@ export default function AdminProducts() {
           });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Save failed");
-      setMsg(editingId ? "Product updated." : "Product created.");
+      setMsg(editingId ? "Product updated." : "Product created. You can now add variants.");
       setShowForm(false);
       loadAll();
     } catch (e: unknown) {
@@ -290,6 +347,9 @@ export default function AdminProducts() {
       {showForm && (
         <div className={`glass-panel ${styles.formPanel}`}>
           <h3 className={styles.panelTitle}>{editingId ? "Edit Product" : "New Product"}</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+            {editingId ? "Update product details." : "Create the main product first. You can add color variants and variant images after creating."}
+          </p>
           <form onSubmit={saveProduct} className={styles.formGrid}>
             <label className={styles.inputGroup}>
               Title *
@@ -308,8 +368,16 @@ export default function AdminProducts() {
               <input className={styles.input} type="number" min="0" step="0.01" value={form.delivery_fee} onChange={e => setForm({ ...form, delivery_fee: e.target.value })} />
             </label>
             <label className={styles.inputGroup}>
-              Image URL
-              <input className={styles.input} value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
+              Main Product Image *
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <input type="file" accept="image/*" onChange={handleMainImageUpload} style={{ display: 'none' }} id="mainImageUpload" />
+                <label htmlFor="mainImageUpload" className={styles.secondaryBtn} style={{ cursor: 'pointer' }}>
+                  Choose Image
+                </label>
+                {form.image_url && (
+                  <img src={form.image_url} alt="Preview" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} />
+                )}
+              </div>
             </label>
             <label className={styles.inputGroup}>
               Category
@@ -319,8 +387,8 @@ export default function AdminProducts() {
               </select>
             </label>
             <label className={styles.inputGroup} style={{ gridColumn: "1 / -1" }}>
-              Description
-              <textarea className={styles.input} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} style={{ minHeight: "5rem", resize: "vertical" }} />
+              Product Details (Description)
+              <textarea className={styles.input} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} style={{ minHeight: "5rem", resize: "vertical" }} placeholder="Enter detailed product description here..." />
             </label>
             <label className={styles.inputGroup} style={{ gridColumn: "1 / -1" }}>
               <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} style={{ marginRight: "0.5rem" }} />
@@ -381,50 +449,117 @@ export default function AdminProducts() {
             </div>
           </div>
 
-          {(p.product_variants || []).length > 0 && (
-            <div className={styles.variantTable}>
-              <div className={styles.variantHeader}>
-                <span>Variant</span>
-                <span>Colors/Size</span>
-                <span>Stock</span>
-                <span>Adj.</span>
-                <span>Status</span>
-              </div>
-              {(p.product_variants || []).map((v: { id: string; size?: string; color?: string; inventory_count: number; price_adjustment: number; sku?: string }) => (
-                <div key={v.id} className={styles.variantRow}>
-                  <span style={{ fontFamily: "monospace", fontSize: 12 }}>{v.sku || v.id.slice(0, 8)}</span>
-                  <span>
-    {v.color?.split('[IMG:')[0].trim()} / {v.size}
-    {v.color?.includes('[IMG:') && <img src={v.color.split('[IMG:')[1].replace(']','')} style={{width:24, height:24, objectFit:'cover', marginLeft:8, borderRadius:4, verticalAlign:'middle'}} />}
-    <label style={{marginLeft: 8, fontSize: 10, cursor:'pointer', background:'var(--color-surface-variant)', padding:'2px 6px', borderRadius:4}}>
-      🖼️ Add Image
-      <input type="file" style={{display:'none'}} accept="image/*" onChange={(e) => uploadVariantImage(v.id, p.id, e.target.files?.[0] || null)} />
-    </label>
-  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    className={styles.variantInput}
-                    value={stockEdits[v.id] !== undefined ? stockEdits[v.id] : String(v.inventory_count ?? 0)}
-                    onChange={e => setStockEdits({ ...stockEdits, [v.id]: e.target.value })}
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    className={styles.variantInput}
-                    value={priceEdits[v.id] !== undefined ? priceEdits[v.id] : String(v.price_adjustment ?? 0)}
-                    onChange={e => setPriceEdits({ ...priceEdits, [v.id]: e.target.value })}
-                  />
-                  <span className={`${styles.badge} ${Number(v.inventory_count) > 0 ? styles.badgeActive : styles.badgeHidden}`}>
-                    {Number(v.inventory_count) > 0 ? "In stock" : "Out of stock"}
-                  </span>
+          <div className={styles.variantTable} style={{ marginTop: '1rem', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
+            <h4 style={{ fontSize: '1rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              Color Variants & Inventory
+              <button 
+                className={styles.secondaryBtn} 
+                style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                onClick={() => setNewVariant({ productId: p.id, color: '', size: 'One Size', inventory_count: '', price_adjustment: '', file: null })}
+              >
+                + Add Variant
+              </button>
+            </h4>
+            
+            {(p.product_variants || []).length > 0 ? (
+              <>
+                <div className={styles.variantHeader}>
+                  <span>Variant</span>
+                  <span>Colors/Size</span>
+                  <span>Stock</span>
+                  <span>Adj.</span>
+                  <span>Status</span>
                 </div>
-              ))}
-              <div className={styles.variantFooter}>
-                <button className={styles.secondaryBtn} onClick={() => saveVariants(p)}>Save Variants</button>
-              </div>
-            </div>
-          )}
+                {(p.product_variants || []).map((v: { id: string; size?: string; color?: string; inventory_count: number; price_adjustment: number; sku?: string }) => (
+                  <div key={v.id} className={styles.variantRow}>
+                    <span style={{ fontFamily: "monospace", fontSize: 12 }}>{v.sku || v.id.slice(0, 8)}</span>
+                    <span>
+                      {v.color?.split('[IMG:')[0].trim()} / {v.size}
+                      {v.color?.includes('[IMG:') && <img src={v.color.split('[IMG:')[1].replace(']','')} style={{width:24, height:24, objectFit:'cover', marginLeft:8, borderRadius:4, verticalAlign:'middle'}} />}
+                      <label style={{marginLeft: 8, fontSize: 10, cursor:'pointer', background:'var(--color-surface-variant)', padding:'2px 6px', borderRadius:4}}>
+                        🖼️ Change Image
+                        <input type="file" style={{display:'none'}} accept="image/*" onChange={(e) => uploadVariantImage(v.id, p.id, e.target.files?.[0] || null)} />
+                      </label>
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      className={styles.variantInput}
+                      value={stockEdits[v.id] !== undefined ? stockEdits[v.id] : String(v.inventory_count ?? 0)}
+                      onChange={e => setStockEdits({ ...stockEdits, [v.id]: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      step="0.01"
+                      className={styles.variantInput}
+                      value={priceEdits[v.id] !== undefined ? priceEdits[v.id] : String(v.price_adjustment ?? 0)}
+                      onChange={e => setPriceEdits({ ...priceEdits, [v.id]: e.target.value })}
+                    />
+                    <span className={`${styles.badge} ${Number(v.inventory_count) > 0 ? styles.badgeActive : styles.badgeHidden}`}>
+                      {Number(v.inventory_count) > 0 ? "In stock" : "Out of stock"}
+                    </span>
+                  </div>
+                ))}
+                <div className={styles.variantFooter}>
+                  <button className={styles.secondaryBtn} onClick={() => saveVariants(p)}>Save Variant Updates</button>
+                </div>
+              </>
+            ) : (
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>No variants yet. Add a variant to track stock and colors.</p>
+            )}
+
+            {newVariant?.productId === p.id && (
+              <form onSubmit={handleCreateVariant} style={{ marginTop: '1rem', padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: '8px' }}>
+                <h5 style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>New Variant</h5>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                  <input 
+                    className={styles.input} style={{ flex: '1 1 120px' }} 
+                    placeholder="Color (e.g. Red)" 
+                    value={newVariant.color} 
+                    onChange={e => setNewVariant({ ...newVariant, color: e.target.value })} 
+                    required 
+                  />
+                  <input 
+                    className={styles.input} style={{ flex: '1 1 100px' }} 
+                    placeholder="Size" 
+                    value={newVariant.size} 
+                    onChange={e => setNewVariant({ ...newVariant, size: e.target.value })} 
+                    required 
+                  />
+                  <input 
+                    className={styles.input} style={{ flex: '1 1 80px' }} 
+                    placeholder="Stock" 
+                    type="number" min="0" 
+                    value={newVariant.inventory_count} 
+                    onChange={e => setNewVariant({ ...newVariant, inventory_count: e.target.value })} 
+                  />
+                  <input 
+                    className={styles.input} style={{ flex: '1 1 100px' }} 
+                    placeholder="Price Adj (INR)" 
+                    type="number" step="0.01" 
+                    value={newVariant.price_adjustment} 
+                    onChange={e => setNewVariant({ ...newVariant, price_adjustment: e.target.value })} 
+                  />
+                  <div style={{ flex: '1 1 100%', display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+                    <label className={styles.secondaryBtn} style={{ cursor: 'pointer', flexShrink: 0 }}>
+                      Upload Variant Image
+                      <input 
+                        type="file" accept="image/*" style={{ display: 'none' }} 
+                        onChange={e => setNewVariant({ ...newVariant, file: e.target.files?.[0] || null })} 
+                      />
+                    </label>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
+                      {newVariant.file ? newVariant.file.name : 'No image selected'}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                  <button type="submit" className={styles.primaryBtn}>Save Variant</button>
+                  <button type="button" className={styles.secondaryBtn} onClick={() => setNewVariant(null)}>Cancel</button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       ))}
     </>
