@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import styles from "./page.module.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import { listActiveProducts } from "@/lib/services/catalog";
+import { createServerClient } from "@/lib/supabase/server";
 
 type FeaturedProduct = {
   id: string;
@@ -19,7 +21,18 @@ type FeaturedProduct = {
 export const revalidate = 0;
 
 export default async function Home() {
-  const activeProducts = await listActiveProducts();
+  const supabase = createServerClient();
+  
+  const [productsRes, catRes, bannerRes] = await Promise.all([
+    listActiveProducts(),
+    supabase.from('categories').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+    supabase.from('delivery_settings').select('setting_value').eq('setting_key', 'home_banners').maybeSingle()
+  ]);
+
+  const activeProducts = productsRes;
+  const categories = catRes.data || [];
+  const banners = (bannerRes.data?.setting_value as { id: string; image_url: string; link_url: string }[]) || [];
+
   const products: FeaturedProduct[] = activeProducts.slice(0, 3).map(p => ({
     id: p.id,
     title: p.title,
@@ -34,6 +47,35 @@ export default async function Home() {
   return (
     <main className={styles.main}>
       <Navbar />
+
+      {/* Categories Bar (Flipkart Style) */}
+      <section className={styles.categoryBar}>
+        {categories.map((cat) => (
+          <Link href={`/shop?category=${cat.name}`} key={cat.id} className={styles.categoryBubble}>
+            <div className={styles.categoryImageWrap}>
+              {cat.image_url ? (
+                <img src={cat.image_url} data-eslint-disable="true" alt={cat.name} className={styles.categoryImage} />
+              ) : (
+                <span className="material-symbols-outlined" style={{ color: 'var(--color-outline)' }}>category</span>
+              )}
+            </div>
+            <span className={styles.categoryName}>{cat.name}</span>
+          </Link>
+        ))}
+      </section>
+
+      {/* Promotional Banners Carousel */}
+      {banners.length > 0 && (
+        <section className={styles.bannerSection}>
+          <div className={styles.bannerScroller}>
+            {banners.map((b) => (
+              <Link href={b.link_url || '#'} key={b.id} className={styles.bannerCard}>
+                <img src={b.image_url} data-eslint-disable="true" alt="Offer Poster" className={styles.bannerImage} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Immersive Hero Section */}
       <section className={styles.heroSection}>

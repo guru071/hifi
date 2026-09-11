@@ -61,6 +61,7 @@ export default function AdminProducts() {
   // category form
   const [catName, setCatName] = useState("");
   const [catDesc, setCatDesc] = useState("");
+  const [catImg, setCatImg] = useState<File | null>(null);
 
   // per-variant inline edits
   const [stockEdits, setStockEdits] = useState<Record<string, string>>({});
@@ -314,15 +315,25 @@ export default function AdminProducts() {
       return;
     }
     try {
+      let image_url = null;
+      if (catImg) {
+        const fd = new FormData();
+        fd.append("file", catImg);
+        const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+        const upData = await upRes.json();
+        if (upRes.ok) image_url = upData.url;
+      }
+
       const res = await fetch("/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: catName.trim(), description: catDesc.trim() || null }),
+        body: JSON.stringify({ name: catName.trim(), description: catDesc.trim() || null, image_url }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create category");
       setCatName("");
       setCatDesc("");
+      setCatImg(null);
       setMsg(`Category "${data.category.name}" created.`);
       const catData = await (await fetch("/api/categories", { cache: "no-store" })).json();
       setCategories(catData.categories || []);
@@ -405,10 +416,13 @@ export default function AdminProducts() {
       <div className={`glass-panel ${styles.catPanel}`}>
         <h3 className={styles.panelTitle}>Categories</h3>
         <div className={styles.catManage}>
-          <form onSubmit={createCategory} className={styles.catForm}>
-            <input className={styles.input} placeholder="Category name *" value={catName} onChange={e => setCatName(e.target.value)} required />
-            <input className={styles.input} placeholder="Description (optional)" value={catDesc} onChange={e => setCatDesc(e.target.value)} />
-            <button type="submit" className={styles.primaryBtn}>Add</button>
+          <form onSubmit={createCategory} className={styles.catForm} style={{ alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+              <input className={styles.input} placeholder="Category name *" value={catName} onChange={e => setCatName(e.target.value)} required />
+              <input className={styles.input} placeholder="Description (optional)" value={catDesc} onChange={e => setCatDesc(e.target.value)} />
+              <input type="file" accept="image/*" onChange={e => setCatImg(e.target.files?.[0] || null)} style={{ fontSize: '12px' }} />
+            </div>
+            <button type="submit" className={styles.primaryBtn} style={{ marginTop: '0.5rem' }}>Add</button>
           </form>
           <div className={styles.catList}>
             {categories.map(c => (
