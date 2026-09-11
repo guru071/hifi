@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server';
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl, sendWhatsAppFlow } from './whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppCtaUrl, sendWhatsAppFlow, sendWhatsAppList } from './whatsapp';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hificustom.goatech.tech';
 const ADMIN_WHATSAPP = process.env.ADMIN_WHATSAPP_NUMBER;
@@ -341,6 +341,23 @@ export async function sendWelcomeMessage(phone: string, name: string, isNewUser:
   const cleanPhone = phone.replace(/[^0-9]/g, '');
   if (cleanPhone.length < 10) return;
 
+  const supabase = createServerClient();
+  const { data: products } = await supabase
+    .from('products')
+    .select('id, title, base_price')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  let rows: any[] = [];
+  if (products && products.length > 0) {
+    rows = products.map((p) => ({
+      id: `view_product_${p.id}`,
+      title: p.title.slice(0, 24),
+      description: `₹${p.base_price}`
+    }));
+  }
+
   if (isNewUser) {
     const msg = `👋 *Welcome to HIFI!*
 
@@ -350,12 +367,17 @@ Hi ${name}! Thanks for joining HIFI — India's premium custom clothing brand.
 🚀 Fast delivery across India
 💎 Premium quality guaranteed
 
-Start shopping: ${SITE_URL}/shop
+Got questions? Just reply to this message!
 
-Got questions? Just reply to this message!`;
+_Powered by Maghgo_`;
 
     try {
-      await sendWhatsAppMessage(cleanPhone, msg);
+      if (rows.length > 0) {
+        await sendWhatsAppList(cleanPhone, msg, 'Explore Products', rows, '🆕 Latest Arrivals');
+      } else {
+        await sendWhatsAppMessage(cleanPhone, msg);
+      }
+      
       if (ADMIN_WHATSAPP) {
         await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - NEW USER]\n${name} (${cleanPhone}) has joined HIFI!`);
       }
@@ -368,12 +390,17 @@ Got questions? Just reply to this message!`;
 
 Hi ${name}! Great to see you again.
 
-🆕 Check out our new arrivals: ${SITE_URL}/shop
+We've got fresh designs waiting for you!
 
-We've got fresh designs waiting for you!`;
+_Powered by Maghgo_`;
 
     try {
-      await sendWhatsAppMessage(cleanPhone, msg);
+      if (rows.length > 0) {
+        await sendWhatsAppList(cleanPhone, msg, 'Explore Products', rows, '🆕 Latest Arrivals');
+      } else {
+        await sendWhatsAppMessage(cleanPhone, msg);
+      }
+
       if (ADMIN_WHATSAPP) {
         await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - RETURNING USER]\n${name} (${cleanPhone}) has returned to HIFI!`);
       }

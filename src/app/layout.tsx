@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import AnalyticsProvider from "@/components/providers/AnalyticsProvider";
+import PhoneWarningBanner from "@/components/layout/PhoneWarningBanner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ export default function RootLayout({
         <AnalyticsProvider>
           <AuthProvider>
             <CartProvider>
+              <PhoneWarningBanner />
               {children}
             </CartProvider>
           </AuthProvider>

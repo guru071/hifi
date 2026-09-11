@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const { signIn, user } = useAuth();
@@ -21,7 +22,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     setErrorMsg('');
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email, password, phone);
     setLoading(false);
     if (error) {
       setErrorMsg(error);
@@ -43,6 +44,14 @@ export default function LoginScreen() {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
+      />
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number (e.g. +1234567890)"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
       />
       
       <TextInput

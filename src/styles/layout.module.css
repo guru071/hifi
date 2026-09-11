@@ -1,0 +1,52 @@
+.warningBanner {
+  background-color: #ffcc00;
+  color: #333;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  z-index: 1000;
+  position: relative;
+  width: 100%;
+}
+
+.warningContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .warningContent {
+    flex-direction: row;
+  }
+}
+
+.warningForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.warningInput {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.warningBtn {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.warningBtn:disabled {
+  background-color: #777;
+  cursor: not-allowed;
+}

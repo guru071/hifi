@@ -15,6 +15,7 @@ function LoginForm({ onAuthFlowChange }: { onAuthFlowChange: (active: boolean) =
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -23,7 +24,7 @@ function LoginForm({ onAuthFlowChange }: { onAuthFlowChange: (active: boolean) =
     setSubmitting(true);
     onAuthFlowChange(true);
     setError(null);
-    const { error: signInError } = await signIn(email, password);
+    const { error: signInError } = await signIn(email, password, phone);
     if (signInError) {
       setSubmitting(false);
       onAuthFlowChange(false);
@@ -63,6 +64,19 @@ function LoginForm({ onAuthFlowChange }: { onAuthFlowChange: (active: boolean) =
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="phone" className={styles.label}>Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          className={styles.input}
+          placeholder="Enter your phone number (e.g. +1234567890)"
+          required
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
       </div>
 

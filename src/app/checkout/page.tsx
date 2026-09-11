@@ -42,6 +42,28 @@ export default function Checkout() {
     }
   }, [authLoading, user, router]);
 
+  const [profilePhone, setProfilePhone] = useState<string | null>("loading");
+
+  useEffect(() => {
+    if (!user) {
+      setProfilePhone(null);
+      return;
+    }
+    async function checkProfile() {
+      try {
+        const token = await user?.getIdToken();
+        const res = await fetch("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setProfilePhone(data.profile?.phone || null);
+      } catch (err) {
+        setProfilePhone(null);
+      }
+    }
+    checkProfile();
+  }, [user]);
+
   const [shippingFee, setShippingFee] = useState(0);
   const [deliveryType, setDeliveryType] = useState('global');
   
@@ -95,6 +117,18 @@ export default function Checkout() {
 
     setLoading(true);
     setError("");
+
+    if (profilePhone === "loading") {
+      setError("Please wait while we verify your profile.");
+      setLoading(false);
+      return;
+    }
+
+    if (!profilePhone) {
+      setError("Please set up your mobile number using the banner at the top before placing an order.");
+      setLoading(false);
+      return;
+    }
 
     try {
       let orderData = pendingOrder;

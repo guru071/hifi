@@ -26,7 +26,7 @@ type AuthContextValue = {
   user: User | null;
   loading: boolean;
   getIdToken: () => Promise<string | null>;
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string, phone?: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: string | null }>;
   sendPasswordReset: (email: string) => Promise<{ error: string | null }>;
   verifyEmail: () => Promise<{ error: string | null }>;
@@ -47,7 +47,7 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 // Sync the Firebase user into our Supabase users table via Next.js backend
-async function syncProfile(user: User) {
+async function syncProfile(user: User, explicitPhone?: string) {
   try {
     const token = await user.getIdToken();
     await fetch(`${API_URL}/api/auth/sync`, {
@@ -59,7 +59,7 @@ async function syncProfile(user: User) {
       body: JSON.stringify({
         email: user.email,
         full_name: user.displayName ?? user.email?.split("@")[0] ?? "User",
-        phone: user.phoneNumber ?? null,
+        phone: explicitPhone ?? user.phoneNumber ?? null,
       }),
     });
   } catch (e) {
@@ -87,9 +87,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return firebaseAuth.currentUser.getIdToken();
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string, phone?: string) => {
     try {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      await syncProfile(user, phone);
       return { error: null };
     } catch (e: any) {
       return { error: e.message || "Sign in failed" };
