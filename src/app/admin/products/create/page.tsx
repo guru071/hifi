@@ -11,6 +11,7 @@ export default function CreateProductPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [deliveryType, setDeliveryType] = useState("global");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,12 +95,14 @@ export default function CreateProductPage() {
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee</label>
-            <select name="delivery_type" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', marginBottom: '0.5rem' }}>
+            <select name="delivery_type" value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', marginBottom: '0.5rem' }}>
               <option value="global">Global Fee (Uses default from Settings)</option>
               <option value="free">Free Delivery (₹0 for this product)</option>
-              <option value="custom">Custom Fee (Enter below)</option>
+              <option value="custom">Custom Fee (Per product)</option>
             </select>
-            <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee (if Custom is selected)" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
+            {deliveryType === "custom" && (
+              <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee in INR" required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
+            )}
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Colors (comma separated)</label>
