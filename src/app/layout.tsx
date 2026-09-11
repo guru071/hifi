@@ -21,26 +21,26 @@ export const viewport: import('next').Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hificustoms.com"),
   title: {
-    default: "HIFI E-commerce | Premium Custom T-Shirts",
-    template: "%s | HIFI E-commerce",
+    default: "HIFI CUSTOM PRINTING | Personalized & Stylish Custom Apparel",
+    template: "%s | HIFI CUSTOM PRINTING",
   },
-  description: "Create and order premium custom T-shirts instantly. We turn your designs into high-quality apparel.",
-  keywords: ["custom t-shirts", "premium blanks", "apparel printing", "custom clothing", "HIFI customs", "GOAT'ECH", "Maghgo", "Abdul Kapur"],
-  authors: [{ name: "Abdul Kapur" }],
-  creator: "GOAT'ECH",
-  publisher: "Maghgo",
+  description: "HIFI CUSTOM PRINTING is your destination for personalized custom printing in Thirukkanur, Puducherry. From custom T-shirts to oversized and acid-wash styles, we turn your creativity into wearable fashion.",
+  keywords: ["custom t-shirts", "apparel printing", "oversized t-shirts", "acid-wash shirts", "custom clothing", "HIFI custom printing", "Thirukkanur", "Puducherry", "GOAT'ECH", "Abdul Kapur"],
+  authors: [{ name: "Abdul Kapur", url: "https://instagram.com/_abdul_official_35t" }],
+  creator: "Abdul Kapur",
+  publisher: "GOAT'ECH",
   openGraph: {
-    title: "HIFI Premium Customs",
-    description: "Create and order premium custom T-shirts instantly.",
+    title: "HIFI CUSTOM PRINTING",
+    description: "HIFI CUSTOM PRINTING is your destination for personalized and stylish custom printing. We create unique designs on T-shirts and apparel based on your ideas.",
     url: "/",
-    siteName: "HIFI E-commerce",
-    locale: "en_US",
+    siteName: "HIFI CUSTOM PRINTING",
+    locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HIFI Premium Customs",
-    description: "Create and order premium custom T-shirts instantly.",
+    title: "HIFI CUSTOM PRINTING",
+    description: "We create unique designs on T-shirts and apparel based on your ideas. Quality printing and customer satisfaction are our priority.",
   },
 };
 
@@ -54,13 +54,41 @@ export default function RootLayout({
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://hificustom.goatech.tech/#organization",
-        "name": "HIFI Premium Customs",
-        "legalName": "Maghgo",
-        "url": "https://hificustom.goatech.tech",
-        "logo": "https://hificustom.goatech.tech/logo.jpeg",
-        "image": "https://hificustom.goatech.tech/logo.jpeg",
-        "description": "Create and order premium custom T-shirts instantly. Powered by GOAT'ECH.",
+        "@id": "https://hificustoms.com/#organization",
+        "name": "HIFI CUSTOM PRINTING",
+        "legalName": "HIFI CUSTOM PRINTING",
+        "url": "https://hificustoms.com",
+        "logo": "https://hificustoms.com/logo.jpeg",
+        "image": "https://hificustoms.com/logo.jpeg",
+        "description": "HIFI CUSTOM PRINTING is your destination for personalized and stylish custom printing. We create unique designs on T-shirts and apparel based on your ideas. From custom T-shirts to oversized, drop-shoulder, and acid-wash styles, we help you turn your creativity into wearable fashion. Quality printing, creative designs, and customer satisfaction are our priority.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Thirukkanur",
+          "addressRegion": "Puducherry",
+          "addressCountry": "IN"
+        },
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "email": "hificustomprinting@gmail.com",
+            "contactType": "customer support"
+          },
+          {
+            "@type": "ContactPoint",
+            "email": "support@goatech.tech",
+            "contactType": "technical support"
+          },
+          {
+            "@type": "ContactPoint",
+            "telephone": "+91-9655410150",
+            "contactType": "customer support"
+          },
+          {
+            "@type": "ContactPoint",
+            "telephone": "+91-9488731106",
+            "contactType": "bot support"
+          }
+        ],
         "parentOrganization": {
           "@type": "Organization",
           "name": "GOAT'ECH",
@@ -68,35 +96,45 @@ export default function RootLayout({
         },
         "founder": {
           "@type": "Person",
+          "@id": "https://hificustoms.com/#founder",
           "name": "Abdul Kapur",
-          "jobTitle": "Founder & CEO",
-          "url": "https://hificustom.goatech.tech",
-          "worksFor": {
-            "@id": "https://hificustom.goatech.tech/#organization"
-          }
+          "jobTitle": "Founder",
+          "sameAs": [
+            "https://instagram.com/_abdul_official_35t"
+          ]
         },
         "sameAs": [
-          "https://instagram.com/hificustoms",
-          "https://twitter.com/hificustoms"
+          "https://instagram.com/hifi_custom_"
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://hificustoms.com/#founder",
+        "name": "Abdul Kapur",
+        "jobTitle": "Founder of HIFI CUSTOM PRINTING",
+        "worksFor": {
+          "@id": "https://hificustoms.com/#organization"
+        },
+        "sameAs": [
+          "https://instagram.com/_abdul_official_35t"
         ]
       },
       {
         "@type": "WebSite",
-        "@id": "https://hificustom.goatech.tech/#website",
-        "url": "https://hificustom.goatech.tech",
-        "name": "HIFI E-commerce",
+        "@id": "https://hificustoms.com/#website",
+        "url": "https://hificustoms.com",
+        "name": "HIFI CUSTOM PRINTING",
         "publisher": {
-          "@id": "https://hificustom.goatech.tech/#organization"
+          "@id": "https://hificustoms.com/#organization"
         },
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://hificustom.goatech.tech/search?q={search_term_string}",
+          "target": "https://hificustoms.com/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
     ]
   };
-
 
   return (
     <html lang="en" className={inter.variable}>
