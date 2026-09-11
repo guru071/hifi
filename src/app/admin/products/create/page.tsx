@@ -80,6 +80,7 @@ export default function CreateProductPage() {
     const payload = {
       title: formData.get("title"),
       base_price: Number(formData.get("base_price")),
+      subtitle: formData.get("mrp") ? String(formData.get("mrp")) : null,
       delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
       description: formData.get("description"),
       category_id: formData.get("category_id") || null,
@@ -119,9 +120,15 @@ export default function CreateProductPage() {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Title *</label>
             <input name="title" required type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. Heavyweight Tee" />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Base Price (₹) *</label>
-            <input name="base_price" required min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="1499" />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>Selling Price (₹) *</label>
+              <input name="base_price" required min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-primary)', background: 'var(--color-surface)' }} placeholder="e.g. 999" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>MRP (Strikethrough ₹)</label>
+              <input name="mrp" min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. 1499" />
+            </div>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee</label>

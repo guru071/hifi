@@ -89,6 +89,7 @@ export default function EditProductPage() {
     const payload = {
       title: formData.get("title"),
       base_price: Number(formData.get("base_price")),
+      subtitle: formData.get("mrp") ? String(formData.get("mrp")) : null,
       delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
       description: formData.get("description"),
       category_id: formData.get("category_id") || null,

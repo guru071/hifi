@@ -62,6 +62,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="material-symbols-outlined">history</span>
             <span className={styles.navLabel}>Audit Log</span>
           </Link>
+          <Link href="/admin/coupons" className={`${styles.navLink} ${pathname === "/admin/coupons" ? styles.navLinkActive : ""}`}>
+            <span className="material-symbols-outlined">local_offer</span>
+            <span className={styles.navLabel}>Coupons</span>
+          </Link>
           <Link href="/admin/settings" className={`${styles.navLink} ${pathname === "/admin/settings" ? styles.navLinkActive : ""}`}>
             <span className="material-symbols-outlined">settings</span>
             <span className={styles.navLabel}>Settings</span>

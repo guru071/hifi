@@ -155,13 +155,7 @@ export default function AdminSettings() {
                 free_shipping_threshold: Number(formData.get('threshold')),
               });
             }}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Delivery Mode</label>
-                <select name="mode" className={styles.input} defaultValue={globalDelivery.type}>
-                  <option value="global">GLOBAL (Flat delivery fee for all orders)</option>
-                  <option value="per_product">PER PRODUCT (Uses the delivery fee set on each product)</option>
-                </select>
-              </div>
+              
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Flat Delivery Fee (INR)</label>
