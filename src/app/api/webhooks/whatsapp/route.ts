@@ -8,6 +8,7 @@ import {
   sendWhatsAppButtons,
   logWhatsAppMessage,
 } from '@/lib/services/whatsapp';
+import { notifyCustomersNewProduct } from '@/lib/services/whatsapp-notifications';
 
 type WhatsAppInteractiveMessage = {
   interactive?: {
@@ -130,12 +131,12 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true }, { status: 200 });
       }
 
-      const { error: dbError } = await supabase.from('products').insert({
+      const { data: newProduct, error: dbError } = await supabase.from('products').insert({
         title,
         base_price: price,
         image_url: finalImageUrl,
         is_active: true,
-      });
+      }).select().single();
 
       if (dbError) {
         console.error('Admin DB insert failed:', dbError.message);
@@ -145,6 +146,11 @@ export async function POST(request: Request) {
           fromNumber,
           `✅ Product created!\n\nName: ${title}\nPrice: ${price}\nImage: ${finalImageUrl}`
         );
+        
+        // Notify customers of the new product
+        if (newProduct) {
+          notifyCustomersNewProduct(newProduct).catch(err => console.error('Failed to notify customers:', err));
+        }
       }
       return NextResponse.json({ success: true }, { status: 200 });
     }
@@ -243,9 +249,13 @@ export async function POST(request: Request) {
         // Send the AI's response back via WhatsApp
         const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
         const token = process.env.WHATSAPP_TOKEN;
+        const adminWaNumber = process.env.ADMIN_WHATSAPP_NUMBER;
         if (phoneNumberId && token) {
           try {
             await sendWhatsAppMessage(fromNumber, aiResponse);
+            if (adminWaNumber) {
+              await sendWhatsAppMessage(adminWaNumber, `[ADMIN COPY - AI CHAT]\nUser: ${fromNumber}\nBot: ${aiResponse}`);
+            }
           } catch (botError) {
             console.error('Failed to send AI bot reply:', botError);
           }
@@ -291,12 +301,24 @@ export async function POST(request: Request) {
     // Send bot confirmation
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const token = process.env.WHATSAPP_TOKEN;
+    const adminWaNumber = process.env.ADMIN_WHATSAPP_NUMBER;
     if (phoneNumberId && token) {
       try {
         await sendWhatsAppMessage(
           fromNumber,
           `We've received your custom design (${design!.reference_code}). Our team is reviewing it and will get back to you shortly!`
         );
+
+        if (adminWaNumber) {
+          await sendWhatsAppMessage(adminWaNumber, `[ADMIN COPY - NEW CUSTOM DESIGN]\nReceived a new custom design (${design!.reference_code}) from ${fromNumber}.`);
+          if (finalDesignUrl) {
+            let fullUrl = finalDesignUrl;
+            if (!fullUrl.startsWith('http')) {
+              fullUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/designs/${fullUrl}`;
+            }
+            await sendWhatsAppMessage(adminWaNumber, `Image URL: ${fullUrl}`);
+          }
+        }
       } catch (botError) {
         console.error('Failed to send bot reply:', botError);
       }

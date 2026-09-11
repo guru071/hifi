@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { listActiveProducts, listAdminProducts } from '@/lib/services/catalog';
 import { requireAdminRequest } from '@/lib/guards';
 import { logAudit } from '@/lib/services/audit';
+import { notifyCustomersNewProduct } from '@/lib/services/whatsapp-notifications';
 
 const COMMON_COLORS = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'grey', 'brown', 'navy', 'maroon', 'gold', 'silver'];
 
@@ -93,6 +94,11 @@ export async function POST(request: Request) {
       const { error: variantError } = await supabase.from('product_variants').insert(variantsToInsert);
       if (variantError) console.error('Failed to auto-create variants:', variantError);
     }
+
+    // Trigger WhatsApp notification for new product (fire and forget)
+    notifyCustomersNewProduct(data).catch(err => {
+      console.error('Failed to notify customers of new product:', err);
+    });
 
     return NextResponse.json({ product: data, detectedColors }, { status: 201 });
   } catch (error) {

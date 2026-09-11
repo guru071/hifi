@@ -148,6 +148,11 @@ Track your order: ${SITE_URL}/profile/orders`;
   try {
     await sendWhatsAppMessage(cleanPhone, msg);
     console.log('[WA-Notify] Customer notified for order', orderId);
+
+    if (ADMIN_WHATSAPP) {
+      await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - ORDER CONFIRMATION]\n${msg}`);
+      console.log('[WA-Notify] Admin CCed for order confirmation', orderId);
+    }
   } catch (err) {
     console.error('[WA-Notify] Failed to notify customer:', err);
   }
@@ -207,6 +212,11 @@ Track: ${SITE_URL}/profile/orders`;
   try {
     await sendWhatsAppMessage(cleanPhone, msg);
     console.log('[WA-Notify] Status update sent for order', orderId, '→', newStatus);
+
+    if (ADMIN_WHATSAPP) {
+      await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - STATUS UPDATE]\n${msg}`);
+      console.log('[WA-Notify] Admin CCed for status update of order', orderId);
+    }
   } catch (err) {
     console.error('[WA-Notify] Failed to send status update:', err);
   }
@@ -312,6 +322,15 @@ Use code *HIFI10* for 10% off your next order!`;
   }
 
   console.log(`[WA-Promo] Sent: ${sent}, Skipped: ${skipped}`);
+
+  if (ADMIN_WHATSAPP) {
+    try {
+      await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - PROMO BROADCAST]\nSent promotions to ${sent} customers. Skipped ${skipped}.`);
+    } catch (err) {
+      console.error('[WA-Notify] Failed to notify admin of promo broadcast:', err);
+    }
+  }
+
   return { sent, skipped };
 }
 
@@ -337,8 +356,11 @@ Got questions? Just reply to this message!`;
 
     try {
       await sendWhatsAppMessage(cleanPhone, msg);
+      if (ADMIN_WHATSAPP) {
+        await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - NEW USER]\n${name} (${cleanPhone}) has joined HIFI!`);
+      }
     } catch (err) {
-      console.error('[WA-Welcome] Failed to send welcome:', err);
+      console.error('[WA-Notify] Failed to send welcome:', err);
     }
   } else {
     // Returning user
@@ -352,8 +374,11 @@ We've got fresh designs waiting for you!`;
 
     try {
       await sendWhatsAppMessage(cleanPhone, msg);
+      if (ADMIN_WHATSAPP) {
+        await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - RETURNING USER]\n${name} (${cleanPhone}) has returned to HIFI!`);
+      }
     } catch (err) {
-      console.error('[WA-Welcome] Failed to send welcome back:', err);
+      console.error('[WA-Notify] Failed to send welcome back:', err);
     }
   }
 }
@@ -365,4 +390,68 @@ function parseAddress(a: unknown): Record<string, string> {
     try { return JSON.parse(a); } catch { return {}; }
   }
   return (a || {}) as Record<string, string>;
+}
+
+/**
+ * Notify all customers about a newly added product.
+ */
+export async function notifyCustomersNewProduct(product: { id: string; title: string; base_price: number; image_url?: string | null }) {
+  const supabase = createServerClient();
+
+  const { data: customers } = await supabase
+    .from('users')
+    .select('id, full_name, phone')
+    .eq('role', 'customer')
+    .not('phone', 'is', null);
+
+  if (!customers || customers.length === 0) {
+    return { sent: 0, skipped: 0 };
+  }
+
+  let sent = 0;
+  let skipped = 0;
+
+  for (const customer of customers) {
+    const phone = customer.phone?.replace(/[^0-9]/g, '');
+    if (!phone || phone.length < 10) {
+      skipped++;
+      continue;
+    }
+
+    const msg = `🎉 *New Arrival at HIFI!*
+
+Hi ${customer.full_name || 'there'}! We just added a fresh new product to our store:
+
+*${product.title}* — ₹${product.base_price}
+
+🛍️ Grab it now: ${SITE_URL}/product/${product.id}
+
+Stay stylish with HIFI!`;
+
+    try {
+      await sendWhatsAppMessage(phone, msg);
+      sent++;
+      
+      if (product.image_url) {
+        try {
+          await sendWhatsAppImage(phone, product.image_url, `${product.title} — ₹${product.base_price}`);
+        } catch { }
+      }
+      
+      await new Promise(r => setTimeout(r, 500)); // Rate limit
+    } catch (err) {
+      console.error(`[WA-Notify] Failed to notify customer ${phone} of new product:`, err);
+      skipped++;
+    }
+  }
+
+  if (ADMIN_WHATSAPP) {
+    try {
+      await sendWhatsAppMessage(ADMIN_WHATSAPP, `[ADMIN COPY - NEW PRODUCT ALERT]\nNotified ${sent} customers about new product: ${product.title}. Skipped ${skipped}.`);
+    } catch (err) {
+      console.error('[WA-Notify] Failed to notify admin of new product alert:', err);
+    }
+  }
+
+  return { sent, skipped };
 }
