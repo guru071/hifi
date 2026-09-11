@@ -52,6 +52,8 @@ export default function CreateProductPage() {
       description: formData.get("description"),
       category_id: formData.get("category_id") || null,
       image_url: imageUrl || null,
+      colors: formData.get("colors"),
+      sizes: formData.get("sizes"),
     };
 
     try {
@@ -93,6 +95,14 @@ export default function CreateProductPage() {
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee (₹)</label>
             <input name="delivery_fee" min="0" step="0.01" type="number" defaultValue="0" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Colors (comma separated)</label>
+            <input name="colors" type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. Red, Blue, White" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Sizes (comma separated)</label>
+            <input name="sizes" type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. S, M, L, XL" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Description</label>

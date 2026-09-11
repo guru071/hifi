@@ -77,22 +77,28 @@ export async function POST(request: Request) {
       supabase
     );
 
-    // Auto-detect colors and create variants
-    const textToSearch = `${title} ${description || ''}`;
-    const detectedColors = Array.from(new Set(extractColors(textToSearch)));
+    
+    // Create variants based on explicit colors and sizes
+    const colorsList = (body.colors as string) ? (body.colors as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['Standard'];
+    const sizesList = (body.sizes as string) ? (body.sizes as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['One Size'];
 
-    if (detectedColors.length > 0) {
-      const variantsToInsert = detectedColors.map(color => ({
-        product_id: data.id,
-        color: color.charAt(0).toUpperCase() + color.slice(1),
-        size: 'One Size',
-        sku: `${title.substring(0, 3).toUpperCase()}-${color.substring(0, 3).toUpperCase()}`,
-        inventory_count: 100,
-        price_adjustment: 0
-      }));
-      
+    const variantsToInsert = [];
+    for (const c of colorsList) {
+      for (const s of sizesList) {
+        variantsToInsert.push({
+          product_id: data.id,
+          color: c,
+          size: s,
+          sku: `${title.substring(0, 3).toUpperCase()}-${c.substring(0, 3).toUpperCase()}-${s}`,
+          inventory_count: 10,
+          price_adjustment: 0
+        });
+      }
+    }
+    
+    if (variantsToInsert.length > 0) {
       const { error: variantError } = await supabase.from('product_variants').insert(variantsToInsert);
-      if (variantError) console.error('Failed to auto-create variants:', variantError);
+      if (variantError) console.error('Failed to create variants:', variantError);
     }
 
     // Trigger WhatsApp notification for new product (fire and forget)
@@ -100,7 +106,7 @@ export async function POST(request: Request) {
       console.error('Failed to notify customers of new product:', err);
     });
 
-    return NextResponse.json({ product: data, detectedColors }, { status: 201 });
+    return NextResponse.json({ product: data, colorsList }, { status: 201 });
   } catch (error) {
     console.error('Server error creating product:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

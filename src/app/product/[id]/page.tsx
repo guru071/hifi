@@ -118,7 +118,14 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
   const currentVariant = product.product_variants?.find((v) => v.color === selectedColor && v.size === selectedSize);
   const isInStock = !!currentVariant && Number(currentVariant.inventory_count) > 0;
 
-  const heroImage = product.images?.[0]?.url || product.image_url || product.product_images?.[0]?.url;
+  // Find image for selected color
+  let variantImgUrl = null;
+  const variantForColor = product.product_variants?.find(v => v.color === selectedColor);
+  if (variantForColor && variantForColor.color && variantForColor.color.includes('[IMG:')) {
+    variantImgUrl = variantForColor.color.split('[IMG:')[1].replace(']', '');
+  }
+
+  const heroImage = variantImgUrl || product.images?.[0]?.url || product.image_url || product.product_images?.[0]?.url;
   const galleryImages = (product.product_images?.filter((i) => i.url) || []).slice(0, 3);
 
   const inrPrice = (n: number) => `₹${Number(n).toFixed(2)}`;
