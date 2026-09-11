@@ -51,19 +51,52 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "HiFi",
-    "url": "https://hificustom.goatech.tech",
-    "description": "HiFi is a premium custom apparel platform, powered by GOAT'ECH and Maghgo.",
-    "founder": {
-      "@type": "Person",
-      "name": "Abdul Kapur"
-    },
-    "parentOrganization": {
-      "@type": "Organization",
-      "name": "GOAT'ECH"
-    }
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://hificustom.goatech.tech/#organization",
+        "name": "HIFI Premium Customs",
+        "legalName": "Maghgo",
+        "url": "https://hificustom.goatech.tech",
+        "logo": "https://hificustom.goatech.tech/logo.jpeg",
+        "image": "https://hificustom.goatech.tech/logo.jpeg",
+        "description": "Create and order premium custom T-shirts instantly. Powered by GOAT'ECH.",
+        "parentOrganization": {
+          "@type": "Organization",
+          "name": "GOAT'ECH",
+          "url": "https://goatech.tech"
+        },
+        "founder": {
+          "@type": "Person",
+          "name": "Abdul Kapur",
+          "jobTitle": "Founder & CEO",
+          "url": "https://hificustom.goatech.tech",
+          "worksFor": {
+            "@id": "https://hificustom.goatech.tech/#organization"
+          }
+        },
+        "sameAs": [
+          "https://instagram.com/hificustoms",
+          "https://twitter.com/hificustoms"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://hificustom.goatech.tech/#website",
+        "url": "https://hificustom.goatech.tech",
+        "name": "HIFI E-commerce",
+        "publisher": {
+          "@id": "https://hificustom.goatech.tech/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://hificustom.goatech.tech/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
   };
+
 
   return (
     <html lang="en" className={inter.variable}>
