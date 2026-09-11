@@ -110,7 +110,7 @@ export default function OrderDetail({ params }: { params: Promise<{ id: string }
                 <div style={{ fontWeight: 500 }}>{item.title || "HIFI Custom Item"}</div>
                 <div style={{ fontSize: "13px", color: "var(--color-on-surface-variant)" }}>
                   Qty {item.quantity} × {inr(Number(item.unit_price))}
-                  {item.color && <> · {item.color}/{item.size}</>}
+                  {(item.color || '').split('[IMG:')[0].trim() && <> · {item.color?.split('[IMG:')[0].trim()}/{item.size}</>}
                   {item.design_id && <span style={{ color: "var(--color-primary)" }}> · Custom Artwork</span>}
                 </div>
               </div>

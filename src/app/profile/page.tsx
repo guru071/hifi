@@ -203,7 +203,7 @@ export default function Profile() {
                           <div className={styles.itemVariant}>
                             Qty: {item.quantity}
                             {item.custom_design_id && " + Custom Design"}
-                            {item.color && <> · {item.color}/{item.size}</>}
+                            {(item.color || '').split('[IMG:')[0].trim() && <> · {item.color?.split('[IMG:')[0].trim()}/{item.size}</>}
                           </div>
                         </div>
                         <div className={styles.itemPrice}>{inr(Number(item.unit_price) * item.quantity)}</div>

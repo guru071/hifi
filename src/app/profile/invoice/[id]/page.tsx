@@ -205,7 +205,7 @@ export default function Invoice({ params }: { params: Promise<{ id: string }> })
                         )}
                         <div>
                           <div style={{ fontWeight: 500 }}>{item.title || product?.title || "HIFI Custom Item"}</div>
-                          {item.color && <div style={{ fontSize: "12px", color: "var(--color-secondary)", marginTop: "0.25rem" }}>{item.color}/{item.size}</div>}
+                          {(item.color || '').split('[IMG:')[0].trim() && <div style={{ fontSize: "12px", color: "var(--color-secondary)", marginTop: "0.25rem" }}>{item.color?.split('[IMG:')[0].trim()}/{item.size}</div>}
                           
                           {design?.image_url && (
                             <div style={{ marginTop: "0.75rem", padding: "0.5rem", background: "rgba(255,255,255,0.03)", borderRadius: "4px" }}>

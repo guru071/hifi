@@ -84,10 +84,14 @@ export async function POST(request: Request) {
 
     const variantsToInsert = [];
     for (const c of colorsList) {
+      // Connect the main product image to the FIRST color
+      const isFirstColor = c === colorsList[0];
+      const variantColorStr = (isFirstColor && data.image_url) ? `${c} [IMG:${data.image_url}]` : c;
+      
       for (const s of sizesList) {
         variantsToInsert.push({
           product_id: data.id,
-          color: c,
+          color: variantColorStr,
           size: s,
           sku: `${title.substring(0, 3).toUpperCase()}-${c.substring(0, 3).toUpperCase()}-${s}`,
           inventory_count: 10,

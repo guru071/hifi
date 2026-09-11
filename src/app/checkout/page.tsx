@@ -377,7 +377,7 @@ export default function Checkout() {
                       <div className={styles.itemInfo}>
                         <h4 className={styles.itemTitle}>{item.title}</h4>
                         <p className={styles.itemVariant}>
-                          Color: {item.color} <br />
+                          Color: {item.color?.split('[IMG:')[0].trim()} <br />
                           Size: {item.size}
                           {item.customDesignReference && (
                             <><br />Design: {item.customDesignReference}</>

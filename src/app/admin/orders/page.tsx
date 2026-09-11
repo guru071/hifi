@@ -204,7 +204,7 @@ export default function AdminOrders() {
                       <div className={styles.itemRow}>
                         <span>{item.title || "HIFI Custom Item"}</span>
                         <span className={styles.sub}>
-                          {item.color && <>{item.color}/{item.size} · </>}Qty {item.quantity}
+                          {(item.color || '').split('[IMG:')[0].trim() && <>{item.color?.split('[IMG:')[0].trim()}/{item.size} · </>}Qty {item.quantity}
                           {item.design_id && <span style={{ color: "var(--color-primary)" }}> · Custom</span>}
                         </span>
                         <span>{inr(Number(item.unit_price) * item.quantity)}</span>

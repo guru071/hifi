@@ -111,7 +111,8 @@ export default function CreateProductPage() {
 
           {/* Image Upload */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Product Image</label>
+            <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Product Image (Assigned to the 1st Color above)</label>
+            <p style={{ fontSize: '0.8rem', color: 'var(--color-on-surface-variant)', marginBottom: '0.75rem' }}>This image will be used as the default thumbnail and automatically assigned to the first color you typed (like Flipkart).</p>
             <div
               onClick={() => fileInputRef.current?.click()}
               style={{

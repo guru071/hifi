@@ -102,7 +102,7 @@ export default function Orders() {
                     <div className={styles.itemTitle}>{item.title || "HIFI Custom Item"}</div>
                     <div className={styles.itemVariant}>
                       Qty: {item.quantity}
-                      {item.color && <> · {item.color}/{item.size}</>}
+                      {(item.color || '').split('[IMG:')[0].trim() && <> · {item.color?.split('[IMG:')[0].trim()}/{item.size}</>}
                       {item.design_id && <span style={{ color: "var(--color-primary)" }}> · Custom Artwork</span>}
                     </div>
                   </div>

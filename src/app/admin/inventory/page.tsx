@@ -223,8 +223,8 @@ for (const variant of product.product_variants) {
                   <td className={`${styles.td} ${styles.sku}`}>{item.sku}</td>
                   <td className={styles.td}>
                     <div className={styles.variantInfo}>
-                      <span className={styles.colorSwatch} style={{ backgroundColor: (item.color || '').toLowerCase() === 'bone' ? '#f5f5dc' : (item.color || '').toLowerCase() }}></span>
-                      {item.color} / {item.size}
+                      <span className={styles.colorSwatch} style={{ backgroundColor: (item.color || '').split('[IMG:')[0].trim().toLowerCase() === 'bone' ? '#f5f5dc' : (item.color || '').split('[IMG:')[0].trim().toLowerCase() }}></span>
+                      {item.color?.split('[IMG:')[0].trim()} / {item.size}
                     </div>
                   </td>
                   <td className={styles.td} style={{ textAlign: "right" }}>

@@ -40,7 +40,7 @@ export default function Cart() {
                       <div className={styles.itemHeaderRow}>
                         <div>
                           <h3 className={styles.itemTitle}>{item.title}</h3>
-                          <p className={styles.itemVariantText}>Color: {item.color}</p>
+                          <p className={styles.itemVariantText}>Color: {item.color?.split('[IMG:')[0].trim()}</p>
                           <p className={styles.itemVariantText}>Size: {item.size}</p>
                           {item.customDesignReference && (
                             <div className={styles.customDesignStatus}>

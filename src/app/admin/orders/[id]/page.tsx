@@ -258,7 +258,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                 <div>
                   <div className={styles.itemTitle}>{item.title || product?.title || "HIFI Custom Item"}</div>
                   <div className={styles.itemMeta}>
-                    {item.color && <>{item.color} / {item.size}</>}
+                    {(item.color || '').split('[IMG:')[0].trim() && <>{item.color?.split('[IMG:')[0].trim()} / {item.size}</>}
                     {item.variant_sku && <> · SKU: {item.variant_sku}</>}
                     {' '}· Qty: {item.quantity}
                   </div>
