@@ -19,7 +19,7 @@ export const viewport: import('next').Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hificustoms.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hificustom.goatech.tech"),
   title: {
     default: "HIFI CUSTOM PRINTING | Personalized & Stylish Custom Apparel",
     template: "%s | HIFI CUSTOM PRINTING",
@@ -54,12 +54,12 @@ export default function RootLayout({
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://hificustoms.com/#organization",
+        "@id": "https://hificustom.goatech.tech/#organization",
         "name": "HIFI CUSTOM PRINTING",
         "legalName": "HIFI CUSTOM PRINTING",
-        "url": "https://hificustoms.com",
-        "logo": "https://hificustoms.com/logo.jpeg",
-        "image": "https://hificustoms.com/logo.jpeg",
+        "url": "https://hificustom.goatech.tech",
+        "logo": "https://hificustom.goatech.tech/logo.jpeg",
+        "image": "https://hificustom.goatech.tech/logo.jpeg",
         "description": "HIFI CUSTOM PRINTING is your destination for personalized and stylish custom printing. We create unique designs on T-shirts and apparel based on your ideas. From custom T-shirts to oversized, drop-shoulder, and acid-wash styles, we help you turn your creativity into wearable fashion. Quality printing, creative designs, and customer satisfaction are our priority.",
         "address": {
           "@type": "PostalAddress",
@@ -96,7 +96,7 @@ export default function RootLayout({
         },
         "founder": {
           "@type": "Person",
-          "@id": "https://hificustoms.com/#founder",
+          "@id": "https://hificustom.goatech.tech/#founder",
           "name": "Abdul Kapur",
           "jobTitle": "Founder",
           "sameAs": [
@@ -109,11 +109,11 @@ export default function RootLayout({
       },
       {
         "@type": "Person",
-        "@id": "https://hificustoms.com/#founder",
+        "@id": "https://hificustom.goatech.tech/#founder",
         "name": "Abdul Kapur",
         "jobTitle": "Founder of HIFI CUSTOM PRINTING",
         "worksFor": {
-          "@id": "https://hificustoms.com/#organization"
+          "@id": "https://hificustom.goatech.tech/#organization"
         },
         "sameAs": [
           "https://instagram.com/_abdul_official_35t"
@@ -121,15 +121,15 @@ export default function RootLayout({
       },
       {
         "@type": "WebSite",
-        "@id": "https://hificustoms.com/#website",
-        "url": "https://hificustoms.com",
+        "@id": "https://hificustom.goatech.tech/#website",
+        "url": "https://hificustom.goatech.tech",
         "name": "HIFI CUSTOM PRINTING",
         "publisher": {
-          "@id": "https://hificustoms.com/#organization"
+          "@id": "https://hificustom.goatech.tech/#organization"
         },
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://hificustoms.com/search?q={search_term_string}",
+          "target": "https://hificustom.goatech.tech/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
