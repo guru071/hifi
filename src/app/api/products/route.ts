@@ -129,7 +129,7 @@ export async function POST(request: Request) {
       console.error('Failed to notify customers of new product:', err);
     });
 
-    return NextResponse.json({ product: data, colorsList }, { status: 201 });
+    return NextResponse.json({ product: data, variants: variantsToInsert.length }, { status: 201 });
   } catch (error) {
     console.error('Server error creating product:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
