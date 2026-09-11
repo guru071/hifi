@@ -1,8 +1,8 @@
 .nav {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin: 1rem auto;
+  
+  
   width: 90%;
   border-radius: var(--radius-full);
   z-index: 50;
@@ -15,7 +15,7 @@
 }
 
 .nav:hover {
-  transform: translateX(-50%) scale(0.99);
+  transform: scale(0.99);
 }
 
 .navContainer {
