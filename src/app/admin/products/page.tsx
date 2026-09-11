@@ -349,7 +349,7 @@ export default function AdminProducts() {
           <h2 className={styles.title}>Products</h2>
           <p className={styles.subtitle}>Catalog, variants, and stock management.</p>
         </div>
-        <button className={styles.primaryBtn} onClick={openCreate}>+ New Product</button>
+        <a href="/admin/products/create" className={styles.primaryBtn} style={{ textDecoration: "none", display: "inline-block", textAlign: "center" }}>+ New Product</a>
       </header>
 
       {msg && <p style={{ color: "var(--color-primary)", marginBottom: "0.75rem" }}>{msg}</p>}

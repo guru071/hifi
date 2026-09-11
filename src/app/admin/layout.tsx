@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* CTA */}
         <div className={styles.ctaContainer}>
-          <Link href="/admin/products?create=1" className={styles.ctaBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>New Product</Link>
+          <Link href="/admin/products/create" className={styles.ctaBtn} style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>New Product</Link>
         </div>
 
         {/* Footer Navigation */}
