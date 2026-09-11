@@ -14,6 +14,37 @@ export default function CreateProductPage() {
   const [deliveryType, setDeliveryType] = useState("global");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [variants, setVariants] = useState([{ id: Date.now(), color: "", size: "", stock: 10, image_url: "", image_preview: "", uploading: false }]);
+
+  const handleVariantFile = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const newVariants = [...variants];
+    newVariants[index].image_preview = URL.createObjectURL(file);
+    newVariants[index].uploading = true;
+    setVariants(newVariants);
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Upload failed");
+
+      setVariants(prev => prev.map((v, idx) => idx === index ? { ...v, image_url: data.url, uploading: false } : v));
+    } catch (err) {
+      console.error(err);
+      setVariants(prev => prev.map((v, idx) => idx === index ? { ...v, image_url: "", image_preview: "", uploading: false } : v));
+    }
+  };
+
+  const addVariant = () => setVariants([...variants, { id: Date.now(), color: "", size: "", stock: 10, image_url: "", image_preview: "", uploading: false }]);
+  const removeVariant = (id: number) => setVariants(variants.filter(v => v.id !== id));
+  const updateVariant = (id: number, field: string, value: any) => {
+    setVariants(variants.map(v => v.id === id ? { ...v, [field]: value } : v));
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -53,8 +84,7 @@ export default function CreateProductPage() {
       description: formData.get("description"),
       category_id: formData.get("category_id") || null,
       image_url: imageUrl || null,
-      colors: formData.get("colors"),
-      sizes: formData.get("sizes"),
+      custom_variants: variants,
     };
 
     try {
@@ -104,13 +134,33 @@ export default function CreateProductPage() {
               <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee in INR" required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
             )}
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Colors (comma separated)</label>
-            <input name="colors" type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. Red, Blue, White" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Sizes (comma separated)</label>
-            <input name="sizes" type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. S, M, L, XL" />
+                    <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Variants (Colors & Sizes)</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-on-surface-variant)', marginBottom: '1rem' }}>Add each specific combination of Color and Size, and upload a specific image for it.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {variants.map((v, i) => (
+                <div key={v.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', background: 'var(--color-surface)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-outline)' }}>
+                  <input placeholder="Color (e.g. Red)" value={v.color} onChange={e => updateVariant(v.id, 'color', e.target.value)} required style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--color-outline)', borderRadius: '4px' }} />
+                  <input placeholder="Size (e.g. M)" value={v.size} onChange={e => updateVariant(v.id, 'size', e.target.value)} required style={{ flex: 1, padding: '0.5rem', border: '1px solid var(--color-outline)', borderRadius: '4px' }} />
+                  <input type="number" min="0" placeholder="Stock" value={v.stock} onChange={e => updateVariant(v.id, 'stock', e.target.value)} required style={{ width: '80px', padding: '0.5rem', border: '1px solid var(--color-outline)', borderRadius: '4px' }} />
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+                    <label style={{ padding: '0.5rem', background: 'var(--color-outline)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                      {v.uploading ? 'Uploading...' : (v.image_url ? 'Change Image' : 'Upload Image')}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleVariantFile(i, e)} />
+                    </label>
+                    {v.image_preview && <img src={v.image_preview} style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: '4px' }} />}
+                  </div>
+
+                  <button type="button" onClick={() => removeVariant(v.id)} style={{ color: 'red', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0 0.5rem' }}>×</button>
+                </div>
+              ))}
+            </div>
+            
+            <button type="button" onClick={addVariant} style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              + Add Variant
+            </button>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Description</label>
@@ -119,8 +169,8 @@ export default function CreateProductPage() {
 
           {/* Image Upload */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Product Image (Assigned to the 1st Color above)</label>
-            <p style={{ fontSize: '0.8rem', color: 'var(--color-on-surface-variant)', marginBottom: '0.75rem' }}>This image will be used as the default thumbnail and automatically assigned to the first color you typed (like Flipkart).</p>
+            <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Main Product Image</label>
+            <p style={{ fontSize: '0.8rem', color: 'var(--color-on-surface-variant)', marginBottom: '0.75rem' }}>This image will be used as the main thumbnail in the storefront grid.</p>
             <div
               onClick={() => fileInputRef.current?.click()}
               style={{

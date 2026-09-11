@@ -78,25 +78,44 @@ export async function POST(request: Request) {
     );
 
     
-    // Create variants based on explicit colors and sizes
-    const colorsList = (body.colors as string) ? (body.colors as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['Standard'];
-    const sizesList = (body.sizes as string) ? (body.sizes as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['One Size'];
-
-    const variantsToInsert = [];
-    for (const c of colorsList) {
-      // Connect the main product image to the FIRST color
-      const isFirstColor = c === colorsList[0];
-      const variantColorStr = (isFirstColor && data.image_url) ? `${c} [IMG:${data.image_url}]` : c;
-      
-      for (const s of sizesList) {
+    // Create variants
+    let variantsToInsert = [];
+    
+    if (body.custom_variants && Array.isArray(body.custom_variants) && body.custom_variants.length > 0) {
+      // Explicit variants array from the new UI
+      for (const v of body.custom_variants) {
+        let variantColorStr = v.color || 'Standard';
+        if (v.image_url) {
+          variantColorStr = `${variantColorStr} [IMG:${v.image_url}]`;
+        }
         variantsToInsert.push({
           product_id: data.id,
           color: variantColorStr,
-          size: s,
-          sku: `${title.substring(0, 3).toUpperCase()}-${c.substring(0, 3).toUpperCase()}-${s}`,
-          inventory_count: 10,
+          size: v.size || 'One Size',
+          sku: `${title.substring(0, 3).toUpperCase()}-${(v.color||'STD').substring(0, 3).toUpperCase()}-${v.size||'OS'}`,
+          inventory_count: Number(v.stock) || 0,
           price_adjustment: 0
         });
+      }
+    } else {
+      // Fallback cross-multiplication for backwards compatibility
+      const colorsList = (body.colors as string) ? (body.colors as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['Standard'];
+      const sizesList = (body.sizes as string) ? (body.sizes as string).split(',').map((s: string) => s.trim()).filter(Boolean) : ['One Size'];
+  
+      for (const c of colorsList) {
+        const isFirstColor = c === colorsList[0];
+        const variantColorStr = (isFirstColor && data.image_url) ? `${c} [IMG:${data.image_url}]` : c;
+        
+        for (const s of sizesList) {
+          variantsToInsert.push({
+            product_id: data.id,
+            color: variantColorStr,
+            size: s,
+            sku: `${title.substring(0, 3).toUpperCase()}-${c.substring(0, 3).toUpperCase()}-${s}`,
+            inventory_count: 10,
+            price_adjustment: 0
+          });
+        }
       }
     }
     
