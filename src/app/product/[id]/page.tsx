@@ -112,6 +112,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
 
   // Extract unique colors and sizes
   const availableColors = Array.from(new Set(product.product_variants?.map((v) => v.color) || []));
+  const cleanColor = (c: string) => c ? c.split("[IMG:")[0].trim() : "";
   const availableSizes = Array.from(new Set(product.product_variants?.map((v) => v.size) || []));
 
   // Check if current selection is in stock (inventory_count, not the nonexistent stock_quantity)
@@ -175,15 +176,15 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
             <div className={styles.selectors}>
               {/* Color */}
               <div className={styles.selectorGroup}>
-                <span className={styles.selectorLabel}>Color: {selectedColor}</span>
+                <span className={styles.selectorLabel}>Color: {cleanColor(selectedColor || "")}</span>
                 <div className={styles.colorList}>
                   {availableColors.map((color) => (
                     <button 
                       key={color}
                       className={`${styles.colorBtn} ${selectedColor === color ? styles.colorBtnActive : ""}`} 
-                      style={{ backgroundColor: color.toLowerCase() === 'bone' ? '#f5f5dc' : color.toLowerCase() }}
+                      style={{ backgroundColor: cleanColor(color).toLowerCase() === 'bone' ? '#f5f5dc' : cleanColor(color).toLowerCase() }}
                       onClick={() => setSelectedColor(color)}
-                      title={color}
+                      title={cleanColor(color)}
                     />
                   ))}
                 </div>

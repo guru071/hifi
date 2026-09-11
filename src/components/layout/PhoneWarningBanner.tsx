@@ -35,8 +35,9 @@ export default function PhoneWarningBanner() {
     checkProfile();
   }, [user, getIdToken]);
 
-  // Don't show if they aren't logged in, or we are still checking, or they already have a phone number
-  if (!user || profilePhone === "loading" || profilePhone) {
+    // Don't show if they aren't logged in, or we are still checking, or they already have a phone number
+  // ALSO don't show on admin pages
+  if (!user || profilePhone === "loading" || profilePhone || pathname.startsWith('/admin')) {
     return null;
   }
 
