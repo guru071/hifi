@@ -158,8 +158,8 @@ export default function AdminSettings() {
               <div className={styles.formGroup}>
                 <label className={styles.label}>Delivery Mode</label>
                 <select name="mode" className={styles.input} defaultValue={globalDelivery.type}>
-                  <option value="global">GLOBAL (flat fee)</option>
-                  <option value="per_product">PER_PRODUCT (sum of product fees)</option>
+                  <option value="global">GLOBAL (Flat delivery fee for all orders)</option>
+                  <option value="per_product">PER PRODUCT (Uses the delivery fee set on each product)</option>
                 </select>
               </div>
 

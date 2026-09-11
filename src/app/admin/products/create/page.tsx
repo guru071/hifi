@@ -48,7 +48,7 @@ export default function CreateProductPage() {
     const payload = {
       title: formData.get("title"),
       base_price: Number(formData.get("base_price")),
-      delivery_fee: Number(formData.get("delivery_fee") || 0),
+      delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
       description: formData.get("description"),
       category_id: formData.get("category_id") || null,
       image_url: imageUrl || null,
@@ -93,8 +93,13 @@ export default function CreateProductPage() {
             <input name="base_price" required min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="1499" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee (₹)</label>
-            <input name="delivery_fee" min="0" step="0.01" type="number" defaultValue="0" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee</label>
+            <select name="delivery_type" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', marginBottom: '0.5rem' }}>
+              <option value="global">Global Fee (Uses default from Settings)</option>
+              <option value="free">Free Delivery (₹0 for this product)</option>
+              <option value="custom">Custom Fee (Enter below)</option>
+            </select>
+            <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee (if Custom is selected)" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Colors (comma separated)</label>

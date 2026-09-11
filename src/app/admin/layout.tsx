@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
           <Link href="/admin/banners" className={`${styles.navLink} ${pathname.startsWith("/admin/banners") ? styles.navLinkActive : ""}`}>
             <span className="material-symbols-outlined">view_carousel</span>
-            <span className={styles.navLabel}>Banners</span>
+            <span className={styles.navLabel}>Banners & Offers</span>
           </Link>
           <Link href="/admin/customers" className={`${styles.navLink} ${pathname.startsWith("/admin/customers") ? styles.navLinkActive : ""}`}>
             <span className="material-symbols-outlined">group</span>

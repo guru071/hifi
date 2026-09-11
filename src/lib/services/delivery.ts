@@ -42,21 +42,34 @@ export async function computeDeliveryFee(subtotal: number, productIds: string[],
   const client = supabase ?? createServerClient();
   const config = await getDeliverySettings(client);
 
-  if (config.type === 'per_product') {
-    if (productIds.length === 0) return 0;
-    const { data: products } = await client
-      .from('products')
-      .select('id, delivery_fee')
-      .in('id', productIds);
-    const maxFee = (products ?? []).reduce(
-      (max, p) => Math.max(max, p.delivery_fee ? Number(p.delivery_fee) : 0),
-      0
-    );
-    return maxFee;
-  }
-
+  // Free shipping threshold applies universally
   if (config.free_shipping_threshold > 0 && subtotal >= config.free_shipping_threshold) {
     return 0;
   }
+
+  if (productIds.length === 0) return 0;
+
+  // Always fetch products to check for custom overrides
+  const { data: products } = await client
+    .from('products')
+    .select('id, delivery_fee')
+    .in('id', productIds);
+
+  let maxFee = 0;
+  let hasOverride = false;
+
+  (products ?? []).forEach(p => {
+    if (p.delivery_fee !== null) {
+      hasOverride = true;
+      maxFee = Math.max(maxFee, Number(p.delivery_fee));
+    }
+  });
+
+  // If any product has a specific fee (0 or custom), use the highest custom fee.
+  if (hasOverride) {
+    return maxFee;
+  }
+
+  // Fallback to global fee
   return config.fee;
 }
