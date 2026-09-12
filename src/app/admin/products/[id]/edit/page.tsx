@@ -19,6 +19,10 @@ export default function EditProductPage() {
   const id = params.id as string;
 
   const [loading, setLoading] = useState(true);
+  const [descText, setDescText] = useState("");
+  const [descFabric, setDescFabric] = useState("");
+  const [descPrinting, setDescPrinting] = useState("");
+  const [descShipping, setDescShipping] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [product, setProduct] = useState<EditableProduct | null>(null);
@@ -40,6 +44,19 @@ export default function EditProductPage() {
         if (!res.ok) throw new Error("Failed to load product");
         const data = await res.json();
         setProduct(data.product);
+        if (data.product.description && data.product.description.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(data.product.description);
+            setDescText(parsed.text || "");
+            setDescFabric(parsed.fabric || "");
+            setDescPrinting(parsed.printing || "");
+            setDescShipping(parsed.shipping || "");
+          } catch(e) {
+            setDescText(data.product.description);
+          }
+        } else {
+          setDescText(data.product.description || "");
+        }
         if (data.product.image_url) {
           setImageUrl(data.product.image_url);
           setImagePreview(data.product.image_url);
@@ -96,7 +113,12 @@ export default function EditProductPage() {
       base_price: Number(formData.get("base_price")),
       subtitle: formData.get("mrp") ? String(formData.get("mrp")) : null,
       delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
-      description: formData.get("description"),
+      description: JSON.stringify({
+        text: formData.get("description") || "",
+        fabric: formData.get("fabric") || "",
+        printing: formData.get("printing") || "",
+        shipping: formData.get("shipping") || ""
+      }),
       category_id: formData.get("category_id") || null,
       image_url: imageUrl || null,
     };
@@ -151,77 +173,27 @@ export default function EditProductPage() {
               <input name="delivery_fee_custom" defaultValue={product.delivery_fee ?? ""} min="0" step="0.01" type="number" placeholder="Enter custom fee in INR" required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
             )}
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Description</label>
-            <textarea name="description" defaultValue={product.description || ""} rows={4} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
-          </div>
-
-          {/* Image Upload */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Product Image</label>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                width: '100%',
-                minHeight: '160px',
-                border: '2px dashed var(--color-outline)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                overflow: 'hidden',
-                position: 'relative',
-                background: 'var(--color-surface-variant, rgba(255,255,255,0.04))',
-              }}
-            >
-              {imagePreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                />
-              ) : (
-                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-on-surface-variant, #888)' }}>
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📷</div>
-                  <p style={{ margin: 0, fontWeight: 500 }}>Click to change image</p>
-                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem' }}>JPEG, PNG, WEBP, GIF · Max 5MB</p>
-                </div>
-              )}
-              {uploading && (
-                <div style={{
-                  position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600
-                }}>
-                  Uploading...
-                </div>
-              )}
-              {imagePreview && !uploading && (
-                <div style={{
-                  position: 'absolute', bottom: 8, right: 8,
-                  background: 'rgba(0,0,0,0.6)', color: '#fff',
-                  padding: '0.25rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem'
-                }}>
-                  Click to change
-                </div>
-              )}
+          <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)', margin: '1rem 0' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Product Details & Tabs</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Main Description</label>
+                <textarea name="description" defaultValue={descText} rows={3} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Fabric & Fit</label>
+                <textarea name="fabric" defaultValue={descFabric} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Printing Process</label>
+                <textarea name="printing" defaultValue={descPrinting} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Shipping</label>
+                <textarea name="shipping" defaultValue={descShipping} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-            {imageUrl && !uploading && (
-              <p style={{ fontSize: '0.78rem', marginTop: '0.4rem', color: 'var(--color-success, #22c55e)' }}>
-                ✓ Image ready
-              </p>
-            )}
           </div>
-
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>
             <select name="category_id" defaultValue={product.category_id || ""} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', background: 'var(--color-surface)' }}>

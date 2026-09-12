@@ -1,25 +1,14 @@
-"use client";
+const fs = require('fs');
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from '../../page.module.css';
+// Create Page
+let createCode = fs.readFileSync('src/app/admin/products/create/page.tsx', 'utf8');
 
-export default function CreateProductPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [deliveryType, setDeliveryType] = useState("global");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [categories, setCategories] = useState<{id:string, name:string}[]>([]);
+// 1. Remove old main image state
+createCode = createCode.replace(/const \[imageUrl, setImageUrl\] = useState\(""\);\n\s*const \[imagePreview, setImagePreview\] = useState\(""\);\n\s*const \[uploading, setUploading\] = useState\(false\);\n\n\s*const handleFileChange = [\s\S]*?\};\n\n/, '');
 
-  useEffect(() => {
-    fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || [])).catch(console.error);
-  }, []);
-
-  
+// 2. Change variants state to colorGroups
+const variantsStateRegex = /const \[variants, setVariants\] = useState[\s\S]*?updateVariant \=[\s\S]*?\};\n/;
+const newColorGroupsState = `
   const [colorGroups, setColorGroups] = useState([{ id: Date.now(), color: "", image_url: "", image_preview: "", uploading: false, sizes: [{ id: Date.now() + 1, size: "", stock: 10 }] }]);
 
   const handleColorImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,41 +40,12 @@ export default function CreateProductPage() {
   const updateSizeInColor = (colorId: number, sizeId: number, field: string, value: any) => {
     setColorGroups(colorGroups.map(c => c.id === colorId ? { ...c, sizes: c.sizes.map(s => s.id === sizeId ? { ...s, [field]: value } : s) } : c));
   };
+`;
+createCode = createCode.replace(variantsStateRegex, newColorGroupsState);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Show local preview immediately
-    const localPreview = URL.createObjectURL(file);
-    setImagePreview(localPreview);
-    setUploading(true);
-    setError("");
-
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-      setImageUrl(data.url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Image upload failed");
-      setImagePreview("");
-      setImageUrl("");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const formData = new FormData(e.currentTarget);
-    const payload = {
-      title: formData.get("title"),
+// 3. Update payload construction
+const payloadSearchRegex = /base_price:[\s\S]*?custom_variants: variants,\n\s*\};/;
+const newPayload = `
       base_price: Number(formData.get("base_price")),
       subtitle: formData.get("mrp") ? String(formData.get("mrp")) : null,
       delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
@@ -104,61 +64,12 @@ export default function CreateProductPage() {
         stock: s.stock
       }))),
     };
+`;
+createCode = createCode.replace(payloadSearchRegex, newPayload.trim());
 
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create product");
-      router.push("/admin/products");
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Create Product</h1>
-          <p className={styles.subtitle}>Add a new item to the catalog.</p>
-        </div>
-      </div>
-      <div className={`glass-panel ${styles.recentOrdersCard}`}>
-        {error && <p style={{ color: "var(--color-error)", marginBottom: "1rem" }}>{error}</p>}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Title *</label>
-            <input name="title" required type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. Heavyweight Tee" />
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>Selling Price (₹) *</label>
-              <input name="base_price" required min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-primary)', background: 'var(--color-surface)' }} placeholder="e.g. 999" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>MRP (Strikethrough ₹)</label>
-              <input name="mrp" min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. 1499" />
-            </div>
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee</label>
-            <select name="delivery_type" value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', marginBottom: '0.5rem' }}>
-              <option value="global">Global Fee (Uses default from Settings)</option>
-              <option value="free">Free Delivery (₹0 for this product)</option>
-              <option value="custom">Custom Fee (Per product)</option>
-            </select>
-            {deliveryType === "custom" && (
-              <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee in INR" required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
-            )}
-          </div>
-                    <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
+// 4. Replace Variant UI
+const variantUiRegex = /<div style=\{\{ padding: '1rem', background: 'var\(--color-surface-variant\)', borderRadius: 'var\(--radius-md\)' \}\}>[\s\S]*?<\!-- Image Upload -->/;
+const newVariantUi = `<div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Colors & Sizes</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {colorGroups.map((c, i) => (
@@ -203,8 +114,9 @@ export default function CreateProductPage() {
             </button>
           </div>
           
-          <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)', margin: '1rem 0' }}>
+          <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Product Details & Tabs</h3>
+            
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Main Description</label>
@@ -224,32 +136,17 @@ export default function CreateProductPage() {
               </div>
             </div>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>
-            <select name="category_id" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', background: 'var(--color-surface)' }}>
-              <option value="">None</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <button
-            disabled={loading}
-            type="submit"
-            style={{
-              padding: '0.75rem',
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-on-primary)',
-              borderRadius: 'var(--radius-full)',
-              fontWeight: 600,
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginTop: '1rem',
-              opacity: loading ? 0.7 : 1
-            }}
-          >
-            {loading ? "Saving..." : "Save Product"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
+
+          {/* Hidden Image Upload section, since we deleted the main image upload field completely */}`;
+createCode = createCode.replace(variantUiRegex, newVariantUi);
+
+// 5. Delete the main image upload section completely
+const oldMainImageUI = /<div>\s*<label style=\{\{ display: 'block', marginBottom: '0\.25rem', fontWeight: 600 \}\}>Main Product Image<\/label>[\s\S]*?<\/div>/;
+createCode = createCode.replace(oldMainImageUI, '');
+
+// Also remove uploading from disabled state of the submit button, we don't have global uploading state anymore (we have it inside colorGroups)
+createCode = createCode.replace(/disabled=\{loading \|\| uploading\}/g, 'disabled={loading}');
+createCode = createCode.replace(/cursor: \(loading \|\| uploading\) \? 'not-allowed' : 'pointer'/g, "cursor: loading ? 'not-allowed' : 'pointer'");
+createCode = createCode.replace(/opacity: \(loading \|\| uploading\) \? 0\.7 : 1/g, "opacity: loading ? 0.7 : 1");
+
+fs.writeFileSync('src/app/admin/products/create/page.tsx', createCode);

@@ -33,6 +33,11 @@ export default function Checkout() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+
   const [error, setError] = useState("");
 
   // Redirect to login if not authenticated — user must be logged in to place an order
@@ -391,6 +396,16 @@ export default function Checkout() {
               </div>
 
               <div className={styles.costBreakdown}>
+                <div className={styles.costRow} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'stretch' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input type="text" placeholder="Coupon Code" value={couponCode} onChange={e => setCouponCode(e.target.value.toUpperCase())} style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-outline)' }} />
+                    <button type="button" onClick={applyCoupon} disabled={applyingCoupon || !couponCode} style={{ padding: '0.5rem 1rem', background: 'var(--color-primary)', color: 'var(--color-on-primary)', borderRadius: 'var(--radius-sm)', border: 'none', cursor: applyingCoupon ? 'not-allowed' : 'pointer' }}>
+                      {applyingCoupon ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                  {couponMsg && <span style={{ fontSize: '0.85rem', color: discountAmount > 0 ? 'var(--color-success, green)' : 'var(--color-error, red)' }}>{couponMsg}</span>}
+                </div>
+                <hr style={{ border: 'none', borderTop: '1px solid var(--color-outline-variant)', margin: '0.5rem 0' }} />
                 <div className={styles.costRow}>
                   <span>Subtotal</span>
                   <span>{inr(totalPrice)}</span>
@@ -399,13 +414,19 @@ export default function Checkout() {
                   <span>Shipping</span>
                   <span>{inr(estimate)}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className={styles.costRow} style={{ color: 'var(--color-success, green)', fontWeight: 600 }}>
+                    <span>Discount</span>
+                    <span>-{inr(discountAmount)}</span>
+                  </div>
+                )}
               </div>
 
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>Total</span>
                 <div className={styles.totalAmountContainer}>
                   <span className={styles.totalCurrency}>INR</span>
-                  <span className={styles.totalAmount}>{inr(totalPrice + estimate)}</span>
+                  <span className={styles.totalAmount}>{inr(Math.max(0, totalPrice + estimate - discountAmount))}</span>
                 </div>
               </div>
 

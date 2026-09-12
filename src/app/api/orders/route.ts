@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       };
     }
 
-    const result = await createOrder({ profileId: profile.id, items, address: shippingAddress });
+    const result = await createOrder({ profileId: profile.id, items, address: shippingAddress, couponCode: body.coupon_code });
 
     return NextResponse.json(
       {

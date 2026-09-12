@@ -113,7 +113,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
   // Extract unique colors and sizes
   const availableColors = Array.from(new Set(product.product_variants?.map((v) => v.color) || []));
   const cleanColor = (c: string) => c ? c.split("[IMG:")[0].trim() : "";
-  const availableSizes = Array.from(new Set(product.product_variants?.map((v) => v.size) || []));
+  const availableSizes = Array.from(new Set(product.product_variants?.filter(v => v.color === selectedColor).map((v) => v.size) || []));
 
   // Check if current selection is in stock (inventory_count, not the nonexistent stock_quantity)
   const currentVariant = product.product_variants?.find((v) => v.color === selectedColor && v.size === selectedSize);
@@ -130,6 +130,14 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
   const galleryImages = (product.product_images?.filter((i) => i.url) || []).slice(0, 3);
 
   const inrPrice = (n: number) => `₹${Number(n).toFixed(2)}`;
+  
+  let descObj = { text: product.description || "", fabric: "", printing: "", shipping: "" };
+  try {
+    if (product.description && product.description.startsWith('{')) {
+      const parsed = JSON.parse(product.description);
+      if (parsed.text !== undefined) descObj = parsed;
+    }
+  } catch (e) {}
 
   return (
     <>
@@ -282,7 +290,7 @@ export default function ProductDetail({ params }: { params: Promise<{ id: string
                   <span className="material-symbols-outlined">expand_more</span>
                 </summary>
                 <div className={styles.accordionContent}>
-                  Knitted from 100% organic cotton at a substantial 240gsm. Features a relaxed, boxy fit with dropped shoulders and a tight crewneck. Pre-shrunk for lasting structure.
+                  {descObj.fabric || 'Premium quality material for comfort and durability.'}
                 </div>
               </details>
               <details className={styles.accordion}>

@@ -1,25 +1,11 @@
-"use client";
+const fs = require('fs');
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from '../../page.module.css';
+let createCode = fs.readFileSync('src/app/admin/products/create/page.tsx', 'utf8');
 
-export default function CreateProductPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [deliveryType, setDeliveryType] = useState("global");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [categories, setCategories] = useState<{id:string, name:string}[]>([]);
+createCode = createCode.replace(/const \[imageUrl, setImageUrl\] = useState\(""\);\n\s*const \[imagePreview, setImagePreview\] = useState\(""\);\n\s*const \[uploading, setUploading\] = useState\(false\);\n\n\s*const handleFileChange = [\s\S]*?\};\n\n/, '');
 
-  useEffect(() => {
-    fetch("/api/categories").then(r => r.json()).then(d => setCategories(d.categories || [])).catch(console.error);
-  }, []);
-
-  
+const variantsStateRegex = /const \[variants, setVariants\] = useState[\s\S]*?updateVariant \=[\s\S]*?\};\n/;
+const newColorGroupsState = `
   const [colorGroups, setColorGroups] = useState([{ id: Date.now(), color: "", image_url: "", image_preview: "", uploading: false, sizes: [{ id: Date.now() + 1, size: "", stock: 10 }] }]);
 
   const handleColorImage = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,41 +37,11 @@ export default function CreateProductPage() {
   const updateSizeInColor = (colorId: number, sizeId: number, field: string, value: any) => {
     setColorGroups(colorGroups.map(c => c.id === colorId ? { ...c, sizes: c.sizes.map(s => s.id === sizeId ? { ...s, [field]: value } : s) } : c));
   };
+`;
+createCode = createCode.replace(variantsStateRegex, newColorGroupsState);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Show local preview immediately
-    const localPreview = URL.createObjectURL(file);
-    setImagePreview(localPreview);
-    setUploading(true);
-    setError("");
-
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-      setImageUrl(data.url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Image upload failed");
-      setImagePreview("");
-      setImageUrl("");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const formData = new FormData(e.currentTarget);
-    const payload = {
-      title: formData.get("title"),
+const payloadSearchRegex = /base_price:[\s\S]*?custom_variants: variants,\n\s*\};/;
+const newPayload1 = `
       base_price: Number(formData.get("base_price")),
       subtitle: formData.get("mrp") ? String(formData.get("mrp")) : null,
       delivery_fee: formData.get("delivery_type") === "global" ? null : (formData.get("delivery_type") === "free" ? 0 : Number(formData.get("delivery_fee_custom") || 0)),
@@ -104,61 +60,14 @@ export default function CreateProductPage() {
         stock: s.stock
       }))),
     };
+`;
+createCode = createCode.replace(payloadSearchRegex, newPayload1.trim());
 
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+const splitStart = createCode.indexOf("<div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>");
+const splitEnd = createCode.indexOf("<div>\n            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>");
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create product");
-      router.push("/admin/products");
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Create Product</h1>
-          <p className={styles.subtitle}>Add a new item to the catalog.</p>
-        </div>
-      </div>
-      <div className={`glass-panel ${styles.recentOrdersCard}`}>
-        {error && <p style={{ color: "var(--color-error)", marginBottom: "1rem" }}>{error}</p>}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Title *</label>
-            <input name="title" required type="text" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. Heavyweight Tee" />
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>Selling Price (₹) *</label>
-              <input name="base_price" required min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-primary)', background: 'var(--color-surface)' }} placeholder="e.g. 999" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>MRP (Strikethrough ₹)</label>
-              <input name="mrp" min="0" step="0.01" type="number" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} placeholder="e.g. 1499" />
-            </div>
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Delivery Fee</label>
-            <select name="delivery_type" value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', marginBottom: '0.5rem' }}>
-              <option value="global">Global Fee (Uses default from Settings)</option>
-              <option value="free">Free Delivery (₹0 for this product)</option>
-              <option value="custom">Custom Fee (Per product)</option>
-            </select>
-            {deliveryType === "custom" && (
-              <input name="delivery_fee_custom" min="0" step="0.01" type="number" placeholder="Enter custom fee in INR" required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)' }} />
-            )}
-          </div>
-                    <div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
+if (splitStart > -1 && splitEnd > -1) {
+  const newMiddle = `<div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Colors & Sizes</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {colorGroups.map((c, i) => (
@@ -223,33 +132,86 @@ export default function CreateProductPage() {
                 <textarea name="shipping" rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }} placeholder="e.g. Ships within 3-5 business days..."></textarea>
               </div>
             </div>
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>
-            <select name="category_id" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', background: 'var(--color-surface)' }}>
-              <option value="">None</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <button
-            disabled={loading}
-            type="submit"
-            style={{
-              padding: '0.75rem',
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-on-primary)',
-              borderRadius: 'var(--radius-full)',
-              fontWeight: 600,
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginTop: '1rem',
-              opacity: loading ? 0.7 : 1
-            }}
-          >
-            {loading ? "Saving..." : "Save Product"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+          </div>\n          `;
+  createCode = createCode.substring(0, splitStart) + newMiddle + createCode.substring(splitEnd);
 }
+
+createCode = createCode.replace(/disabled=\{loading \|\| uploading\}/g, 'disabled={loading}');
+createCode = createCode.replace(/cursor: \(loading \|\| uploading\) \? 'not-allowed' : 'pointer'/g, "cursor: loading ? 'not-allowed' : 'pointer'");
+createCode = createCode.replace(/opacity: \(loading \|\| uploading\) \? 0\.7 : 1/g, "opacity: loading ? 0.7 : 1");
+
+fs.writeFileSync('src/app/admin/products/create/page.tsx', createCode);
+
+let editCode = fs.readFileSync('src/app/admin/products/[id]/edit/page.tsx', 'utf8');
+
+editCode = editCode.replace(/const \[imageUrl, setImageUrl\] = useState\(""\);\n\s*const \[imagePreview, setImagePreview\] = useState\(""\);\n\s*const \[uploading, setUploading\] = useState\(false\);\n\n\s*const handleFileChange = [\s\S]*?\};\n\n/, '');
+
+const getDescRegex = /const \[loading, setLoading\] = useState\(true\);/;
+const addDescParsing = `const [loading, setLoading] = useState(true);
+  const [descText, setDescText] = useState("");
+  const [descFabric, setDescFabric] = useState("");
+  const [descPrinting, setDescPrinting] = useState("");
+  const [descShipping, setDescShipping] = useState("");`;
+editCode = editCode.replace(getDescRegex, addDescParsing);
+
+const setProductRegex = /setProduct\(data\.product\);/;
+const newSetProduct = `setProduct(data.product);
+        if (data.product.description && data.product.description.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(data.product.description);
+            setDescText(parsed.text || "");
+            setDescFabric(parsed.fabric || "");
+            setDescPrinting(parsed.printing || "");
+            setDescShipping(parsed.shipping || "");
+          } catch(e) {
+            setDescText(data.product.description);
+          }
+        } else {
+          setDescText(data.product.description || "");
+        }`;
+editCode = editCode.replace(setProductRegex, newSetProduct);
+
+const oldPayload = /description: formData\.get\("description"\),/;
+const newPayload2 = `description: JSON.stringify({
+        text: formData.get("description") || "",
+        fabric: formData.get("fabric") || "",
+        printing: formData.get("printing") || "",
+        shipping: formData.get("shipping") || ""
+      }),`;
+editCode = editCode.replace(oldPayload, newPayload2);
+editCode = editCode.replace(/image_url: imageUrl \|\| product\.image_url,/, 'image_url: product.image_url,');
+
+const splitStartEdit = editCode.indexOf("<div>\n            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Description</label>");
+const splitEndEdit = editCode.indexOf("<div>\n            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Category</label>");
+
+if (splitStartEdit > -1 && splitEndEdit > -1) {
+  const newMiddleEdit = `<div style={{ padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)', margin: '1rem 0' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Product Details & Tabs</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Main Description</label>
+                <textarea name="description" defaultValue={descText} rows={3} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Fabric & Fit</label>
+                <textarea name="fabric" defaultValue={descFabric} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Printing Process</label>
+                <textarea name="printing" defaultValue={descPrinting} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Shipping</label>
+                <textarea name="shipping" defaultValue={descShipping} rows={2} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-outline)', resize: 'vertical' }}></textarea>
+              </div>
+            </div>
+          </div>\n          `;
+  editCode = editCode.substring(0, splitStartEdit) + newMiddleEdit + editCode.substring(splitEndEdit);
+}
+
+editCode = editCode.replace(/disabled=\{loading \|\| uploading\}/g, 'disabled={loading}');
+editCode = editCode.replace(/cursor: \(loading \|\| uploading\) \? 'not-allowed' : 'pointer'/g, "cursor: loading ? 'not-allowed' : 'pointer'");
+editCode = editCode.replace(/opacity: \(loading \|\| uploading\) \? 0\.7 : 1/g, "opacity: loading ? 0.7 : 1");
+
+fs.writeFileSync('src/app/admin/products/[id]/edit/page.tsx', editCode);
+

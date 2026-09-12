@@ -40,7 +40,7 @@ export class OrderCreationError extends Error {
  * @param items      Line items with productId/variantId/quantity.
  * @param address    Shipping address object (validated).
  */
-export async function createOrder({ profileId, items, address }: { profileId: string; items: OrderItemInput[]; address: ShippingAddressInput }) {
+export async function createOrder({ profileId, items, address, couponCode }: { profileId: string; items: OrderItemInput[]; address: ShippingAddressInput; couponCode?: string }) {
   const supabase = createServerClient();
   const raz = getRazorpay();
 
@@ -122,7 +122,20 @@ export async function createOrder({ profileId, items, address }: { profileId: st
   const deliveryMode = (await getDeliveryMode(supabase));
 
   // 3. Create the order with a full price snapshot
-  const total = subtotal + shippingFee;
+  let discountAmount = 0;
+  if (couponCode) {
+    const { data: cData } = await supabase.from('delivery_settings').select('setting_value').eq('setting_key', 'discount_coupons').single();
+    if (cData && cData.setting_value) {
+      const coupons = cData.setting_value;
+      const coupon = coupons.find((c: any) => c.code.toUpperCase() === couponCode.toUpperCase());
+      if (coupon && coupon.active && (subtotal + shippingFee) >= Number(coupon.min_order || 0)) {
+        if (coupon.type === 'percentage') discountAmount = ((subtotal + shippingFee) * Number(coupon.value)) / 100;
+        else discountAmount = Number(coupon.value);
+        snapshotItems.push({ type: 'discount', title: 'Coupon Applied', code: couponCode, amount: -discountAmount });
+      }
+    }
+  }
+  const total = Math.max(0, subtotal + shippingFee - discountAmount);
   const { data: newOrder, error: orderError } = await supabase
     .from('orders')
     .insert({
