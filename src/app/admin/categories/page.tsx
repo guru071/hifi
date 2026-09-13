@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createServerClient } from '@/lib/supabase/server';
 import styles from '../page.module.css';
 import Link from 'next/link';

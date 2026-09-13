@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createServerClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
