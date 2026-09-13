@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import Navbar from "@/components/layout/Navbar";
@@ -32,12 +32,12 @@ export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [loading, setLoading] = useState, useEffect(false);
-  const [couponCode, setCouponCode] = useState, useEffect("");
-  const [discountAmount, setDiscountAmount] = useState, useEffect(0);
-  const [couponMsg, setCouponMsg] = useState, useEffect("");
-  const [applyingCoupon, setApplyingCoupon] = useState, useEffect(false);
-  const [availableCoupons, setAvailableCoupons] = useState, useEffect<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
 
   useEffect(() => {
     fetch('/api/coupons/active').then(r=>r.json()).then(d=> {
@@ -45,7 +45,7 @@ export default function Checkout() {
     }).catch(console.error);
   }, []);
 
-  const [error, setError] = useState, useEffect("");
+  const [error, setError] = useState("");
 
   // Redirect to login if not authenticated — user must be logged in to place an order
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function Checkout() {
     }
   }, [authLoading, user, router]);
 
-  const [profilePhone, setProfilePhone] = useState, useEffect<string | null>("loading");
+  const [profilePhone, setProfilePhone] = useState<string | null>("loading");
 
   useEffect(() => {
     if (!user) {
@@ -76,11 +76,11 @@ export default function Checkout() {
     checkProfile();
   }, [user]);
 
-  const [shippingFee, setShippingFee] = useState, useEffect(0);
-  const [deliveryType, setDeliveryType] = useState, useEffect('global');
+  const [shippingFee, setShippingFee] = useState(0);
+  const [deliveryType, setDeliveryType] = useState('global');
   
-  const [designFile, setDesignFile] = useState, useEffect<File | null>(null);
-  const [designPreview, setDesignPreview] = useState, useEffect<string | null>(null);
+  const [designFile, setDesignFile] = useState<File | null>(null);
+  const [designPreview, setDesignPreview] = useState<string | null>(null);
 
   React.useEffect(() => {
     async function fetchSettings() {
@@ -117,7 +117,28 @@ export default function Checkout() {
     });
   };
 
-  const [pendingOrder, setPendingOrder] = useState, useEffect<{ orderId: string, razorpayOrderId: string, amount: number, currency: string } | null>(null);
+  const [pendingOrder, setPendingOrder] = useState<{ orderId: string, razorpayOrderId: string, amount: number, currency: string } | null>(null);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setApplyingCoupon(true);
+    setCouponMsg("");
+    try {
+      const res = await fetch("/api/coupons/validate?code=" + couponCode + "&total=" + totalPrice);
+      const data = await res.json();
+      if (!res.ok) {
+        setCouponMsg(data.error || "Invalid coupon");
+        setDiscountAmount(0);
+      } else {
+        setDiscountAmount(data.discount);
+        setCouponMsg(`Coupon applied! Saved ${inr(data.discount)}`);
+      }
+    } catch (e) {
+      setCouponMsg("Failed to validate coupon");
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -416,7 +437,7 @@ export default function Checkout() {
                     <div style={{ marginTop: '0.5rem', padding: '0.75rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-sm)' }}>
                       <span style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>Available Offers:</span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        {availableCoupons.map(c => {
+                        {availableCoupons.map((c: any) => {
                           const isEligible = totalPrice >= (Number(c.min_order) || 0);
                           return (
                             <div key={c.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isEligible ? 1 : 0.6 }}>

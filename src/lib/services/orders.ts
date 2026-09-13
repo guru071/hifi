@@ -126,7 +126,7 @@ export async function createOrder({ profileId, items, address, couponCode }: { p
   if (couponCode) {
     const { data: cData } = await supabase.from('delivery_settings').select('setting_value').eq('setting_key', 'discount_coupons').single();
     if (cData && cData.setting_value) {
-      const coupons = cData.setting_value;
+      const coupons = cData.setting_value as any[];
       const coupon = coupons.find((c: any) => c.code.toUpperCase() === couponCode.toUpperCase());
       if (coupon && coupon.active && (subtotal + shippingFee) >= Number(coupon.min_order || 0)) {
         if (coupon.type === 'percentage') discountAmount = ((subtotal + shippingFee) * Number(coupon.value)) / 100;

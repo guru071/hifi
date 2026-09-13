@@ -10,6 +10,12 @@ const inr = (n: number) => `₹${Number(n).toFixed(2)}`;
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
+  useEffect(() => {
+    fetch('/api/coupons/active').then(r=>r.json()).then(d=> {
+      if(d.coupons) setAvailableCoupons(d.coupons);
+    }).catch(console.error);
+  }, []);
 
   return (
     <>
@@ -107,7 +113,7 @@ export default function Cart() {
                 <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
                   <span style={{ fontSize: '0.9rem', fontWeight: 600, display: 'block', marginBottom: '0.75rem' }}>Available Offers at Checkout:</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {availableCoupons.map(c => {
+                    {availableCoupons.map((c: any) => {
                       const isEligible = totalPrice >= (Number(c.min_order) || 0);
                       return (
                         <div key={c.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isEligible ? 1 : 0.6, background: 'var(--color-surface)', padding: '0.5rem', borderRadius: '4px', border: '1px dashed var(--color-outline)' }}>
