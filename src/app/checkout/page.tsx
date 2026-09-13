@@ -190,6 +190,7 @@ export default function Checkout() {
             ...(token ? { Authorization: `Bearer ${token}` } : {})
           },
           body: JSON.stringify({
+            coupon_code: discountAmount > 0 ? couponCode : null,
             shippingAddress,
             items: items.map((it) => ({
               productId: it.productId,
