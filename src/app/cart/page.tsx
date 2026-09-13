@@ -103,6 +103,25 @@ export default function Cart() {
                 <button className={styles.checkoutBtn} disabled={items.length === 0}>Secure Checkout</button>
               </Link>
               
+              {availableCoupons.length > 0 && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--color-surface-variant)', borderRadius: 'var(--radius-md)' }}>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, display: 'block', marginBottom: '0.75rem' }}>Available Offers at Checkout:</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {availableCoupons.map(c => {
+                      const isEligible = totalPrice >= (Number(c.min_order) || 0);
+                      return (
+                        <div key={c.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isEligible ? 1 : 0.6, background: 'var(--color-surface)', padding: '0.5rem', borderRadius: '4px', border: '1px dashed var(--color-outline)' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-primary)' }}>{c.code}</span>
+                            <span style={{ fontSize: '0.8rem' }}>{c.type === 'percentage' ? c.value + '% OFF' : '₹' + c.value + ' OFF'} {c.min_order > 0 ? `on orders above ₹${c.min_order}` : ''}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              
               <div className={styles.securityNote}>
                 <span className="material-symbols-outlined" style={{ fontSize: "14px", fontVariationSettings: "'FILL' 1" }}>lock</span>
                 <span className={styles.securityText}>SSL Encrypted</span>
